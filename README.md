@@ -8,8 +8,12 @@ Currently supported commands:
 
 %scorebot files
 > Lists files stored in the channel
+
+
 %scorebot scores
 > Lists all scorecards and total scores
+
+
 %scorebot dates
 > Lists all dates for scorecards
 
