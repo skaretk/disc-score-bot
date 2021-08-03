@@ -2,6 +2,12 @@ import os
 import discord
 import logging
 
+# Fetch python bot token
+from dotenv import load_dotenv
+from os import getenv
+load_dotenv('token.env')
+token = getenv("TOKEN")
+
 from csv_reader import Csv_reader
 from player import Player
 from scorecard import Scorecard
@@ -113,4 +119,4 @@ async def on_message(message):
         embed.add_field(name="Total", value=scorecard_total, inline=False)
         await message.channel.send(embed=embed)   
 
-client.run('')
+client.run(token)
