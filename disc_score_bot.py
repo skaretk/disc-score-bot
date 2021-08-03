@@ -68,7 +68,7 @@ async def on_message(message):
         await message.channel.send(f'No of files: {file_count}\n{msg_to_send}')
 
     # Get current dates
-    elif message.content == '%scorebot date':
+    elif message.content == '%scorebot dates':
         if not os.path.exists(currentPath):
             await message.channel.send("No scores stored for this channel")
             return
