@@ -6,15 +6,15 @@ Will store .csv files uploaded and responds to commands in order to view these i
 
 Currently supported commands:
 
-%scorebot files
+%files
 > Lists files stored in the channel
 
 
-%scorebot scores
+%scores
 > Lists all scorecards and total scores
 
 
-%scorebot dates
+%dates
 > Lists all dates for scorecards
 
 
