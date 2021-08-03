@@ -113,4 +113,4 @@ async def on_message(message):
         embed.add_field(name="Total", value=scorecard_total, inline=False)
         await message.channel.send(embed=embed)   
 
-client.run('ODY4MjAxODY0MDA3NjU5NTYx.YPsN_g.5gkeaR6HIzCjxIyMcgLksOoSbgk')
+client.run('')
