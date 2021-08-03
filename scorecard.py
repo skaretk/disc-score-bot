@@ -8,7 +8,7 @@ class Scorecard:
         self.playerlist = []
 
     def __str__(self):
-        msg = f'{self.coursename} Dato: {self.date} Par: {self.par}'
+        msg = f'{self.coursename} Dato: {self.date_time} Par: {self.par}'
         for player in self.playerlist:
             msg += f'\n{player}'
         return msg
