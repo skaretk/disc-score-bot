@@ -8,7 +8,7 @@ class Csv_reader:
         self.file = file
     
     def parse(self):
-        with open('{}\{}'.format(self.path, self.file)) as csv_file:
+        with open(f'{self.path}\{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             line_count = 0
             for row in reader:
@@ -18,5 +18,5 @@ class Csv_reader:
                     player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
                     scorecard.add_player(player)
                 line_count += 1
-            scorecard.sort_players_score()
+            scorecard.sort_players()
         return scorecard

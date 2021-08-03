@@ -4,9 +4,11 @@ class Scorecard_total:
         self.playerlist = []
     
     def __str__(self):
-        msg = f'Total Scores:'
+        msg = ''
+        no = 1
         for player in self.playerlist:
-            msg += f'\n{player}'
+            msg += f'\n{no}: {player.get_full_info()}'
+            no += 1
         return msg
     
     def add_scorecard(self, scorecard):
@@ -21,7 +23,7 @@ class Scorecard_total:
         else:
             return False
     
-    def sort_players_score(self):
+    def sort_players(self):
         self.playerlist.sort(key=lambda x: x.score)
 
     def print_scores(self):

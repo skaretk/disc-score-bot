@@ -6,7 +6,7 @@ class Player:
         self.score = score
 
     def __str__(self):
-     return f'Spiller: {self.name} Score: {self.score} Kast: {self.total}'
+     return f'**{self.name}** {self.score}'
 
     #def __lt__(self, other):
     #    return True if self.score < other.score else False
@@ -28,3 +28,6 @@ class Player:
     
     def __add__(self, other):
         return Player(self.name, self.total + other.total, self.score + other.score)
+
+    def get_full_info(self):
+     return f'{self} Kast: {self.total}'

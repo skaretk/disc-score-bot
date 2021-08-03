@@ -47,7 +47,7 @@ async def on_message(message):
                 await message.channel.send(scorecard)
 
     # Check files stored for the current channel
-    elif message.content == '%discbot files':        
+    elif message.content == '%scorebot files':        
         if not os.path.exists(currentPath):
             await message.channel.send("No files stored for this channel")
             return
@@ -61,8 +61,31 @@ async def on_message(message):
                 msg_to_send += f'\n{file}'
         await message.channel.send(f'No of files: {file_count}\n{msg_to_send}')
 
+    # Get current dates
+    elif message.content == '%scorebot date':
+        if not os.path.exists(currentPath):
+            await message.channel.send("No scores stored for this channel")
+            return
+        datelist = []
+
+        for file in os.listdir(currentPath):
+            if file.endswith(".csv"):
+                csv_reader = Csv_reader(currentPath, file)
+                scorecard = csv_reader.parse()
+
+                date = scorecard.date_time.date()
+
+                if date not in datelist:
+                    datelist.append(scorecard.date_time.date())
+        
+        msg = ''
+        for date in datelist:
+            msg += f'\n{date}'
+
+        await message.channel.send(msg)
+
     # Check current scores stored in this channel
-    elif message.content == '%discbot scores':        
+    elif message.content == '%scorebot scores':
         if not os.path.exists(currentPath):
             await message.channel.send("No scores stored for this channel")
             return
@@ -78,16 +101,16 @@ async def on_message(message):
                     if scorecard_total.player_exist(player):
                         idx = scorecard_total.playerlist.index(player)
                         scorecard_total.playerlist[idx] += player
-                    else:    
+                    else:
                         scorecard_total.add_player(player)
-                #tmp print
-                scorecard.sort_players_score()
-                print(scorecard)
-                
-                await message.channel.send(f'Scorecard:\n{scorecard}')
         
-        scorecard_total.sort_players_score()
+        scorecard_total.sort_players()
         scorecard_total.print_scores()
-        await message.channel.send(f'Total:\n{scorecard_total}')
+
+        embed=discord.Embed(title="Disc-Score-Bot", url="", description="", color=0xFF5733)
+        for scorecard in scorecard_total.scorecardlist:
+            embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)    
+        embed.add_field(name="Total", value=scorecard_total, inline=False)
+        await message.channel.send(embed=embed)   
 
 client.run('ODY4MjAxODY0MDA3NjU5NTYx.YPsN_g.5gkeaR6HIzCjxIyMcgLksOoSbgk')
