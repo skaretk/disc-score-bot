@@ -17,7 +17,7 @@ class Scorecard:
     def get_players(self):
         players = ''
         for player in self.playerlist:
-            players += f'\n{player}'
+            players += f'\n> {player}'
         return players
 
     def add_player(self, player):

@@ -17,7 +17,7 @@ class Scorecard_total:
                 no += no_same_scores + 1
                 no_same_scores = 0
             
-            msg += f'\n{no}: {player.get_full_info()}'
+            msg += f'\n> {no}: {player.get_full_info()}'
 
             last_score = player.score
             

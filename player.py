@@ -7,7 +7,7 @@ class Player:
         self.score_cards = 1
 
     def __str__(self):
-     return f'**{self.name}** {self.score}'
+     return f'{self.name} **{self.score}**'
 
     #def __lt__(self, other):
     #    return True if self.score < other.score else False
