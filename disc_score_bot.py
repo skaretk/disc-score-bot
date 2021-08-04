@@ -63,7 +63,7 @@ async def files(ctx):
     path = str(f'{ctx.guild.name}\{ctx.channel}')
 
     if is_path_empty(path):
-        await ctx.send("No files stored for this channel")
+        await ctx.send('No files stored for this channel')
         return
         
     msg_to_send = ''
@@ -73,8 +73,11 @@ async def files(ctx):
             file_count += 1
             print(os.path.join(f'{path}\{file}'))
             msg_to_send += f'\n{file}'
-            
-    await ctx.send(f'No of files: {file_count}\n{msg_to_send}')
+    
+    if file_count:     
+        await ctx.send(f'No of files: {file_count}\n{msg_to_send}')
+    else:
+        await ctx.send('No .csv files stored for this channel')
 
 @bot.command()
 async def dates(ctx):
@@ -110,7 +113,7 @@ async def scores(ctx):
 
     # Check current scores stored in this channel
     if is_path_empty(path):
-        await ctx.send("No scores stored for this channel")
+        await ctx.send('No scores stored for this channel')
         return
     
     scorecard_total = Scorecard_total()
@@ -130,10 +133,6 @@ async def scores(ctx):
     scorecard_total.sort_players()
     scorecard_total.print_scores()
 
-    embed=discord.Embed(title="Disc-Score-Bot", url="", description="", color=0xFF5733)
-    for scorecard in scorecard_total.scorecardlist:
-        embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)    
-    embed.add_field(name="Total", value=scorecard_total, inline=False)
-    await ctx.send(embed=embed)  
+    await ctx.send(embed=scorecard_total.get_embed(ctx.author.avatar_url))  
 
 bot.run(token)
