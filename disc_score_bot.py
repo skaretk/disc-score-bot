@@ -31,6 +31,7 @@ def is_path_empty(path):
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
+    await bot.change_presence(activity=discord.Game(name="Disc golf"))
 
 @bot.event
 async def on_message(message):
