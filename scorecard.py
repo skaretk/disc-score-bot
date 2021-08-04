@@ -1,4 +1,5 @@
 import datetime
+import discord
 
 class Scorecard:
     def __init__(self, coursename, date_time, par):
@@ -28,3 +29,11 @@ class Scorecard:
     def print_players(self):        
         for player in self.playerlist:
             print(player)
+    
+    def get_embed(self, thumbnail=''):
+        embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
+        embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
+        if thumbnail != '':
+            embed.set_thumbnail(url=(thumbnail))
+
+        return embed

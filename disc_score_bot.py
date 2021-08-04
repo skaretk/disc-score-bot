@@ -16,6 +16,18 @@ from scorecard_total import Scorecard_total
 # discord client
 bot = commands.Bot(command_prefix='%')
 
+def is_path_empty(path):
+    if os.path.exists(path) and not os.path.isfile(path):  
+        if not os.listdir(path):
+            # Empty directory
+            return True
+        else:
+            # Not empty directory
+            return False
+    else:
+        # The path is either for a file or not valid
+        return True
+
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
@@ -23,64 +35,60 @@ async def on_ready():
 @bot.event
 async def on_message(message):
 
-    print('msg received')   
-    channel = str(message.channel)
-    author = str(message.author)
-    currentPath = str(f'{message.guild.name}\{channel}')
+    path = str(f'{message.guild.name}\{message.channel}')
     
     # any attachments in the message?
     if message.attachments:
         for attachment in message.attachments:
             if 'text/csv' in attachment.content_type:
-                print("csv attached from server {} channel {}".format(message.guild.name, channel))
-                if not os.path.exists(currentPath):
-                    os.makedirs(currentPath)
-                await attachment.save(fp="{}\{}".format(currentPath, attachment.filename)) # saves the file in a server/channel folder
-                await message.channel.send('{} attached {}'.format(attachment.filename, author))
-                print("csv attached and stored in {}\{}!".format(currentPath, attachment.filename))
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                await attachment.save(fp=f"{path}\{attachment.filename}") # saves the file in a server/channel folder
+                await message.channel.send(f'{attachment.filename} attached by {message.author}')
+                print(f'csv attached and stored in {path}\{attachment.filename}!')
                 
-                csv_reader = Csv_reader(currentPath, attachment.filename)
+                csv_reader = Csv_reader(path, attachment.filename)
                 scorecard = csv_reader.parse()
-
-                await message.channel.send(scorecard)
+                
+                await message.channel.send(embed=scorecard.get_embed(message.author.avatar_url))
+                await message.delete()
+                return
 
     await bot.process_commands(message)
 
 @bot.command()
 async def files(ctx):
 
-    channel = str(ctx.channel)
-    currentPath = str(f'{ctx.guild.name}\{channel}')
+    path = str(f'{ctx.guild.name}\{ctx.channel}')
 
-    # Check files stored for the current channel     
-    if not os.path.exists(currentPath):
+    if is_path_empty(path):
         await ctx.send("No files stored for this channel")
         return
         
     msg_to_send = ''
     file_count = 0
-    for file in os.listdir(currentPath):
+    for file in os.listdir(path):
         if file.endswith(".csv"):
             file_count += 1
-            print(os.path.join(f'{currentPath}\{file}'))
+            print(os.path.join(f'{path}\{file}'))
             msg_to_send += f'\n{file}'
+            
     await ctx.send(f'No of files: {file_count}\n{msg_to_send}')
 
 @bot.command()
 async def dates(ctx):
 
-    channel = str(ctx.channel)
-    currentPath = str(f'{ctx.guild.name}\{channel}')
+    path = str(f'{ctx.guild.name}\{ctx.channel}')
 
-    # Get current dates
-    if not os.path.exists(currentPath):
+    if is_path_empty(path):
         await ctx.send("No scores stored for this channel")
         return
+    
+    # Get current dates
     datelist = []
-
-    for file in os.listdir(currentPath):
+    for file in os.listdir(path):
         if file.endswith(".csv"):
-            csv_reader = Csv_reader(currentPath, file)
+            csv_reader = Csv_reader(path, file)
             scorecard = csv_reader.parse()
 
             date = scorecard.date_time.date()
@@ -97,18 +105,17 @@ async def dates(ctx):
 @bot.command()
 async def scores(ctx):
 
-    channel = str(ctx.channel)
-    currentPath = str(f'{ctx.guild.name}\{channel}')
+    path = str(f'{ctx.guild.name}\{ctx.channel}')
 
     # Check current scores stored in this channel
-    if not os.path.exists(currentPath):
+    if is_path_empty(path):
         await ctx.send("No scores stored for this channel")
         return
     
     scorecard_total = Scorecard_total()
-    for file in os.listdir(currentPath):
+    for file in os.listdir(path):
         if file.endswith(".csv"):
-            csv_reader = Csv_reader(currentPath, file)
+            csv_reader = Csv_reader(path, file)
             scorecard = csv_reader.parse()
 
             scorecard_total.add_scorecard(scorecard)
