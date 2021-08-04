@@ -1,6 +1,6 @@
 import discord
 
-class Scorecard_total:
+class Scorecards:
     def __init__(self):
         self.scorecardlist = []
         self.playerlist = []
@@ -28,6 +28,7 @@ class Scorecard_total:
     
     def add_player(self, new_player):
         self.playerlist.append(new_player)
+        self.sort_players()
     
     def player_exist(self, new_player):
         if (new_player in self.playerlist):

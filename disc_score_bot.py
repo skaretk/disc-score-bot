@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import discord
 from discord.ext import commands
@@ -11,7 +12,7 @@ token = getenv("TOKEN")
 from csv_reader import Csv_reader
 from player import Player
 from scorecard import Scorecard
-from scorecard_total import Scorecard_total
+from scorecards import Scorecards
 
 # discord client
 bot = commands.Bot(command_prefix='%')
@@ -27,6 +28,69 @@ def is_path_empty(path):
     else:
         # The path is either for a file or not valid
         return True
+
+def get_scorecards(path):
+    scorecards = Scorecards()
+    for file in os.listdir(path):
+        if file.endswith(".csv"):
+            csv_reader = Csv_reader(path, file)
+            scorecard = csv_reader.parse()
+
+            scorecards.add_scorecard(scorecard)
+            for player in scorecard.playerlist:
+                if scorecards.player_exist(player):
+                    idx = scorecards.playerlist.index(player)
+                    scorecards.playerlist[idx] += player
+                else:
+                    scorecards.add_player(player)
+    return scorecards
+
+def get_scorecards_course(path, course):
+    scorecards = Scorecards()
+    for file in os.listdir(path):
+        if file.endswith(".csv"):
+            csv_reader = Csv_reader(path, file)
+            scorecard = csv_reader.parse()
+            if course.lower() in scorecard.coursename.lower():
+                scorecards.add_scorecard(scorecard)
+                
+                for player in scorecard.playerlist:
+                    if scorecards.player_exist(player):
+                        idx = scorecards.playerlist.index(player)
+                        scorecards.playerlist[idx] += player
+                    else:
+                        scorecards.add_player(player)
+    return scorecards
+
+def get_scorecards_date(path, date, date_to = ''):
+    scorecards = Scorecards()
+    for file in os.listdir(path):
+        if file.endswith(".csv"):
+            csv_reader = Csv_reader(path, file)
+            scorecard = csv_reader.parse()
+            # Parse scores between two dates ?
+            if (date_to):
+                if date.date() <= scorecard.date_time.date() and date_to.date() >= scorecard.date_time.date():
+                    add_scorecard = True
+                else:
+                    add_scorecard = False
+            # Only one date
+            else:
+                if date.date() == scorecard.date_time.date():
+                    add_scorecard = True
+                else:
+                    add_scorecard = False
+
+            if (add_scorecard):
+                scorecards.add_scorecard(scorecard)
+                
+                for player in scorecard.playerlist:
+                    if scorecards.player_exist(player):
+                        idx = scorecards.playerlist.index(player)
+                        scorecards.playerlist[idx] += player
+                    else:
+                        scorecards.add_player(player)
+    return scorecards
 
 @bot.event
 async def on_ready():
@@ -59,7 +123,6 @@ async def on_message(message):
 
 @bot.command()
 async def files(ctx):
-
     path = str(f'{ctx.guild.name}\{ctx.channel}')
 
     if is_path_empty(path):
@@ -98,7 +161,7 @@ async def dates(ctx):
             date = scorecard.date_time.date()
 
             if date not in datelist:
-                datelist.append(scorecard.date_time.date())
+                datelist.append(date)
     
     msg = ''
     for date in datelist:
@@ -107,32 +170,64 @@ async def dates(ctx):
     await ctx.send(msg)
 
 @bot.command()
-async def scores(ctx):
-
+async def scores(ctx, *args):  
     path = str(f'{ctx.guild.name}\{ctx.channel}')
 
     # Check current scores stored in this channel
     if is_path_empty(path):
         await ctx.send('No scores stored for this channel')
         return
-    
-    scorecard_total = Scorecard_total()
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            csv_reader = Csv_reader(path, file)
-            scorecard = csv_reader.parse()
 
-            scorecard_total.add_scorecard(scorecard)
-            for player in scorecard.playerlist:
-                if scorecard_total.player_exist(player):
-                    idx = scorecard_total.playerlist.index(player)
-                    scorecard_total.playerlist[idx] += player
-                else:
-                    scorecard_total.add_player(player)
-    
-    scorecard_total.sort_players()
-    scorecard_total.print_scores()
+    if args:
+        print(f'%scores: {len(args)} arguments:', ', '.join(args))
 
-    await ctx.send(embed=scorecard_total.get_embed(ctx.author.avatar_url))  
+        if args[0] == "course":
+            if len(args) < 2:
+                ctx.send("Missing coursename")
+                return
 
+            scorecards = get_scorecards_course(path, args[1])           
+
+            if (scorecards.scorecardlist):               
+                await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
+            else:
+                await ctx.send("No courses found")
+
+        if args[0] == "date":
+            if len(args) < 2:
+                ctx.send("Missing date")
+                return
+            
+            date = ''                
+            try:
+                date = datetime.strptime(args[1],'%d.%m.%Y')    
+            except ValueError:
+                await ctx.send("Invalid format in date 1 - should be 01.12.2021")
+                return
+
+            if len(args) == 2:
+                scorecards = get_scorecards_date(path, date)
+            if (len(args) > 2):
+                date_to = ''
+                try:
+                    date_to = datetime.strptime(args[2],'%d.%m.%Y')    
+                except ValueError:
+                    await ctx.send("Invalid format in date 2 - should be 01.12.2021")
+                    return
+
+                scorecards = get_scorecards_date(path, date, date_to)                                 
+
+            if (scorecards.scorecardlist):               
+                await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
+            else:
+                await ctx.send("No courses found")
+            
+    else: # no args, list all scores
+        scorecards = get_scorecards(path)
+
+        if (scorecards.scorecardlist):               
+            await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url))  
+        else:
+            await ctx.send("No courses found")
+      
 bot.run(token)

@@ -4,7 +4,7 @@ import discord
 class Scorecard:
     def __init__(self, coursename, date_time, par):
         self.coursename = coursename
-        self.date_time = datetime.datetime.strptime(date_time,'%Y-%m-%d %H:%M' )
+        self.date_time = datetime.datetime.strptime(date_time,'%Y-%m-%d %H:%M')
         self.par = par
         self.playerlist = []
 
@@ -22,6 +22,7 @@ class Scorecard:
 
     def add_player(self, player):
         self.playerlist.append(player)
+        self.sort_players()
     
     def sort_players(self):
         self.playerlist.sort(key=lambda x: x.score)
