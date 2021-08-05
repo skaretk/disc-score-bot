@@ -19,7 +19,6 @@ class CsvReader:
                     player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
                     scorecard.add_player(player)
                 line_count += 1
-            scorecard.sort_players()
         return scorecard
     
     def parse_course(self, course):
@@ -36,7 +35,6 @@ class CsvReader:
                     player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
                     scorecard.add_player(player)
                 line_count += 1
-            scorecard.sort_players()
         return scorecard
 
     def parse_dates(self, date, date_to = ''):
@@ -67,5 +65,4 @@ class CsvReader:
                     player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
                     scorecard.add_player(player)
                 line_count += 1
-            scorecard.sort_players()
         return scorecard
