@@ -98,7 +98,11 @@ async def on_message(message):
             if findWholeWord(word)(message.content.lower()) is not None:
                 emoji = '<a:shutupandtakemymoney:751168620339527830>'
                 await message.add_reaction(emoji)
-                break        
+                break 
+        
+        if 'bomb' in message.content.lower():
+            emoji = '💣'
+            await message.add_reaction(emoji)
     
     else:
         await bot.process_commands(message)
