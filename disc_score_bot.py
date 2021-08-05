@@ -99,7 +99,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-
     path = str(f'{message.guild.name}\{message.channel}')
     
     # any attachments in the message?
@@ -118,8 +117,13 @@ async def on_message(message):
                 await message.channel.send(embed=scorecard.get_embed(message.author.avatar_url))
                 await message.delete()
                 return
-
-    await bot.process_commands(message)
+    elif message.guild.id == 597085958244139022:
+        if 'disc' in message.content.lower():
+            emoji = '<a:shutupandtakemymoney:751168620339527830>'
+            await message.add_reaction(emoji)        
+    
+    else:
+        await bot.process_commands(message)
 
 @bot.command()
 async def files(ctx):
