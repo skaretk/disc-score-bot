@@ -25,10 +25,19 @@ class Scorecards:
     
     def add_scorecard(self, scorecard):
         self.scorecardlist.append(scorecard)
+        self.add_players(scorecard)        
     
     def add_player(self, new_player):
         self.playerlist.append(new_player)
         self.sort_players()
+    
+    def add_players(self, scorecard):
+        for player in scorecard.playerlist:
+            if self.player_exist(player):
+                idx = self.playerlist.index(player)
+                self.playerlist[idx] += player
+            else:
+                self.add_player(player)
     
     def player_exist(self, new_player):
         if (new_player in self.playerlist):

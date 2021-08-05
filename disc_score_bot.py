@@ -37,12 +37,7 @@ def get_scorecards(path):
             scorecard = csvreader.parse()
 
             scorecards.add_scorecard(scorecard)
-            for player in scorecard.playerlist:
-                if scorecards.player_exist(player):
-                    idx = scorecards.playerlist.index(player)
-                    scorecards.playerlist[idx] += player
-                else:
-                    scorecards.add_player(player)
+
     return scorecards
 
 def get_scorecards_course(path, course):
@@ -50,16 +45,10 @@ def get_scorecards_course(path, course):
     for file in os.listdir(path):
         if file.endswith(".csv"):
             csvreader = CsvReader(path, file)
-            scorecard = csvreader.parse()
-            if course.lower() in scorecard.coursename.lower():
+            scorecard = csvreader.parse_course(course)
+            if scorecard is not None:
                 scorecards.add_scorecard(scorecard)
-                
-                for player in scorecard.playerlist:
-                    if scorecards.player_exist(player):
-                        idx = scorecards.playerlist.index(player)
-                        scorecards.playerlist[idx] += player
-                    else:
-                        scorecards.add_player(player)
+
     return scorecards
 
 def get_scorecards_date(path, date, date_to = ''):
@@ -67,29 +56,11 @@ def get_scorecards_date(path, date, date_to = ''):
     for file in os.listdir(path):
         if file.endswith(".csv"):
             csvreader = CsvReader(path, file)
-            scorecard = csvreader.parse()
-            # Parse scores between two dates ?
-            if (date_to):
-                if date.date() <= scorecard.date_time.date() and date_to.date() >= scorecard.date_time.date():
-                    add_scorecard = True
-                else:
-                    add_scorecard = False
-            # Only one date
-            else:
-                if date.date() == scorecard.date_time.date():
-                    add_scorecard = True
-                else:
-                    add_scorecard = False
+            scorecard = csvreader.parse_dates(date, date_to)            
 
-            if (add_scorecard):
+            if scorecard is not None:
                 scorecards.add_scorecard(scorecard)
-                
-                for player in scorecard.playerlist:
-                    if scorecards.player_exist(player):
-                        idx = scorecards.playerlist.index(player)
-                        scorecards.playerlist[idx] += player
-                    else:
-                        scorecards.add_player(player)
+
     return scorecards
 
 @bot.event
