@@ -104,8 +104,7 @@ async def on_message(message):
             emoji = '💣'
             await message.add_reaction(emoji)
     
-    else:
-        await bot.process_commands(message)
+    await bot.process_commands(message)
 
 @bot.command()
 async def files(ctx):
