@@ -12,6 +12,12 @@ Currently supported commands:
 
 %scores
 > Lists all scorecards and total scores
+%scores course coursename
+> Search for all scorecards with coursename
+%scores date 01.12.1990
+> Search for all scorecards with given date
+%scores date 01.12.1990 01.01.1991
+> Search for all scorecards between dates
 
 
 %dates
