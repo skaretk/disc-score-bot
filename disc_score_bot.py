@@ -111,8 +111,8 @@ async def on_message(message):
                 await message.channel.send(f'{attachment.filename} attached by {message.author}')
                 print(f'csv attached and stored in {path}\{attachment.filename}!')
                 
-                csv_reader = Csv_reader(path, attachment.filename)
-                scorecard = csv_reader.parse()
+                csvreader = CsvReader(path, attachment.filename)
+                scorecard = csvreader.parse()
                 
                 await message.channel.send(embed=scorecard.get_embed(message.author.avatar_url))
                 await message.delete()
