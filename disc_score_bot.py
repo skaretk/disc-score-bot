@@ -9,7 +9,7 @@ from os import getenv
 load_dotenv('token.env')
 token = getenv("TOKEN")
 
-from csv_reader import Csv_reader
+from csvreader import CsvReader
 from player import Player
 from scorecard import Scorecard
 from scorecards import Scorecards
@@ -33,8 +33,8 @@ def get_scorecards(path):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csv_reader = Csv_reader(path, file)
-            scorecard = csv_reader.parse()
+            csvreader = CsvReader(path, file)
+            scorecard = csvreader.parse()
 
             scorecards.add_scorecard(scorecard)
             for player in scorecard.playerlist:
@@ -49,8 +49,8 @@ def get_scorecards_course(path, course):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csv_reader = Csv_reader(path, file)
-            scorecard = csv_reader.parse()
+            csvreader = CsvReader(path, file)
+            scorecard = csvreader.parse()
             if course.lower() in scorecard.coursename.lower():
                 scorecards.add_scorecard(scorecard)
                 
@@ -66,8 +66,8 @@ def get_scorecards_date(path, date, date_to = ''):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csv_reader = Csv_reader(path, file)
-            scorecard = csv_reader.parse()
+            csvreader = CsvReader(path, file)
+            scorecard = csvreader.parse()
             # Parse scores between two dates ?
             if (date_to):
                 if date.date() <= scorecard.date_time.date() and date_to.date() >= scorecard.date_time.date():
@@ -159,8 +159,8 @@ async def dates(ctx):
     datelist = []
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csv_reader = Csv_reader(path, file)
-            scorecard = csv_reader.parse()
+            csvreader = CsvReader(path, file)
+            scorecard = csvreader.parse()
 
             date = scorecard.date_time.date()
 

@@ -2,10 +2,10 @@ import csv
 from player import Player
 from scorecard import Scorecard
 
-class Csv_reader:
+class CsvReader:
     def __init__(self, path, file):
         self.path = path
-        self.file = file
+        self.file = file       
     
     def parse(self):
         with open(f'{self.path}\{self.file}', encoding='UTF-8', newline='') as csv_file:
@@ -20,3 +20,4 @@ class Csv_reader:
                 line_count += 1
             scorecard.sort_players()
         return scorecard
+        
