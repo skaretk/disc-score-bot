@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import discord
 from discord.ext import commands
+import re
 
 # Fetch python bot token
 from dotenv import load_dotenv
@@ -89,9 +90,15 @@ async def on_message(message):
                 await message.delete()
                 return
     elif message.guild.id == 597085958244139022:
-        if 'disc' in message.content.lower():
-            emoji = '<a:shutupandtakemymoney:751168620339527830>'
-            await message.add_reaction(emoji)        
+        def findWholeWord(w):
+            return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
+        
+        disc_golf_words = ['disc', 'disc-golf', 'discgolf']
+        for word in disc_golf_words:
+            if findWholeWord(word)(message.content.lower()) is not None:
+                emoji = '<a:shutupandtakemymoney:751168620339527830>'
+                await message.add_reaction(emoji)
+                break        
     
     else:
         await bot.process_commands(message)
