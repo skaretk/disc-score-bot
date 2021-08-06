@@ -25,7 +25,7 @@ class Player:
     #    return True if self.score >= other.score else False
     
     def __eq__(self, other):
-        return True if self.name == other.name else False
+        return True if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", "") else False
     
     def __add__(self, other):
         player = Player(self.name, self.total + other.total, self.score + other.score)
