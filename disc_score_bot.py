@@ -80,7 +80,6 @@ async def on_message(message):
                 if not os.path.exists(path):
                     os.makedirs(path)
                 await attachment.save(fp=f"{path}\{attachment.filename}") # saves the file in a server/channel folder
-                await message.channel.send(f'{attachment.filename} attached by {message.author}')
                 print(f'csv attached and stored in {path}\{attachment.filename}!')
                 
                 csvreader = CsvReader(path, attachment.filename)
