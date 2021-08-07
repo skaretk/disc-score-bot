@@ -1,6 +1,7 @@
 import os
 import discord
 from discord.ext import commands
+from discord.message import Attachment
 
 # Fetch python bot token
 from dotenv import load_dotenv
@@ -12,6 +13,7 @@ from csvreader import CsvReader
 import utilities
 
 # cogs
+from attachment import Attachment
 from scores import Scores
 from emojis import Emojis
 from files import Files
@@ -25,25 +27,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name="Disc golf"))
 
 @bot.event
-async def on_message(message):
-    path = str(f'{message.guild.name}\{message.channel}')
-    
-    # any attachments in the message?
-    if message.attachments:
-        for attachment in message.attachments:
-            if 'text/csv' in attachment.content_type:
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                await attachment.save(fp=f"{path}\{attachment.filename}") # saves the file in a server/channel folder
-                print(f'csv attached and stored in {path}\{attachment.filename}!')
-                
-                csvreader = CsvReader(path, attachment.filename)
-                scorecard = csvreader.parse()
-                
-                await message.channel.send(embed=scorecard.get_embed(message.author.avatar_url))
-                await message.delete()
-                return
-    
+async def on_message(message):    
     await bot.process_commands(message)
 
 @bot.command()
@@ -73,6 +57,7 @@ async def dates(ctx):
 
     await ctx.send(msg)
 
+bot.add_cog(Attachment(bot))
 bot.add_cog(Emojis(bot))
 bot.add_cog(Files(bot))
 bot.add_cog(Scores(bot))
