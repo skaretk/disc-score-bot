@@ -14,22 +14,15 @@ from csvreader import CsvReader
 from player import Player
 from scorecard import Scorecard
 from scorecards import Scorecards
+
+import utilities
+
+# cogs
 from emojis import Emojis
+from files import Files
 
 # discord client
 bot = commands.Bot(command_prefix='%')
-
-def is_path_empty(path):
-    if os.path.exists(path) and not os.path.isfile(path):  
-        if not os.listdir(path):
-            # Empty directory
-            return True
-        else:
-            # Not empty directory
-            return False
-    else:
-        # The path is either for a file or not valid
-        return True
 
 def get_scorecards(path):
     scorecards = Scorecards()
@@ -93,32 +86,11 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.command()
-async def files(ctx):
-    path = str(f'{ctx.guild.name}\{ctx.channel}')
-
-    if is_path_empty(path):
-        await ctx.send('No files stored for this channel')
-        return
-        
-    msg_to_send = ''
-    file_count = 0
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            file_count += 1
-            print(os.path.join(f'{path}\{file}'))
-            msg_to_send += f'\n{file}'
-    
-    if file_count:     
-        await ctx.send(f'No of files: {file_count}\n{msg_to_send}')
-    else:
-        await ctx.send('No .csv files stored for this channel')
-
-@bot.command()
 async def dates(ctx):
 
     path = str(f'{ctx.guild.name}\{ctx.channel}')
 
-    if is_path_empty(path):
+    if utilities.is_path_empty(path):
         await ctx.send("No scores stored for this channel")
         return
     
@@ -145,7 +117,7 @@ async def scores(ctx, *args):
     path = str(f'{ctx.guild.name}\{ctx.channel}')
 
     # Check current scores stored in this channel
-    if is_path_empty(path):
+    if utilities.is_path_empty(path):
         await ctx.send('No scores stored for this channel')
         return
 
@@ -202,5 +174,6 @@ async def scores(ctx, *args):
             await ctx.send("No courses found")
 
 bot.add_cog(Emojis(bot))
+bot.add_cog(Files(bot))
 
 bot.run(token)
