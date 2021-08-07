@@ -14,6 +14,7 @@ from csvreader import CsvReader
 from player import Player
 from scorecard import Scorecard
 from scorecards import Scorecards
+from emojis import Emojis
 
 # discord client
 bot = commands.Bot(command_prefix='%')
@@ -88,20 +89,6 @@ async def on_message(message):
                 await message.channel.send(embed=scorecard.get_embed(message.author.avatar_url))
                 await message.delete()
                 return
-    elif message.guild.id == 597085958244139022:
-        def findWholeWord(w):
-            return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
-        
-        disc_golf_words = ['disc', 'disc-golf', 'discgolf']
-        for word in disc_golf_words:
-            if findWholeWord(word)(message.content.lower()) is not None:
-                emoji = '<a:shutupandtakemymoney:751168620339527830>'
-                await message.add_reaction(emoji)
-                break 
-        
-        if 'bomb' in message.content.lower():
-            emoji = '💣'
-            await message.add_reaction(emoji)
     
     await bot.process_commands(message)
 
@@ -213,5 +200,7 @@ async def scores(ctx, *args):
             await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url))  
         else:
             await ctx.send("No courses found")
-      
+
+bot.add_cog(Emojis(bot))
+
 bot.run(token)
