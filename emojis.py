@@ -8,6 +8,7 @@ class Emojis(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.disc_golf_words = ['disc', 'disc-golf', 'discgolf']
+        self.ace_golf_words = ['ace', 'aces', 'aca', 'aced']
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -21,3 +22,13 @@ class Emojis(commands.Cog):
             if 'bomb' in message.content.lower():
                 emoji = '💣'
                 await message.add_reaction(emoji)  
+
+            if 'discs' in message.content.lower():
+                emoji = '🥏'
+                await message.add_reaction(emoji)
+
+            for word in self.ace_golf_words:
+                if findWholeWord(word)(message.content.lower()) is not None:
+                    emoji = '⛳'
+                    await message.add_reaction(emoji)  
+                    break              
