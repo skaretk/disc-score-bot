@@ -6,34 +6,136 @@ class Scorecard:
         self.coursename = coursename
         self.date_time = datetime.datetime.strptime(date_time,'%Y-%m-%d %H:%M')
         self.par = par
-        self.playerlist = []
+        self.players = []
+        self.holes = []
+        self.holes_par = []
 
     def __str__(self):
         msg = f'{self.coursename} Dato: {self.date_time} Par: {self.par}'
-        for player in self.playerlist:
+        for player in self.players:
             msg += f'\n{player}'
         return msg
+
+    def add_hole(self, holeName, par):
+        print (f'add_hole {holeName} par:{par}')
+        self.holes.append(holeName)
+        self.holes_par.append(par)
     
     def get_players(self):
         players = ''
-        for player in self.playerlist:
+        for player in self.players:
             players += f'\n> {player}'
         return players
 
     def add_player(self, player):
-        self.playerlist.append(player)
+        self.players.append(player)
         self.sort_players()
     
     def sort_players(self):
-        self.playerlist.sort(key=lambda x: x.score)
+        self.players.sort(key=lambda x: x.score)
 
     def print_players(self):        
-        for player in self.playerlist:
+        for player in self.players:
             print(player)
+
+    def get_max_length_player_name(self):
+        max_length = 0
+        for player in self.players:
+            if len(player.name) > max_length:
+                max_length = len(player.name)
+        return max_length
     
+    def get_embed_header(self, str):        
+        offset = self.get_max_length_player_name() - len(str)
+        str += ' ' * offset + ' '
+        return str
+
+    def get_embed_par(self, from_hole = '', to_hole = ''):
+            pars = ''
+            if from_hole and to_hole:
+                current_hole = from_hole
+                for par in self.holes_par[from_hole-1:to_hole]:
+                    if current_hole <= 9:
+                        pars += f'{par} '
+                    else:
+                        pars += f'{par}  '
+                    current_hole += 1
+
+            return pars
+    
+    def get_embed_holes(self, from_hole = '', to_hole = ''):
+            holes = ''
+            if from_hole and to_hole:
+                current_hole = from_hole
+                for hole in range(from_hole, to_hole+1):
+                    holes += f'{hole} '
+                    current_hole += 1
+
+            return holes
+
     def get_embed(self, thumbnail=''):
         embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
+        if thumbnail != '':
+            embed.set_thumbnail(url=(thumbnail))
+
+        return embed
+    
+    def get_embed_full(self, thumbnail=''):
+        embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
+        embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
+        
+        header_holes = self.get_embed_header('Hole')
+        header_par = self.get_embed_header('Par')
+
+        no_of_holes = len(self.holes_par)
+        if no_of_holes <= 12:
+            holes = self.get_embed_holes(1, no_of_holes)
+            pars = self.get_embed_par(1, no_of_holes)
+            scores = ''
+            for player in self.players:
+                playerStr = self.get_embed_header(player.name)
+                scores += f'{playerStr}{player.get_scores(1,no_of_holes)}\n'            
+
+            embed.add_field(name=f'Holes 1-{no_of_holes}', value=f'```{header_holes}{holes}\n{header_par}{pars}\n{scores}```', inline=False)
+        elif no_of_holes <= 18:
+            holes_1 = self.get_embed_holes(1, 9)
+            holes_2 = self.get_embed_holes(10, no_of_holes)
+            pars_1 = self.get_embed_par(1, 9)
+            pars_2 = self.get_embed_par(10, no_of_holes)
+
+            scores_1 = ''
+            scores_2 = ''
+            for player in self.players:
+                playerStr = self.get_embed_header(player.name)
+                scores_1 += f'{playerStr}{player.get_scores(1,9)}\n'
+                scores_2 += f'{playerStr}{player.get_scores(10, no_of_holes)}\n'
+            
+            embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
+            embed.add_field(name=f'Holes 10-{no_of_holes}', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
+
+        elif no_of_holes <= 27:
+            pars_1 = self.get_embed_par(1, 9)
+            pars_2 = self.get_embed_par(10, 18)
+            pars_3 = self.get_embed_par(19, no_of_holes)
+            holes_1 = self.get_embed_holes(1, 9)
+            holes_2 = self.get_embed_holes(10, 18)
+            holes_3 = self.get_embed_holes(19, no_of_holes)
+
+            scores_1 = ''
+            scores_2 = ''
+            scores_3 = ''
+            for player in self.players:
+                playerStr = self.get_embed_header(player.name)
+                scores_1 += f'{playerStr}{player.get_scores(1,9)}\n'
+                scores_2 += f'{playerStr}{player.get_scores(10, 18)}\n'
+                scores_3 += f'{playerStr}{player.get_scores(19, no_of_holes)}\n'
+
+            embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
+            embed.add_field(name=f'Holes 10-18', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
+            embed.add_field(name=f'Holes 19-{no_of_holes}', value=f'```{header_holes}{holes_3}\n{header_par}{pars_3}\n{scores_3}```', inline=False)        
+        
+        
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))
 

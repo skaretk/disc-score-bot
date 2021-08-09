@@ -63,7 +63,7 @@ class Scores(commands.Cog):
 
                 scorecards = get_scorecards_course(path, args[1])           
 
-                if (scorecards.scorecardlist):               
+                if (scorecards.scorecards):               
                     await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
                 else:
                     await ctx.send("No courses found")
@@ -92,7 +92,7 @@ class Scores(commands.Cog):
 
                 scorecards = get_scorecards_date(path, date, date_to)                                 
 
-            if (scorecards.scorecardlist):               
+            if (scorecards.scorecards):               
                 await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
             else:
                 await ctx.send("No courses found")
@@ -100,7 +100,7 @@ class Scores(commands.Cog):
         else: # no args, list all scores
             scorecards = get_scorecards(path)
 
-            if (scorecards.scorecardlist):               
+            if (scorecards.scorecards):               
                 await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url))  
             else:
                 await ctx.send("No courses found")

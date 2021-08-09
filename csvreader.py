@@ -13,9 +13,17 @@ class CsvReader:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
-                    scorecard = Scorecard(row['CourseName'], row['Date'], int(row['Total']) )
+                    scorecard = Scorecard(row['CourseName'], row['Date'], int(row['Total']))
+                    for i in range(1, 28):
+                        try:
+                            if row[f'Hole{i}'] is not None:
+                                scorecard.add_hole(f'Hole{i}', row[f'Hole{i}'])
+                        except:
+                            break 
                 else:
                     player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    for i in range(0, len(scorecard.holes)):
+                        player.add_hole(int(row[f'Hole{i+1}']))
                     scorecard.add_player(player)
         return scorecard
     
