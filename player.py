@@ -48,6 +48,9 @@ class Player:
                     current_hole += 1
 
             return scores
+    
+    def get_first_name(self):
+        return self.name.split(' ', 1)[0]
 
     def get_full_info(self):
      return f'{self} Kast: {self.total} - Scorecards: {self.score_cards}'

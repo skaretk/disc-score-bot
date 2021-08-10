@@ -17,7 +17,6 @@ class Scorecard:
         return msg
 
     def add_hole(self, holeName, par):
-        print (f'add_hole {holeName} par:{par}')
         self.holes.append(holeName)
         self.holes_par.append(par)
     
@@ -34,19 +33,20 @@ class Scorecard:
     def sort_players(self):
         self.players.sort(key=lambda x: x.score)
 
-    def print_players(self):        
-        for player in self.players:
-            print(player)
-
-    def get_max_length_player_name(self):
+    def get_max_length_player_name(self, only_first_name = False):
         max_length = 0
         for player in self.players:
-            if len(player.name) > max_length:
-                max_length = len(player.name)
+            if only_first_name:
+                first_name = player.get_first_name()
+                if len(first_name) > max_length:
+                    max_length = len(first_name)
+            else:
+                if len(player.name) > max_length:
+                    max_length = len(player.name)
         return max_length
     
-    def get_embed_header(self, str):        
-        offset = self.get_max_length_player_name() - len(str)
+    def get_embed_header(self, str, only_first_name = False):        
+        offset = self.get_max_length_player_name(only_first_name) - len(str)
         str += ' ' * offset + ' '
         return str
 
@@ -85,8 +85,8 @@ class Scorecard:
         embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
         
-        header_holes = self.get_embed_header('Hole')
-        header_par = self.get_embed_header('Par')
+        header_holes = self.get_embed_header('Hole', True)
+        header_par = self.get_embed_header('Par', True)
 
         no_of_holes = len(self.holes_par)
         if no_of_holes <= 12:
@@ -94,8 +94,8 @@ class Scorecard:
             pars = self.get_embed_par(1, no_of_holes)
             scores = ''
             for player in self.players:
-                playerStr = self.get_embed_header(player.name)
-                scores += f'{playerStr}{player.get_scores(1,no_of_holes)}\n'            
+                player_str = self.get_embed_header(player.get_first_name(), True)
+                scores += f'{player_str}{player.get_scores(1,no_of_holes)}\n'            
 
             embed.add_field(name=f'Holes 1-{no_of_holes}', value=f'```{header_holes}{holes}\n{header_par}{pars}\n{scores}```', inline=False)
         elif no_of_holes <= 18:
@@ -107,9 +107,9 @@ class Scorecard:
             scores_1 = ''
             scores_2 = ''
             for player in self.players:
-                playerStr = self.get_embed_header(player.name)
-                scores_1 += f'{playerStr}{player.get_scores(1,9)}\n'
-                scores_2 += f'{playerStr}{player.get_scores(10, no_of_holes)}\n'
+                player_str = self.get_embed_header(player.get_first_name(), True)
+                scores_1 += f'{player_str}{player.get_scores(1,9)}\n'
+                scores_2 += f'{player_str}{player.get_scores(10, no_of_holes)}\n'
             
             embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
             embed.add_field(name=f'Holes 10-{no_of_holes}', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
@@ -126,10 +126,10 @@ class Scorecard:
             scores_2 = ''
             scores_3 = ''
             for player in self.players:
-                playerStr = self.get_embed_header(player.name)
-                scores_1 += f'{playerStr}{player.get_scores(1,9)}\n'
-                scores_2 += f'{playerStr}{player.get_scores(10, 18)}\n'
-                scores_3 += f'{playerStr}{player.get_scores(19, no_of_holes)}\n'
+                player_str = self.get_embed_header(player.get_first_name())
+                scores_1 += f'{player_str}{player.get_scores(1,9)}\n'
+                scores_2 += f'{player_str}{player.get_scores(10, 18)}\n'
+                scores_3 += f'{player_str}{player.get_scores(19, no_of_holes)}\n'
 
             embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
             embed.add_field(name=f'Holes 10-18', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
