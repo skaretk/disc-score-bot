@@ -3,32 +3,33 @@ from discord.ext import commands
 from datetime import datetime
 
 from csvreader import CsvReader
+from alias import Alias
 from scorecards import Scorecards
 import utilities
 
-def get_scorecards(path):
+def get_scorecards(path, alias):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
             csvreader = CsvReader(path, file)
             scorecard = csvreader.parse()
 
-            scorecards.add_scorecard(scorecard)
+            scorecards.add_scorecard(scorecard, alias)
 
     return scorecards
 
-def get_scorecards_course(path, course):
+def get_scorecards_course(path, alias, course):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
             csvreader = CsvReader(path, file)
             scorecard = csvreader.parse_course(course)
             if scorecard is not None:
-                scorecards.add_scorecard(scorecard)
+                scorecards.add_scorecard(scorecard, alias)
 
     return scorecards
 
-def get_scorecards_date(path, date, date_to = ''):
+def get_scorecards_date(path, alias, date, date_to = ''):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
@@ -36,7 +37,7 @@ def get_scorecards_date(path, date, date_to = ''):
             scorecard = csvreader.parse_dates(date, date_to)            
 
             if scorecard is not None:
-                scorecards.add_scorecard(scorecard)
+                scorecards.add_scorecard(scorecard, alias)
 
     return scorecards
 
@@ -47,6 +48,9 @@ class Scores(commands.Cog):
     @commands.command()
     async def scores(self, ctx, *args):  
         path = str(f'{ctx.guild.name}\{ctx.channel}')
+
+        alias = Alias(ctx.guild.name)
+        alias.parse()
 
         # Check current scores stored in this channel
         if utilities.is_path_empty(path):
@@ -61,7 +65,7 @@ class Scores(commands.Cog):
                     ctx.send("Missing coursename")
                     return
 
-                scorecards = get_scorecards_course(path, args[1])           
+                scorecards = get_scorecards_course(path, alias, args[1])           
 
                 if (scorecards.scorecards):               
                     await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
@@ -81,7 +85,7 @@ class Scores(commands.Cog):
                     return
 
             if len(args) == 2:
-                scorecards = get_scorecards_date(path, date)
+                scorecards = get_scorecards_date(path, alias, date)
             if (len(args) > 2):
                 date_to = ''
                 try:
@@ -90,7 +94,7 @@ class Scores(commands.Cog):
                     await ctx.send("Invalid format in date 2 - should be 01.12.2021")
                     return
 
-                scorecards = get_scorecards_date(path, date, date_to)                                 
+                scorecards = get_scorecards_date(path, alias, date, date_to)                                 
 
             if (scorecards.scorecards):               
                 await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
@@ -98,7 +102,7 @@ class Scores(commands.Cog):
                 await ctx.send("No courses found")
             
         else: # no args, list all scores
-            scorecards = get_scorecards(path)
+            scorecards = get_scorecards(path, alias)
 
             if (scorecards.scorecards):               
                 await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url))  

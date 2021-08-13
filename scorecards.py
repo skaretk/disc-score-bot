@@ -23,7 +23,12 @@ class Scorecards:
             
         return msg
     
-    def add_scorecard(self, scorecard):
+    def add_scorecard(self, scorecard, alias):        
+        for player in scorecard.players:
+            player_alias = alias.get_player_alias(player.name)
+            if player_alias != None:
+                idx = scorecard.players.index(player)
+                scorecard.players[idx].add_alias(player_alias)
         self.scorecards.append(scorecard)
         self.add_players(scorecard)        
     

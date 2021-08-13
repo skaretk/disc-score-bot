@@ -2,6 +2,7 @@
 class Player:
     def __init__(self, name, total, score):
         self.name = name
+        self.alias = ""
         self.total = total
         self.score = score
         self.holes = []
@@ -26,15 +27,24 @@ class Player:
     #    return True if self.score >= other.score else False
     
     def __eq__(self, other):
-        return True if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", "") else False
+        if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
+            return True
+        elif self.alias.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
+            return True
+        else:
+            return False
     
     def __add__(self, other):
         player = Player(self.name, self.total + other.total, self.score + other.score)
+        player.add_alias(self.alias)
         player.score_cards = self.score_cards + 1
         return player
 
     def add_hole(self, score):
         self.holes.append(score)
+    
+    def add_alias(self, alias):
+        self.alias = alias
     
     def get_scores(self, from_hole = '', to_hole = ''):
             scores = ''
