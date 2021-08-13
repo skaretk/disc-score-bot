@@ -23,5 +23,4 @@ class Attachment(commands.Cog):
                     scorecard = csvreader.parse()
                 
                     await message.channel.send(embed=scorecard.get_embed_full(message.author.avatar_url))
-                    await message.delete()
-                    return
+                    await message.delete()                    

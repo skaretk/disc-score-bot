@@ -8,7 +8,6 @@ class Scorecard:
         self.par = par
         self.players = []
         self.holes = []
-        self.holes_par = []
 
     def __str__(self):
         msg = f'{self.coursename} Dato: {self.date_time} Par: {self.par}'
@@ -16,9 +15,14 @@ class Scorecard:
             msg += f'\n{player}'
         return msg
 
-    def add_hole(self, holeName, par):
-        self.holes.append(holeName)
-        self.holes_par.append(par)
+    class Hole:
+        def __init__(self, name, par):
+            self.name = name
+            self.par = par
+
+    def add_hole(self, name, par):
+        hole = self.Hole(name, par)
+        self.holes.append(hole)
     
     def get_players(self):
         players = ''
@@ -54,11 +58,11 @@ class Scorecard:
             pars = ''
             if from_hole and to_hole:
                 current_hole = from_hole
-                for par in self.holes_par[from_hole-1:to_hole]:
+                for hole in self.holes[from_hole-1:to_hole]:
                     if current_hole <= 9:
-                        pars += f'{par} '
+                        pars += f'{hole.par} '
                     else:
-                        pars += f'{par}  '
+                        pars += f'{hole.par}  '
                     current_hole += 1
 
             return pars
@@ -88,7 +92,7 @@ class Scorecard:
         header_holes = self.get_embed_header('Hole', True)
         header_par = self.get_embed_header('Par', True)
 
-        no_of_holes = len(self.holes_par)
+        no_of_holes = len(self.holes)
         if no_of_holes <= 12:
             holes = self.get_embed_holes(1, no_of_holes)
             pars = self.get_embed_par(1, no_of_holes)
