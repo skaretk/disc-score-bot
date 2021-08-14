@@ -1,16 +1,12 @@
 import os.path
 import json
+from playername import PlayerName
 
 class Alias:
     def __init__(self, server):
         self.server = server
         self.file = "alias.json"
-        self.alias_list = []
-
-    class PlayerAlias:
-        def __init__(self, name, alias):
-            self.name = name
-            self.alias = alias
+        self.alias_list = []        
 
     def parse(self):
         if os.path.isfile(f'{self.server}\{self.file}') == False:
@@ -20,7 +16,7 @@ class Alias:
         with open(f'{self.server}\{self.file}', encoding='UTF-8', newline='') as json_file:
             data = json.load(json_file)
             for aliases in data['aliases']:
-                self.alias_list.append(self.PlayerAlias(aliases.get('name'), aliases.get('alias')))
+                self.alias_list.append(PlayerName(aliases.get('name'), aliases.get('alias')))
     
     def get_player_alias(self, player_name):
         for player in self.alias_list:

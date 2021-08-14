@@ -1,5 +1,5 @@
 from discord.ext import commands
-from csvreader import CsvReader
+from scorecardreader import ScorecardReader
 import utilities
 import os
 
@@ -19,8 +19,8 @@ class Dates(commands.Cog):
         datelist = []
         for file in os.listdir(path):
             if file.endswith(".csv"):
-                csvreader = CsvReader(path, file)
-                scorecard = csvreader.parse()
+                scorecard_reader = ScorecardReader(path, file)
+                scorecard = scorecard_reader.parse()
 
                 date = scorecard.date_time.date()
 

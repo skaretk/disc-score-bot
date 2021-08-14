@@ -1,9 +1,10 @@
 import csv
 import datetime
 from player import Player
+from playername import PlayerName
 from scorecard import Scorecard
 
-class CsvReader:
+class ScorecardReader:
     def __init__(self, path, file):
         self.path = path
         self.file = file
@@ -21,7 +22,7 @@ class CsvReader:
                         except:
                             break 
                 else:
-                    player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
                     for i in range(0, len(scorecard.holes)):
                         player.add_hole(int(row[f'Hole{i+1}']))
                     scorecard.add_player(player)
@@ -37,7 +38,7 @@ class CsvReader:
                     else:
                         return None
                 else:
-                    player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
                     scorecard.add_player(player)
         return scorecard
 
@@ -65,6 +66,6 @@ class CsvReader:
                     else:
                         return None
                 else:
-                    player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
                     scorecard.add_player(player)
         return scorecard

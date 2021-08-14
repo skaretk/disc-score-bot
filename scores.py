@@ -2,7 +2,7 @@ import os
 from discord.ext import commands
 from datetime import datetime
 
-from csvreader import CsvReader
+from scorecardreader import ScorecardReader
 from alias import Alias
 from scorecards import Scorecards
 import utilities
@@ -11,8 +11,8 @@ def get_scorecards(path, alias):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csvreader = CsvReader(path, file)
-            scorecard = csvreader.parse()
+            scorecard_reader = ScorecardReader(path, file)
+            scorecard = scorecard_reader.parse()
 
             scorecards.add_scorecard(scorecard, alias)
 
@@ -22,8 +22,8 @@ def get_scorecards_course(path, alias, course):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csvreader = CsvReader(path, file)
-            scorecard = csvreader.parse_course(course)
+            scorecard_reader = ScorecardReader(path, file)
+            scorecard = scorecard_reader.parse_course(course)
             if scorecard is not None:
                 scorecards.add_scorecard(scorecard, alias)
 
@@ -33,8 +33,8 @@ def get_scorecards_date(path, alias, date, date_to = ''):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            csvreader = CsvReader(path, file)
-            scorecard = csvreader.parse_dates(date, date_to)            
+            scorecard_reader = ScorecardReader(path, file)
+            scorecard = scorecard_reader.parse_dates(date, date_to)            
 
             if scorecard is not None:
                 scorecards.add_scorecard(scorecard, alias)

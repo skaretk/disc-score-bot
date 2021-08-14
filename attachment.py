@@ -1,5 +1,5 @@
 from discord.ext import commands
-from csvreader import CsvReader
+from scorecardreader import ScorecardReader
 import os
 
 class Attachment(commands.Cog):
@@ -19,8 +19,8 @@ class Attachment(commands.Cog):
                     await attachment.save(fp=f"{path}\{attachment.filename}") # saves the file in a server/channel folder
                     print(f'csv attached and stored in {path}\{attachment.filename}!')
                 
-                    csvreader = CsvReader(path, attachment.filename)
-                    scorecard = csvreader.parse()
+                    scorecard_reader = ScorecardReader(path, attachment.filename)
+                    scorecard = scorecard_reader.parse()
                 
                     await message.channel.send(embed=scorecard.get_embed_full(message.author.avatar_url))
                     await message.delete()                    
