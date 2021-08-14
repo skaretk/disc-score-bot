@@ -84,22 +84,22 @@ class Scores(commands.Cog):
                     await ctx.send("Invalid format in date 1 - should be 01.12.2021")
                     return
 
-            if len(args) == 2:
-                scorecards = get_scorecards_date(path, alias, date)
-            if (len(args) > 2):
-                date_to = ''
-                try:
-                    date_to = datetime.strptime(args[2],'%d.%m.%Y')    
-                except ValueError:
-                    await ctx.send("Invalid format in date 2 - should be 01.12.2021")
-                    return
+                if len(args) == 2:
+                    scorecards = get_scorecards_date(path, alias, date)
+                if (len(args) > 2):
+                    date_to = ''
+                    try:
+                        date_to = datetime.strptime(args[2],'%d.%m.%Y')    
+                    except ValueError:
+                        await ctx.send("Invalid format in date 2 - should be 01.12.2021")
+                        return
 
-                scorecards = get_scorecards_date(path, alias, date, date_to)                                 
+                    scorecards = get_scorecards_date(path, alias, date, date_to)                                 
 
-            if (scorecards.scorecards):               
-                await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
-            else:
-                await ctx.send("No courses found")
+                if (scorecards.scorecards):               
+                    await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
+                else:
+                    await ctx.send("No courses found")
             
         else: # no args, list all scores
             scorecards = get_scorecards(path, alias)
