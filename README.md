@@ -6,25 +6,28 @@ Will store .csv files uploaded and responds to commands in order to view these i
 
 Currently supported commands:
 
-%files
-> Lists files stored in the channel
 
 
 %scores
 > Lists all scorecards and total scores
 
-%scores course coursename
-> Search for all scorecards with coursename
+%scores list course
+> List all courses stored
 
-%scores date 01.12.1990
+%scores list date
+> Lists all dates for scorecards
+
+%scores get course coursename
+> Get all scorescards for the coursename
+
+%scores get date 01.12.1990
 > Search for all scorecards with given date
 
-%scores date 01.12.1990 01.01.1991
+%scores get date 01.12.1990 01.01.1991
 > Search for all scorecards between dates
 
-
-%dates
-> Lists all dates for scorecards
+%files
+> Lists files stored in the channel
 
 
 Get started:
