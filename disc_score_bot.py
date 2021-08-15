@@ -14,7 +14,6 @@ from attachment import Attachment
 from scores import Scores
 from emojis import Emojis
 from files import Files
-from dates import Dates
 
 # discord client
 bot = commands.Bot(command_prefix='%')
@@ -32,7 +31,6 @@ bot.add_cog(Attachment(bot))
 bot.add_cog(Scores(bot))
 bot.add_cog(Emojis(bot))
 bot.add_cog(Files(bot))
-bot.add_cog(Dates(bot))
 
 
 bot.run(token)
