@@ -27,6 +27,10 @@ class Emojis(commands.Cog):
             if 'discs' in message.content.lower():
                 emoji = '🥏'
                 await message.add_reaction(emoji)
+            
+            if 'tilt' in message.content.lower():
+                emoji = '<a:tilt:874612488505806878>'
+                await message.add_reaction(emoji)
 
             for word in self.ace_golf_words:
                 if findWholeWord(word)(message.content.lower()) is not None:
