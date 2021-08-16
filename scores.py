@@ -72,7 +72,26 @@ class Scores(commands.Cog):
 
     @course.command(pass_context=True, name='list', brief='List courses', description='Lists courses stored in this channel')
     async def course_list(self, ctx):
-        await ctx.send("Not implemented yet")
+        if utilities.is_path_empty(f'{ctx.guild.name}\{ctx.channel}'):
+            await ctx.send("No scores stored for this channel")
+            return
+    
+        course_list = []
+        for file in os.listdir(f'{ctx.guild.name}\{ctx.channel}'):
+            if file.endswith(".csv"):
+                scorecard_reader = ScorecardReader(f'{ctx.guild.name}\{ctx.channel}', file)
+                scorecard = scorecard_reader.parse()
+
+                course_name = scorecard.coursename
+
+                if course_name not in course_list:
+                    course_list.append(course_name)
+    
+        msg = ''
+        for course in course_list:
+            msg += f'\n{course}'
+
+        await ctx.send(msg)
         pass
 
     @course.command(pass_context=True, name="search", brief='Search for scorecards for a course', description='Search and prints all scorecards for a course in this channel')
@@ -120,7 +139,7 @@ class Scores(commands.Cog):
             msg += f'\n{date}'
 
         await ctx.send(msg)
-        pass        
+        pass
     
     @dates.command(pass_context=True, name='search', brief='Search for scorecards', description='Search and print scorecards for date(s) given\nSearch one date: 1.1.1990\nSearch between two dates: 1.1.1990 1.12.1990')
     async def dates_search(self, ctx, *args):
