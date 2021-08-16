@@ -28,7 +28,7 @@ class Emojis(commands.Cog):
                 emoji = '🥏'
                 await message.add_reaction(emoji)
             
-            if 'tilt' in message.content.lower():
+            if findWholeWord('tilt')(message.content.lower()) is not None:
                 emoji = '<a:tilt:874612488505806878>'
                 await message.add_reaction(emoji)
 
