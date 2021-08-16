@@ -45,7 +45,7 @@ class Scores(commands.Cog):
     def __init__(self, bot):
         self.bot = bot    
 
-    @commands.group(pass_context=True)
+    @commands.group(pass_context=True, brief='Print stored scores', description='Prints all stored scorecards for this channel, including total')
     async def scores(self, ctx):
         # Check current scores stored in this channel
         path = str(f'{ctx.guild.name}\{ctx.channel}')  
@@ -64,19 +64,42 @@ class Scores(commands.Cog):
             else:
                 await ctx.send("No courses found")
 
-    @scores.group(pass_context=True, name='list')
-    async def scores_list(self, ctx):
+    @scores.group(pass_context=True, brief='scores related to a course')
+    async def course(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Nothing specified to list')
+            await ctx.send('Missing subcommand, see %help scores course')
             return  
 
-    @scores_list.command(pass_context=True, name='course')
-    async def list_course(self, ctx):
+    @course.command(pass_context=True, name='list', brief='List courses', description='Lists courses stored in this channel')
+    async def course_list(self, ctx):
         await ctx.send("Not implemented yet")
         pass
 
-    @scores_list.command(pass_context=True, name='date')
-    async def list_date(self, ctx):
+    @course.command(pass_context=True, name="search", brief='Search for scorecards for a course', description='Search and prints all scorecards for a course in this channel')
+    async def search_course(self, ctx, arg = ''):
+        if arg == '':
+            await ctx.send('No course specified, see %help course search')
+            return
+            
+        alias = Alias(ctx.guild.name)
+        alias.parse()
+    
+        scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)           
+
+        if (scorecards.scorecards):               
+            await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
+        else:
+            await ctx.send("No courses found!")  
+
+    @scores.group(pass_context=True, brief='scores related to dates')
+    async def dates(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send('Missing subcommands, see %help scores dates')
+            return 
+
+
+    @dates.command(pass_context=True, name='list', brief='List dates', description='Lists all dates for scorecards stored in this channel')
+    async def date_list(self, ctx):
         if utilities.is_path_empty(f'{ctx.guild.name}\{ctx.channel}'):
             await ctx.send("No scores stored for this channel")
             return
@@ -97,32 +120,10 @@ class Scores(commands.Cog):
             msg += f'\n{date}'
 
         await ctx.send(msg)
-        pass  
-
-    @scores.group(pass_context=True)
-    async def get(self, ctx):
-        if ctx.invoked_subcommand is None:
-            await ctx.send('Nothing specified to get')
-            return  
-
-    @get.command(pass_context=True, name="course")
-    async def get_course(self, ctx, arg = ''):
-        if arg == '':
-            await ctx.send('No course specified')
-            return
-            
-        alias = Alias(ctx.guild.name)
-        alias.parse()
+        pass        
     
-        scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)           
-
-        if (scorecards.scorecards):               
-            await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
-        else:
-            await ctx.send("No courses found!")      
-    
-    @get.command(pass_context=True, name='date')
-    async def get_date(self, ctx, *args):
+    @dates.command(pass_context=True, name='search', brief='Search for scorecards', description='Search and print scorecards for date(s) given\nSearch one date: 1.1.1990\nSearch between two dates: 1.1.1990 1.12.1990')
+    async def dates_search(self, ctx, *args):
         if utilities.is_path_empty(f'{ctx.guild.name}\{ctx.channel}'):
             await ctx.send("No scores stored for this channel")
             return

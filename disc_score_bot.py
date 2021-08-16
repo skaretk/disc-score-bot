@@ -32,5 +32,4 @@ bot.add_cog(Scores(bot))
 bot.add_cog(Emojis(bot))
 bot.add_cog(Files(bot))
 
-
 bot.run(token)

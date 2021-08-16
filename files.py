@@ -6,7 +6,7 @@ class Files(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(brief='List stored files', description='Lists all files stored in this discord server and channel')
     async def files(self, ctx):
         path = str(f'{ctx.guild.name}\{ctx.channel}')
 
