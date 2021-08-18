@@ -53,7 +53,7 @@ class DiscStock(commands.Cog):
                 self.discs.append(disc)
 
         if(len(self.discs) == 0):
-            await ctx.send("No discs found")
+            await ctx.send(f'No discs found {ctx.author.mention}')
             return        
         elif(len(self.discs)) == 1:
             embed_title = f'Found {len(self.discs)} Disc!'            
@@ -63,5 +63,6 @@ class DiscStock(commands.Cog):
 
         for disc in self.discs:            
             embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.link})')
+        embed.set_thumbnail(url=(ctx.author.avatar_url))
 
         await ctx.send(embed=embed)
