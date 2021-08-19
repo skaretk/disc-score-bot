@@ -1,7 +1,7 @@
 import csv
 import datetime
 from player import Player
-from playername import PlayerName
+from player import PlayerName
 from scorecard import Scorecard
 
 class ScorecardReader:
