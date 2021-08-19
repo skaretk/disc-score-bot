@@ -1,10 +1,11 @@
+import asyncio
+import time
+import urllib.parse
 import discord
 from discord.ext import commands
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
-import urllib.parse
-import time
 
 class DiscStock(commands.Cog):
     def __init__(self, bot):
@@ -19,6 +20,25 @@ class DiscStock(commands.Cog):
             self.store = ''
             self.link = ''
 
+    def get_chrome(self):
+        # support to get response status and headers
+        opt = webdriver.ChromeOptions()
+        opt.add_argument("--headless")
+        opt.add_argument("--disable-extensions")
+        opt.add_argument("--disable-gpu")
+        opt.add_argument("--disable-xss-auditor")
+        #opt.add_argument("--disable-web-security")
+        #opt.add_argument("--allow-running-insecure-content")
+        #opt.add_argument("--no-sandbox")
+        opt.add_argument("--disable-setuid-sandbox")
+        opt.add_argument("--disable-webgl")
+        opt.add_argument("--disable-popup-blocking")
+        opt.page_load_strategy = 'eager'
+        browser = webdriver.Chrome(options=opt)
+        browser.implicitly_wait(10)
+        browser.set_page_load_timeout(30)
+        return browser 
+
     @commands.command(brief='Search for disc', description='Search for disc in norwegian stores and list if in stock')
     async def disc(self, ctx, *args, sep=" "):
         self.discs = []
@@ -28,13 +48,34 @@ class DiscStock(commands.Cog):
 
         disc_search = sep.join(args)        
 
-        chrome_options = Options()
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--headless")
-        chrome_options.page_load_strategy = 'eager'
+        print(f"Starting search: {time.strftime('%X')}")
+        await asyncio.gather(
+            self.search_discinstock(disc_search),
+            self.search_discconnection(disc_search))
+        print(f"Finished search {time.strftime('%X')}")
 
-        with webdriver.Chrome(options=chrome_options) as driver:
+        if(len(self.discs) == 0):
+            await ctx.send(f'Found no discs {ctx.author.mention}')
+            return        
+        elif(len(self.discs)) == 1:
+            embed_title = f'Found {len(self.discs)} Disc!'            
+        else:
+            embed_title = f'Found {len(self.discs)} Discs!'
+        embed = discord.Embed(title=embed_title, color=0xFF5733)
+
+        for disc in self.discs:            
+            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.link})')
+        embed.set_thumbnail(url=(ctx.author.avatar_url))
+
+        if (len(embed) < 6000): # Size limit for embeds
+            await ctx.send(embed=embed)
+        else:
+            print(len(embed))
+            await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of discs! ({len(self.discs)}!) ')           
+
+    async def search_discinstock(self, disc_search):
+        with self.get_chrome() as driver:
             url = urllib.parse.quote(f'https://www.discinstock.no/?name={disc_search}', safe='?:/=')
             driver.get(url)
             time.sleep(1)
@@ -52,17 +93,37 @@ class DiscStock(commands.Cog):
 
                 self.discs.append(disc)
 
-        if(len(self.discs) == 0):
-            await ctx.send(f'No discs found {ctx.author.mention}')
-            return        
-        elif(len(self.discs)) == 1:
-            embed_title = f'Found {len(self.discs)} Disc!'            
-        else:
-            embed_title = f'Found {len(self.discs)} Discs!'
-        embed = discord.Embed(title=embed_title, color=0xFF5733)
+    async def search_discconnection(self, disc_search):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}', safe='?:/=&')
+            driver.get(url)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+            
+            names = []
+            manufacturers = []
+            prices = []
+            store = 'discconnection.dk'
+            link = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}'
 
-        for disc in self.discs:            
-            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.link})')
-        embed.set_thumbnail(url=(ctx.author.avatar_url))
+            # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
+            for prodHeader in soup.findAll("td", class_="prodHeader"):
+                b = prodHeader.find_all("b")
+                prodHeader_list = b[0].getText().split()
+                manufacturers.append(prodHeader_list[0])
+                names.append(b[0].getText())
 
-        await ctx.send(embed=embed)
+            # Contains: Pris inkl. moms: 120,00 DKK
+            for prodPriceWeight in soup.findAll("td", class_="prodPriceWeight"):
+                b = prodPriceWeight.find("b")
+                if b is not None:
+                    prices.append(b.getText())            
+
+            for i in range(len(names)):
+                disc = self.Disc()
+                disc.name = names[i]
+                disc.manufacturer = manufacturers[i]
+                disc.price = prices[i]
+                disc.store = store
+                disc.link = link
+                self.discs.append(disc)  
