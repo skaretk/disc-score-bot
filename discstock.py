@@ -50,8 +50,9 @@ class DiscStock(commands.Cog):
 
         print(f"Starting search: {time.strftime('%X')}")
         await asyncio.gather(
-            self.search_discinstock(disc_search),
-            self.search_discconnection(disc_search))
+            self.scrape_discinstock(disc_search),
+            self.scrape_frisbeefeber(disc_search),
+            self.scrape_discconnection(disc_search))
         print(f"Finished search {time.strftime('%X')}")
 
         if(len(self.discs) == 0):
@@ -74,7 +75,7 @@ class DiscStock(commands.Cog):
             await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
             await ctx.send(f'WOW {ctx.author.mention}, thats a lot of discs! ({len(self.discs)}!) ')           
 
-    async def search_discinstock(self, disc_search):
+    async def scrape_discinstock(self, disc_search):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(f'https://www.discinstock.no/?name={disc_search}', safe='?:/=')
             driver.get(url)
@@ -93,7 +94,35 @@ class DiscStock(commands.Cog):
 
                 self.discs.append(disc)
 
-    async def search_discconnection(self, disc_search):
+    async def scrape_frisbeefeber(self, disc_search):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(f'https://www.frisbeefeber.no/search_result?keywords={disc_search}', safe='?:/=&')
+            driver.get(url)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+            store = 'frisbeefeber.no'
+
+            for product in soup.select('li[class*="product-box-id-"]'):
+                # Is product in stock ?
+                not_in_stock = product.find("div", class_="product not-in-stock-product")
+                if (not_in_stock is not None):
+                    continue
+                disc = self.Disc()
+                disc.name = product.find("a", class_="title col-md-12").getText()
+                # Search engine gives false results, check if the disc name is correct
+                if (disc_search.lower() not in disc.name.lower()):
+                    continue
+                div_manufacturer = product.find("div", class_="manufacturer-box")
+                alt_manufacturer = div_manufacturer.find("img", alt=True)
+                disc.manufacturer = alt_manufacturer['alt']
+                disc.price = product.find("div", class_="price col-md-12").getText()
+                disc.store = store
+                link = product.find('a', href=True)
+                disc.link = link['href']
+
+                self.discs.append(disc)            
+
+    async def scrape_discconnection(self, disc_search):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}', safe='?:/=&')
             driver.get(url)
