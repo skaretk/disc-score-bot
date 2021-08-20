@@ -18,7 +18,7 @@ class DiscStock(commands.Cog):
             self.manufacturer = ''
             self.price = ''
             self.store = ''
-            self.link = ''
+            self.url = ''
 
     def get_chrome(self):
         # support to get response status and headers
@@ -90,7 +90,7 @@ class DiscStock(commands.Cog):
                 disc.price = a.find("span", class_="flex-shrink-1 display-6 mt-1").getText()
                 disc.store = a.find("span", class_="mx-auto text-muted").getText()
                 link = a.find('a', href=True)
-                disc.link = link['href']
+                disc.url = link['href']
 
                 self.discs.append(disc)
 
@@ -118,7 +118,7 @@ class DiscStock(commands.Cog):
                 disc.price = product.find("div", class_="price col-md-12").getText()
                 disc.store = store
                 link = product.find('a', href=True)
-                disc.link = link['href']
+                disc.url = link['href']
 
                 self.discs.append(disc)            
 
@@ -133,7 +133,6 @@ class DiscStock(commands.Cog):
             manufacturers = []
             prices = []
             store = 'discconnection.dk'
-            link = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}'
 
             # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
             for prodHeader in soup.findAll("td", class_="prodHeader"):
@@ -154,5 +153,5 @@ class DiscStock(commands.Cog):
                 disc.manufacturer = manufacturers[i]
                 disc.price = prices[i]
                 disc.store = store
-                disc.link = link
+                disc.url = url
                 self.discs.append(disc)  
