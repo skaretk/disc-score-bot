@@ -65,7 +65,7 @@ class DiscStock(commands.Cog):
         embed = discord.Embed(title=embed_title, color=0xFF5733)
 
         for disc in self.discs:            
-            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.link})')
+            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.url})')
         embed.set_thumbnail(url=(ctx.author.avatar_url))
 
         if (len(embed) < 6000): # Size limit for embeds
