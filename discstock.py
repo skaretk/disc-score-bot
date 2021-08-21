@@ -21,18 +21,22 @@ class DiscStock(commands.Cog):
         
         disc_in_stock_scraper = scraper.DiscInStock(disc_search)
         frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
+        sunesport_scraper = scraper.SuneSport(disc_search)
         discconnetion_scraper = scraper.Discconnection(disc_search)
+        
         start_time = time.time()
         await asyncio.gather(
             disc_in_stock_scraper.scrape(),
             frisbeefeber_scraper.scrape(),
+            sunesport_scraper.scrape(),
             discconnetion_scraper.scrape())
         end_time = time.time()
         print(f'Spent {end_time - start_time} scraping')
 
         self.discs.extend(disc_in_stock_scraper.discs)
         self.discs.extend(frisbeefeber_scraper.discs)
-        self.discs.extend(discconnetion_scraper.discs)
+        self.discs.extend(sunesport_scraper.discs)
+        self.discs.extend(discconnetion_scraper.discs)        
 
         if(len(self.discs) == 0):
             await ctx.send(f'Found no discs in stock {ctx.author.mention}')
