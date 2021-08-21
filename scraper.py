@@ -193,3 +193,31 @@ class Discconnection(Scraper):
                 disc.store = self.url
                 disc.url = url
                 self.discs.append(disc)
+
+# Latitude64
+class Latitude64(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'store.latitude64.se'
+        self.url_product = 'https://store.latitude64.se/'
+        self.search_url = f'https://store.latitude64.se/search?q={disc_search}'
+    
+    async def scrape(self):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
+            driver.get(url)
+            time.sleep(1)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+
+            for prodHeader in soup.findAll("div", class_="box product"):
+                title =  prodHeader.find("a", class_="title")
+                if (title is None):
+                    continue
+                disc = Disc()
+                disc.name = title.getText()
+                disc.url = f'{self.url_product}{title["href"]}'
+                disc.manufacturer = prodHeader.find("span", class_="vendor").getText()
+                disc.price = prodHeader.find("span", class_="money").getText()
+                disc.store = self.url
+                self.discs.append(disc)
