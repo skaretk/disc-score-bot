@@ -124,7 +124,36 @@ class SuneSport(Scraper):
                 disc.url = a["href"]
                 disc.price = caption.find("p", class_="price").getText()
                 disc.store = self.url
-                self.discs.append(disc)              
+                self.discs.append(disc)
+
+# Discexpress does not contain disc manufacturer
+class DiscExpress(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'discexpress.se'
+        self.url_product = 'https://www.discexpress.se'
+        self.search_url = f'https://www.discexpress.se/a/search?type=product&q={disc_search}'
+    
+    async def scrape(self):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
+            driver.get(url)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+
+            for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
+                if (self.disc_search.lower() not in grid_item.find("p").getText().lower()): # Search engine gives false response
+                    continue
+
+                disc = Disc()
+                disc.name = grid_item.find("p").getText()
+                a = grid_item.find('a', href=True)
+                disc.url = f'{self.url_product}{a["href"]}'
+                for hidden_item in grid_item.findAll("span", class_="visually-hidden"):
+                    if("kr" in hidden_item.getText().lower()):
+                        disc.price = hidden_item.getText()                 
+                disc.store = self.url
+                self.discs.append(disc)
 
 class Discconnection(Scraper):
     def __init__(self, disc_search):
