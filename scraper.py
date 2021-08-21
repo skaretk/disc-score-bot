@@ -43,11 +43,11 @@ class Scraper():
 class DiscInStock(Scraper):
     def __init__(self, disc_search):
         super().__init__(disc_search)
-        self.search_url = 'https://www.discinstock.no/?name='
+        self.search_url = f'https://www.discinstock.no/?name={disc_search}'
     
     async def scrape(self):
         with self.get_chrome() as driver:
-            url = urllib.parse.quote(f'{self.search_url}{self.disc_search}', safe='?:/=')
+            url = urllib.parse.quote(self.search_url, safe='?:/=')
             driver.get(url)
             time.sleep(1)
             content = driver.page_source
@@ -68,11 +68,11 @@ class FrisbeeFeber(Scraper):
     def __init__(self, disc_search):
         super().__init__(disc_search)
         self.url = 'frisbeefeber.no'
-        self.search_url = 'https://www.frisbeefeber.no/search_result?keywords='
+        self.search_url = f'https://www.frisbeefeber.no/search_result?keywords={disc_search}'
     
     async def scrape(self):
         with self.get_chrome() as driver:
-            url = urllib.parse.quote(f'{self.search_url}{self.disc_search}', safe='?:/=&')
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
             content = driver.page_source
             soup = BeautifulSoup(content, "html.parser")
@@ -92,20 +92,49 @@ class FrisbeeFeber(Scraper):
                 disc.manufacturer = alt_manufacturer['alt']
                 disc.price = product.find("div", class_="price col-md-12").getText()
                 disc.store = self.url
-                link = product.find('a', href=True)
-                disc.url = link['href']
+                url = product.find('a', href=True)
+                disc.url = url['href']
 
                 self.discs.append(disc) 
+
+# Sune Sport does not contain disc manufacturer
+class SuneSport(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'sunesport.no'
+        self.search_url = f'https://sunesport.no/product/search.html?search={disc_search}&category_id=268&sub_category=true'
+    
+    async def scrape(self):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
+            driver.get(url)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+
+            for product_thumb in soup.findAll("div", class_="product-thumb"):
+                if (product_thumb.find("span", class_="stock-status").getText() == "Utsolgt"):
+                    continue
+
+                disc = Disc()
+                caption = product_thumb.find("div", class_="caption")
+                h4 = caption.find("h4")
+                a = h4.find('a', href=True)
+
+                disc.name = a.getText()
+                disc.url = a["href"]
+                disc.price = caption.find("p", class_="price").getText()
+                disc.store = self.url
+                self.discs.append(disc)              
 
 class Discconnection(Scraper):
     def __init__(self, disc_search):
         super().__init__(disc_search)
         self.url = 'discconnection.dk'
-        self.search_url = 'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE='
+        self.search_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}'
     
     async def scrape(self):
         with self.get_chrome() as driver:
-            url = urllib.parse.quote(f'{self.search_url}{self.disc_search}', safe='?:/=&')
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
             content = driver.page_source
             soup = BeautifulSoup(content, "html.parser")
@@ -134,4 +163,4 @@ class Discconnection(Scraper):
                 disc.price = prices[i]
                 disc.store = self.url
                 disc.url = url
-                self.discs.append(disc)  
+                self.discs.append(disc)

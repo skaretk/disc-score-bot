@@ -17,6 +17,7 @@ class DiscStock(commands.Cog):
             return
 
         disc_search = sep.join(args)
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))
         
         disc_in_stock_scraper = scraper.DiscInStock(disc_search)
         frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
@@ -51,4 +52,6 @@ class DiscStock(commands.Cog):
         else:
             print(len(embed))
             await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
-            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')           
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')
+
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))          
