@@ -34,7 +34,7 @@ class DiscStock(commands.Cog):
         self.discs.extend(discconnetion_scraper.discs)
 
         if(len(self.discs) == 0):
-            await ctx.send(f'Found no discs {ctx.author.mention}')
+            await ctx.send(f'Found no discs in stock {ctx.author.mention}')
             return        
         elif(len(self.discs)) == 1:
             embed_title = f'Found {len(self.discs)} Disc!'            
