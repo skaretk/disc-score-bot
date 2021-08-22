@@ -45,7 +45,7 @@ class DiscInStock(Scraper):
         super().__init__(disc_search)
         self.search_url = f'https://www.discinstock.no/?name={disc_search}'
     
-    async def scrape(self):
+    def scrape(self):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=')
             driver.get(url)
@@ -70,7 +70,7 @@ class FrisbeeFeber(Scraper):
         self.url = 'frisbeefeber.no'
         self.search_url = f'https://www.frisbeefeber.no/search_result?keywords={disc_search}'
     
-    async def scrape(self):
+    def scrape(self):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
@@ -104,7 +104,7 @@ class SuneSport(Scraper):
         self.url = 'sunesport.no'
         self.search_url = f'https://sunesport.no/product/search.html?search={disc_search}&category_id=268&sub_category=true'
     
-    async def scrape(self):
+    def scrape(self):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
@@ -134,7 +134,7 @@ class DiscExpress(Scraper):
         self.url_product = 'https://www.discexpress.se'
         self.search_url = f'https://www.discexpress.se/a/search?type=product&q={disc_search}'
     
-    async def scrape(self):
+    def scrape(self):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
@@ -161,7 +161,7 @@ class Discconnection(Scraper):
         self.url = 'discconnection.dk'
         self.search_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}'
     
-    async def scrape(self):
+    def scrape(self):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
@@ -202,7 +202,7 @@ class Latitude64(Scraper):
         self.url_product = 'https://store.latitude64.se/'
         self.search_url = f'https://store.latitude64.se/search?q={disc_search}'
     
-    async def scrape(self):
+    def scrape(self):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)

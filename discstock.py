@@ -1,8 +1,9 @@
-import asyncio
 import time
+import threading
 import discord
 from discord.ext import commands
 import scraper
+
 
 class DiscStock(commands.Cog):
     def __init__(self, bot):
@@ -18,22 +19,39 @@ class DiscStock(commands.Cog):
 
         disc_search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))
-        
+        start_time = time.time()
+        scraper_list = list()
+
         disc_in_stock_scraper = scraper.DiscInStock(disc_search)
         frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
         sunesport_scraper = scraper.SuneSport(disc_search)
         discconnetion_scraper = scraper.Discconnection(disc_search)
         discexpress_scraper = scraper.DiscExpress(disc_search)
         latitude64_scraper = scraper.Latitude64(disc_search)
+  
+        thread1 = threading.Thread(target=disc_in_stock_scraper.scrape)
+        thread1.start()
+        scraper_list.append(thread1)
+        thread2 = threading.Thread(target=frisbeefeber_scraper.scrape)
+        thread2.start()
+        scraper_list.append(thread2)
+        thread3 = threading.Thread(target=sunesport_scraper.scrape)
+        thread3.start()
+        scraper_list.append(thread3)
+        thread4 = threading.Thread(target=discconnetion_scraper.scrape)
+        thread4.start()
+        scraper_list.append(thread4)
+        thread5 = threading.Thread(target=discexpress_scraper.scrape)
+        thread5.start()
+        scraper_list.append(thread5)
+        thread6 = threading.Thread(target=latitude64_scraper.scrape)
+        thread6.start()
+        scraper_list.append(thread6)
         
-        start_time = time.time()
-        await asyncio.gather(
-            disc_in_stock_scraper.scrape(),
-            frisbeefeber_scraper.scrape(),
-            sunesport_scraper.scrape(),
-            discconnetion_scraper.scrape(),
-            discexpress_scraper.scrape(),
-            latitude64_scraper.scrape())
+        # Wait for all threads to complete
+        for thread in scraper_list:
+            thread.join()
+
         end_time = time.time()
         print(f'Spent {end_time - start_time} scraping')
 
