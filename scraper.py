@@ -112,18 +112,17 @@ class SuneSport(Scraper):
             content = driver.page_source
             soup = BeautifulSoup(content, "html.parser")
 
-            for product_thumb in soup.findAll("div", class_="product-thumb"):
-                if (product_thumb.find("span", class_="stock-status").getText() == "Utsolgt"):
+            for product in soup.findAll("div", class_="product-thumb"):
+                if (product.find("span", class_="stock-status").getText() == "Utsolgt"):
                     continue
 
                 disc = Disc()
-                caption = product_thumb.find("div", class_="caption")
+                caption = product.find("div", class_="caption")
                 h4 = caption.find("h4")
                 a = h4.find('a', href=True)
-
                 disc.name = a.getText()
                 disc.url = a["href"]
-                disc.price = caption.find("p", class_="price").getText()
+                disc.price = re.search(r" (.*?)Ekskl.", caption.find("p", class_="price").getText()).group(1)
                 disc.store = self.url
                 self.discs.append(disc)
 
