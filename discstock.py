@@ -23,6 +23,7 @@ class DiscStock(commands.Cog):
         disc_in_stock_scraper = scraper.DiscInStock(disc_search)
         frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
         sunesport_scraper = scraper.SuneSport(disc_search)
+        xxl_scraper = scraper.Xxl(disc_search)
         discconnetion_scraper = scraper.Discconnection(disc_search)
         discexpress_scraper = scraper.DiscExpress(disc_search)
         latitude64_scraper = scraper.Latitude64(disc_search)
@@ -38,6 +39,7 @@ class DiscStock(commands.Cog):
             future = executor.submit(discexpress_scraper.scrape)
             future = executor.submit(latitude64_scraper.scrape)
             future = executor.submit(discsport_scraper.scrape)
+            future = executor.submit(xxl_scraper.scrape)
         
         end_time = time.time()
         print(f'Spent {end_time - start_time} scraping')
@@ -45,10 +47,11 @@ class DiscStock(commands.Cog):
         self.discs.extend(disc_in_stock_scraper.discs)
         self.discs.extend(frisbeefeber_scraper.discs)
         self.discs.extend(sunesport_scraper.discs)
+        self.discs.extend(xxl_scraper.discs)
         self.discs.extend(discconnetion_scraper.discs)
         self.discs.extend(discexpress_scraper.discs)
         self.discs.extend(latitude64_scraper.discs)
-        self.discs.extend(discsport_scraper.discs)
+        self.discs.extend(discsport_scraper.discs)        
 
         if(len(self.discs) == 0):
             await ctx.send(f'Found no discs in stock {ctx.author.mention}')

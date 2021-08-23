@@ -126,6 +126,34 @@ class SuneSport(Scraper):
                 disc.store = self.url
                 self.discs.append(disc)
 
+class Xxl(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'xxl.no'
+        self.product_url = 'https://www.xxl.no'
+        self.search_url = f'https://www.xxl.no/search?query={disc_search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
+    
+    def scrape(self):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(self.search_url, safe='?:/=&+')
+            driver.get(url)
+            time.sleep(1)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+
+            product_list = soup.find("ul", class_="product-list product-list--multiline")
+            for product in product_list.findAll("li"):                
+                disc = Disc()
+                product_info = product.find("div", class_="product-card__info-wrapper")
+                disc.name = product_info.find("p").getText().split(", ")[0]
+                disc.manufacturer = product_info.find("h3").getText()
+                product_price = product.find("div", class_="product-card__price-wrapper")                
+                disc.price = product_price.find("p").getText()
+                a = product.find('a', href=True)
+                disc.url = f'{self.product_url}{a["href"]}'
+                disc.store = self.url
+                self.discs.append(disc)
+
 # Discexpress does not contain disc manufacturer
 class DiscExpress(Scraper):
     def __init__(self, disc_search):
