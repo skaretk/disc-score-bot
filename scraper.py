@@ -128,10 +128,10 @@ class SuneSport(Scraper):
 
 class Xxl(Scraper):
     def __init__(self, disc_search):
-        super().__init__(disc_search)
+        super().__init__(disc_search.replace(" ", "+"))
         self.url = 'xxl.no'
         self.product_url = 'https://www.xxl.no'
-        self.search_url = f'https://www.xxl.no/search?query={disc_search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
+        self.search_url = f'https://www.xxl.no/search?query={self.disc_search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
     
     def scrape(self):
         with self.get_chrome() as driver:
