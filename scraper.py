@@ -1,4 +1,5 @@
 import time
+import re
 import urllib.parse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -193,6 +194,35 @@ class Discconnection(Scraper):
                 disc.store = self.url
                 disc.url = url
                 self.discs.append(disc)
+
+class Discsport(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'discsport.se'
+        self.search_url = f'https://discsport.se/shopping/?search_adv=&name={disc_search}&selBrand=0&selCat=1&selType=0&selStatus=0&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
+    
+    def scrape(self):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
+            driver.get(url)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+
+            products = soup.find('ul', class_="products")
+            if (products is not None):
+                for product in products.findAll("li"):
+                    if product.find("div", class_="upperLeftLabel"): # Not in stock
+                        continue
+                    disc = Disc()
+                    a = product.find("h3", class_="shop_item").find('a', href=True)
+                    disc.name = a.getText().replace("\n", " ").replace("\t", " ")
+                    disc.url = a["href"]
+                    manufacturer = re.search(r"]<br/>(.*?)\|", a["title"]).group(1).replace("\xa0", "")
+                    if (manufacturer is not None):
+                        disc.manufacturer = manufacturer                    
+                    disc.price = product.find("div", class_="text-center").find("p").getText()
+                    disc.store = self.url
+                    self.discs.append(disc)
 
 # Latitude64
 class Latitude64(Scraper):
