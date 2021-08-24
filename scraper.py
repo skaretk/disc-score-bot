@@ -140,6 +140,14 @@ class Xxl(Scraper):
             time.sleep(1)
             content = driver.page_source
             soup = BeautifulSoup(content, "html.parser")
+            contain_discs = False
+
+            for filter in soup.findAll("div", class_="MuiAccordionSummary-content jss11 Mui-expanded jss12"):
+                if "Frisbeegolf" in filter.getText():
+                    contain_discs = True
+
+            if (contain_discs == False):
+                return
 
             product_list = soup.find("ul", class_="product-list product-list--multiline")
             for product in product_list.findAll("li"):                
