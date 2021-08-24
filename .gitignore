@@ -1,4 +1,10 @@
+# General
 *.csv
 *.env
 *.log
+
+# Python
 __pycache__
+
+# Misc
+chromedriver.exe
