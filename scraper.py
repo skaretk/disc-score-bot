@@ -41,6 +41,18 @@ class Scraper():
     async def scrape(self):
         pass
 
+class Scrapers():
+    def __init__(self, disc_search):
+        self.norwegian =     [DiscInStock(disc_search), 
+                              FrisbeeFeber(disc_search),
+                              SuneSport(disc_search),
+                              Xxl(disc_search)]
+        self.voec =          [DiscExpress(disc_search),
+                              Discconnection(disc_search),
+                              Discsport(disc_search)]
+        self.international = [Latitude64(disc_search),
+                              Discrepublic(disc_search)]
+
 class DiscInStock(Scraper):
     def __init__(self, disc_search):
         super().__init__(disc_search)

@@ -18,36 +18,22 @@ class Discs(commands.Cog):
 
         disc_search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
-
-        disc_in_stock_scraper = scraper.DiscInStock(disc_search)
-        frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
-        sunesport_scraper = scraper.SuneSport(disc_search)
-        xxl_scraper = scraper.Xxl(disc_search)
-        discconnetion_scraper = scraper.Discconnection(disc_search)
-        discexpress_scraper = scraper.DiscExpress(disc_search)
-        discsport_scraper = scraper.Discsport(disc_search)
+        
+        scrapers = scraper.Scrapers(disc_search)
+        scraper_list = []
+        scraper_list.extend(scrapers.norwegian)
+        scraper_list.extend(scrapers.voec)
         
         start_time = time.time()
-
-        with ThreadPoolExecutor(max_workers=7) as executor:
-            future = executor.submit(disc_in_stock_scraper.scrape)
-            future = executor.submit(frisbeefeber_scraper.scrape)
-            future = executor.submit(sunesport_scraper.scrape)
-            future = executor.submit(discconnetion_scraper.scrape)
-            future = executor.submit(discexpress_scraper.scrape)
-            future = executor.submit(discsport_scraper.scrape)
-            future = executor.submit(xxl_scraper.scrape)
+        with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
+            for disc_scraper in scraper_list:
+                future = executor.submit(disc_scraper.scrape)
         
         end_time = time.time()
         print(f'Spent {end_time - start_time} scraping')
 
-        self.discs.extend(disc_in_stock_scraper.discs)
-        self.discs.extend(frisbeefeber_scraper.discs)
-        self.discs.extend(sunesport_scraper.discs)
-        self.discs.extend(xxl_scraper.discs)
-        self.discs.extend(discconnetion_scraper.discs)
-        self.discs.extend(discexpress_scraper.discs)
-        self.discs.extend(discsport_scraper.discs)
+        for disc_scraper in scraper_list:
+            self.discs.extend(disc_scraper.discs)
 
         if(len(self.discs) == 0):
             await ctx.send(f'Found no discs in stock {ctx.author.mention}')
@@ -81,41 +67,22 @@ class Discs(commands.Cog):
         disc_search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
 
-        disc_in_stock_scraper = scraper.DiscInStock(disc_search)
-        frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
-        sunesport_scraper = scraper.SuneSport(disc_search)
-        xxl_scraper = scraper.Xxl(disc_search)
-        discconnetion_scraper = scraper.Discconnection(disc_search)
-        discexpress_scraper = scraper.DiscExpress(disc_search)
-        latitude64_scraper = scraper.Latitude64(disc_search)
-        discsport_scraper = scraper.Discsport(disc_search)
-        discrepublic_scraper = scraper.Discrepublic(disc_search)
+        scrapers = scraper.Scrapers(disc_search)
+        scraper_list = []
+        scraper_list.extend(scrapers.norwegian)
+        scraper_list.extend(scrapers.voec)
+        scraper_list.extend(scrapers.international)
         
         start_time = time.time()
-
-        with ThreadPoolExecutor(max_workers=9) as executor:
-            future = executor.submit(disc_in_stock_scraper.scrape)
-            future = executor.submit(frisbeefeber_scraper.scrape)
-            future = executor.submit(sunesport_scraper.scrape)
-            future = executor.submit(discconnetion_scraper.scrape)
-            future = executor.submit(discexpress_scraper.scrape)
-            future = executor.submit(latitude64_scraper.scrape)
-            future = executor.submit(discsport_scraper.scrape)
-            future = executor.submit(xxl_scraper.scrape)
-            future = executor.submit(discrepublic_scraper.scrape)
+        with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
+            for disc_scraper in scraper_list:
+                future = executor.submit(disc_scraper.scrape)
         
         end_time = time.time()
         print(f'Spent {end_time - start_time} scraping')
 
-        self.discs.extend(disc_in_stock_scraper.discs)
-        self.discs.extend(frisbeefeber_scraper.discs)
-        self.discs.extend(sunesport_scraper.discs)
-        self.discs.extend(xxl_scraper.discs)
-        self.discs.extend(discconnetion_scraper.discs)
-        self.discs.extend(discexpress_scraper.discs)
-        self.discs.extend(latitude64_scraper.discs)
-        self.discs.extend(discsport_scraper.discs)
-        self.discs.extend(discrepublic_scraper.discs)  
+        for disc_scraper in scraper_list:
+            self.discs.extend(disc_scraper.discs) 
 
         if(len(self.discs) == 0):
             await ctx.send(f'Found no discs in stock {ctx.author.mention}')
