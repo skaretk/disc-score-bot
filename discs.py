@@ -1,0 +1,140 @@
+import time
+from concurrent.futures import ThreadPoolExecutor
+import discord
+from discord.ext import commands
+import scraper
+
+class Discs(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.discs = []    
+
+    @commands.command(aliases=['d'], brief='Search for disc (Norway & VOEC)', description='Search for disc in norwegian and VOEC approved sites')
+    async def disc(self, ctx, *args, sep=" "):
+        self.discs = []
+        if len(args) == 0:
+            await ctx.send('No disc specified, see %help disc search')
+            return
+
+        disc_search = sep.join(args)
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
+
+        disc_in_stock_scraper = scraper.DiscInStock(disc_search)
+        frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
+        sunesport_scraper = scraper.SuneSport(disc_search)
+        xxl_scraper = scraper.Xxl(disc_search)
+        discconnetion_scraper = scraper.Discconnection(disc_search)
+        discexpress_scraper = scraper.DiscExpress(disc_search)
+        discsport_scraper = scraper.Discsport(disc_search)
+        
+        start_time = time.time()
+
+        with ThreadPoolExecutor(max_workers=7) as executor:
+            future = executor.submit(disc_in_stock_scraper.scrape)
+            future = executor.submit(frisbeefeber_scraper.scrape)
+            future = executor.submit(sunesport_scraper.scrape)
+            future = executor.submit(discconnetion_scraper.scrape)
+            future = executor.submit(discexpress_scraper.scrape)
+            future = executor.submit(discsport_scraper.scrape)
+            future = executor.submit(xxl_scraper.scrape)
+        
+        end_time = time.time()
+        print(f'Spent {end_time - start_time} scraping')
+
+        self.discs.extend(disc_in_stock_scraper.discs)
+        self.discs.extend(frisbeefeber_scraper.discs)
+        self.discs.extend(sunesport_scraper.discs)
+        self.discs.extend(xxl_scraper.discs)
+        self.discs.extend(discconnetion_scraper.discs)
+        self.discs.extend(discexpress_scraper.discs)
+        self.discs.extend(discsport_scraper.discs)
+
+        if(len(self.discs) == 0):
+            await ctx.send(f'Found no discs in stock {ctx.author.mention}')
+            return        
+        elif(len(self.discs)) == 1:
+            embed_title = f'Found {len(self.discs)} Disc!'            
+        else:
+            embed_title = f'Found {len(self.discs)} Discs!'
+        embed = discord.Embed(title=embed_title, color=0xFF5733)
+
+        for disc in self.discs:            
+            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.url})')
+        embed.set_thumbnail(url=(ctx.author.avatar_url))
+
+        if (len(embed) < 6000): # Size limit for embeds
+            await ctx.send(embed=embed)
+        else:
+            print(len(embed))
+            await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')
+
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))       
+
+    @commands.command(pass_context=True, name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
+    async def disc_all(self, ctx, *args, sep=" "):
+        self.discs = []
+        if len(args) == 0:
+            await ctx.send('No disc specified, see %help disc_all')
+            return
+
+        disc_search = sep.join(args)
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
+
+        disc_in_stock_scraper = scraper.DiscInStock(disc_search)
+        frisbeefeber_scraper = scraper.FrisbeeFeber(disc_search)
+        sunesport_scraper = scraper.SuneSport(disc_search)
+        xxl_scraper = scraper.Xxl(disc_search)
+        discconnetion_scraper = scraper.Discconnection(disc_search)
+        discexpress_scraper = scraper.DiscExpress(disc_search)
+        latitude64_scraper = scraper.Latitude64(disc_search)
+        discsport_scraper = scraper.Discsport(disc_search)
+        discrepublic_scraper = scraper.Discrepublic(disc_search)
+        
+        start_time = time.time()
+
+        with ThreadPoolExecutor(max_workers=9) as executor:
+            future = executor.submit(disc_in_stock_scraper.scrape)
+            future = executor.submit(frisbeefeber_scraper.scrape)
+            future = executor.submit(sunesport_scraper.scrape)
+            future = executor.submit(discconnetion_scraper.scrape)
+            future = executor.submit(discexpress_scraper.scrape)
+            future = executor.submit(latitude64_scraper.scrape)
+            future = executor.submit(discsport_scraper.scrape)
+            future = executor.submit(xxl_scraper.scrape)
+            future = executor.submit(discrepublic_scraper.scrape)
+        
+        end_time = time.time()
+        print(f'Spent {end_time - start_time} scraping')
+
+        self.discs.extend(disc_in_stock_scraper.discs)
+        self.discs.extend(frisbeefeber_scraper.discs)
+        self.discs.extend(sunesport_scraper.discs)
+        self.discs.extend(xxl_scraper.discs)
+        self.discs.extend(discconnetion_scraper.discs)
+        self.discs.extend(discexpress_scraper.discs)
+        self.discs.extend(latitude64_scraper.discs)
+        self.discs.extend(discsport_scraper.discs)
+        self.discs.extend(discrepublic_scraper.discs)  
+
+        if(len(self.discs) == 0):
+            await ctx.send(f'Found no discs in stock {ctx.author.mention}')
+            return        
+        elif(len(self.discs)) == 1:
+            embed_title = f'Found {len(self.discs)} Disc!'            
+        else:
+            embed_title = f'Found {len(self.discs)} Discs!'
+        embed = discord.Embed(title=embed_title, color=0xFF5733)
+
+        for disc in self.discs:            
+            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.url})')
+        embed.set_thumbnail(url=(ctx.author.avatar_url))
+
+        if (len(embed) < 6000): # Size limit for embeds
+            await ctx.send(embed=embed)
+        else:
+            print(len(embed))
+            await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')
+
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
