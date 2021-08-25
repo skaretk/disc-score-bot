@@ -310,12 +310,15 @@ class Discrepublic(Scraper):
 
                 # mold contain the disc name, must check this field
                 mold = product.find("span", class_="mold").getText()
-                plastic = product.find("span", class_="plastic").getText()
-                if self.disc_search.lower() not in f'{mold.lower()} {plastic.lower()}':
+                plastic = product.find("span", class_="plastic")
+                # Is the product a disc?
+                if plastic is None:
+                    continue                
+                if self.disc_search.lower() not in f'{mold.lower()} {plastic.getText().lower()}':
                     continue
 
                 disc = Disc()
-                disc.name = f'{mold} {plastic}'
+                disc.name = f'{mold} {plastic.getText()}'
                 product_title = product.find("div", class_="product-title")                
                 title = product_title.find('a', href=True)
                 # manufacturer is fetched from an alt string
