@@ -7,7 +7,20 @@ import scraper
 class Discs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.discs = []    
+        self.discs = []
+
+    async def scrape(self, scraper_list):
+        start_time = time.time()
+        with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
+            for disc_scraper in scraper_list:
+                future = executor.submit(disc_scraper.scrape)
+        
+        end_time = time.time()
+        print(f'Spent {end_time - start_time} scraping')
+
+        for disc_scraper in scraper_list:
+            self.discs.extend(disc_scraper.discs)
+
 
     @commands.command(aliases=['d'], brief='Search for disc (Norway & VOEC)', description='Search for disc in norwegian and VOEC approved sites')
     async def disc(self, ctx, *args, sep=" "):
@@ -23,17 +36,8 @@ class Discs(commands.Cog):
         scraper_list = []
         scraper_list.extend(scrapers.norwegian)
         scraper_list.extend(scrapers.voec)
-        
-        start_time = time.time()
-        with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
-            for disc_scraper in scraper_list:
-                future = executor.submit(disc_scraper.scrape)
-        
-        end_time = time.time()
-        print(f'Spent {end_time - start_time} scraping')
 
-        for disc_scraper in scraper_list:
-            self.discs.extend(disc_scraper.discs)
+        await self.scrape(scraper_list)
 
         if(len(self.discs) == 0):
             await ctx.send(f'Found no discs in stock {ctx.author.mention}')
@@ -72,17 +76,8 @@ class Discs(commands.Cog):
         scraper_list.extend(scrapers.norwegian)
         scraper_list.extend(scrapers.voec)
         scraper_list.extend(scrapers.international)
-        
-        start_time = time.time()
-        with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
-            for disc_scraper in scraper_list:
-                future = executor.submit(disc_scraper.scrape)
-        
-        end_time = time.time()
-        print(f'Spent {end_time - start_time} scraping')
 
-        for disc_scraper in scraper_list:
-            self.discs.extend(disc_scraper.discs) 
+        await self.scrape(scraper_list)
 
         if(len(self.discs) == 0):
             await ctx.send(f'Found no discs in stock {ctx.author.mention}')
@@ -108,23 +103,19 @@ class Discs(commands.Cog):
 
     @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
     async def disc_flight(self, ctx, *args, sep=" "):
+        self.discs = []
         if len(args) == 0:
             await ctx.send('No disc specified, see %help flight')
             return
 
         disc_search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
-        start_time = time.time()        
+        
+        scraper_list = [scraper.MarshallStreetFlight(disc_search)]
+        await self.scrape(scraper_list)
 
-        flight_scraper = scraper.MarshallStreetFlight(disc_search)        
-        start_time = time.time()
-        with ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(flight_scraper.scrape)
-        end_time = time.time()
-        print(f'Spent {end_time - start_time} scraping')
-
-        if (len(flight_scraper.discs) == 1):
-            disc = flight_scraper.discs[0]
+        if (len(self.discs) == 1):
+            disc = self.discs[0]
             embed = discord.Embed(title=disc.name, color=0xFF5733)
             embed.add_field(name='Flight', value=f'Speed: {disc.speed} Glide:{disc.glide} Turn: {disc.turn} Fade: {disc.fade}', inline=True)    
             embed.set_image(url=disc.img_url)

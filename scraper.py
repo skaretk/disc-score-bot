@@ -360,7 +360,7 @@ class MarshallStreetFlight(Scraper):
         self.search_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
 
     def scrape(self):
-        soup = self.get_page(1)
+        soup = self.get_page()
         for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
             if (disc_item.getText().lower() == self.disc_search.lower()):
                 disc = Disc()
