@@ -27,7 +27,7 @@ class ScrapeBench():
       
   def printDiscs(self):
       for disc in self.discs:            
-          print(f'Disc:{disc.name} Manufacturer:{disc.manufacturer} Price: {disc.price} [{disc.store}]({disc.url})')
+          print(f'Disc:{disc.name}\nManufacturer:{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.url})')
 
 
 # Run test scrape

@@ -64,8 +64,7 @@ class DiscInStock(Scraper):
             url = urllib.parse.quote(self.search_url, safe='?:/=')
             driver.get(url)
             time.sleep(1)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for a in soup.findAll("div", class_="col"):
                 disc = Disc()
@@ -88,8 +87,7 @@ class FrisbeeFeber(Scraper):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for product in soup.select('li[class*="product-box-id-"]'):
                 # Is product in stock ?
@@ -122,8 +120,7 @@ class SuneSport(Scraper):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for product in soup.findAll("div", class_="product-thumb"):
                 if (product.find("span", class_="stock-status").getText() == "Utsolgt"):
@@ -151,8 +148,7 @@ class Xxl(Scraper):
             url = urllib.parse.quote(self.search_url, safe='?:/=&+')
             driver.get(url)
             time.sleep(1)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
             contain_discs = False
 
             for filter in soup.findAll("div", class_="MuiAccordionSummary-content jss11 Mui-expanded jss12"):
@@ -191,8 +187,7 @@ class DiscExpress(Scraper):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
                 if (self.disc_search.lower() not in grid_item.find("p").getText().lower()): # Search engine gives false response
@@ -218,8 +213,7 @@ class Discconnection(Scraper):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
             
             names = []
             manufacturers = []
@@ -257,8 +251,7 @@ class Discsport(Scraper):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             products = soup.find('ul', class_="products")
             if (products is not None):
@@ -287,8 +280,7 @@ class Discmania(Scraper):
         with self.get_chrome() as driver:
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for product in soup.findAll("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
                 name = product.find("h3", class_= "product__title h4").getText()
@@ -318,8 +310,7 @@ class Latitude64(Scraper):
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
             time.sleep(1)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             for prodHeader in soup.findAll("div", class_="box product"):
                 title =  prodHeader.find("a", class_="title")
@@ -346,8 +337,7 @@ class Discrepublic(Scraper):
             url = urllib.parse.quote(self.search_url, safe='?:/=&')
             driver.get(url)
             time.sleep(1)
-            content = driver.page_source
-            soup = BeautifulSoup(content, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "html.parser")
 
             # Check if the disc is sold out
             for product in soup.findAll("div", class_="product-item-wrapper col-sm-2"):
