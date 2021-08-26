@@ -57,7 +57,7 @@ class Discs(commands.Cog):
 
         await self.bot.change_presence(activity=discord.Game(name="Disc golf"))       
 
-    @commands.command(pass_context=True, name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
+    @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
     async def disc_all(self, ctx, *args, sep=" "):
         self.discs = []
         if len(args) == 0:
@@ -105,3 +105,30 @@ class Discs(commands.Cog):
             await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')
 
         await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
+
+    @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
+    async def disc_flight(self, ctx, *args, sep=" "):
+        if len(args) == 0:
+            await ctx.send('No disc specified, see %help flight')
+            return
+
+        disc_search = sep.join(args)
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
+        start_time = time.time()        
+
+        flight_scraper = scraper.MarshallStreetFlight(disc_search)        
+        start_time = time.time()
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(flight_scraper.scrape)
+        end_time = time.time()
+        print(f'Spent {end_time - start_time} scraping')
+
+        if (len(flight_scraper.discs) == 1):
+            disc = flight_scraper.discs[0]
+            embed = discord.Embed(title=disc.name, color=0xFF5733)
+            embed.add_field(name='Flight', value=f'Speed: {disc.speed} Glide:{disc.glide} Turn: {disc.turn} Fade: {disc.fade}', inline=True)    
+            embed.set_image(url=disc.img_url)
+            embed.set_thumbnail(url=(ctx.author.avatar_url))
+            await ctx.send(embed=embed)            
+        else:
+            await ctx.send(f'Could not find flight path for {disc_search} {ctx.author.mention}')  

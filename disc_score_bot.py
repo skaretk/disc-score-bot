@@ -14,7 +14,6 @@ from scores import Scores
 from emojis import Emojis
 from files import Files
 from discs import Discs
-from flight import Flight
 
 # discord client
 bot = commands.Bot(command_prefix='%')
@@ -33,6 +32,5 @@ bot.add_cog(Scores(bot))
 bot.add_cog(Emojis(bot))
 bot.add_cog(Files(bot))
 bot.add_cog(Discs(bot))
-bot.add_cog(Flight(bot))
 
 bot.run(token)
