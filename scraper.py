@@ -49,7 +49,8 @@ class Scrapers():
                               Xxl(disc_search)]
         self.voec =          [DiscExpress(disc_search),
                               Discconnection(disc_search),
-                              Discsport(disc_search)]
+                              Discsport(disc_search),
+                              Discmania(disc_search)]
         self.international = [Latitude64(disc_search),
                               Discrepublic(disc_search)]
 
@@ -274,6 +275,35 @@ class Discsport(Scraper):
                     disc.price = product.find("div", class_="text-center").find("p").getText()
                     disc.store = self.url
                     self.discs.append(disc)
+
+class Discmania(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'discmania.net'
+        self.url_product = 'https://europe.discmania.net'
+        self.search_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={disc_search}'
+    
+    def scrape(self):
+        with self.get_chrome() as driver:
+            url = urllib.parse.quote(self.search_url, safe='?:/=&')
+            driver.get(url)
+            content = driver.page_source
+            soup = BeautifulSoup(content, "html.parser")
+
+            for product in soup.findAll("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
+                name = product.find("h3", class_= "product__title h4").getText()
+
+                if self.disc_search.lower() not in name.lower(): # Gives some false products
+                    continue
+
+                disc = Disc()
+                disc.name = name
+                disc.manufacturer = product.find("h4", class_= "product__vendor h6").getText()
+                a = product.find("a", class_="product-link", href=True)
+                disc.url = f'{self.url_product}{a["href"]}'
+                disc.price = product.find("span", class_="money").getText()
+                disc.store = self.url
+                self.discs.append(disc)
 
 # Latitude64
 class Latitude64(Scraper):
