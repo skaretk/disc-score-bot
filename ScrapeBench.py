@@ -3,7 +3,8 @@ from concurrent.futures import ThreadPoolExecutor
 import scraper
 
 # Get scrape info:
-disc_search = "compass"
+disc_search = "firebird"
+# disc_search = "reaper"
 
 class ScrapeBench():
   def __init__(self, search):
@@ -11,11 +12,11 @@ class ScrapeBench():
     self.discs = []
   
   def testScrape(self):
-      test_scraper = scraper.Latitude64(self.search)
+      test_scraper = scraper.RocketDiscs(self.search)
 
       start_time = time.time()
 
-      with ThreadPoolExecutor(max_workers=7) as executor:
+      with ThreadPoolExecutor(max_workers=1) as executor:
           future = executor.submit(test_scraper.scrape)
 
       end_time = time.time()
