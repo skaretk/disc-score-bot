@@ -25,10 +25,10 @@ class Disc():
                f'url: {self.url}\n'
 
 class Scraper():
-    def __init__(self, disc_search):
+    def __init__(self, search):
         self.url = ''
         self.search_url = ''
-        self.disc_search = disc_search
+        self.search = search
         self.discs = []
     
     def get_chrome(self):
@@ -62,23 +62,23 @@ class Scraper():
         pass
 
 class Scrapers():
-    def __init__(self, disc_search):
-        self.norwegian =     [DiscInStock(disc_search), 
-                              FrisbeeFeber(disc_search),
-                              SuneSport(disc_search),
-                              Xxl(disc_search)]
-        self.voec =          [DiscExpress(disc_search),
-                              Discconnection(disc_search),
-                              Discsport(disc_search),
-                              Discmania(disc_search),
-                              RocketDiscs(disc_search)]
-        self.international = [Latitude64(disc_search),
-                              Discrepublic(disc_search)]
+    def __init__(self, search):
+        self.norwegian =     [DiscInStock(search), 
+                              FrisbeeFeber(search),
+                              SuneSport(search),
+                              Xxl(search)]
+        self.voec =          [DiscExpress(search),
+                              Discconnection(search),
+                              Discsport(search),
+                              Discmania(search),
+                              RocketDiscs(search)]
+        self.international = [Latitude64(search),
+                              Discrepublic(search)]
 
 class DiscInStock(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
-        self.search_url = f'https://www.discinstock.no/?name={disc_search}'
+    def __init__(self, search):
+        super().__init__(search)
+        self.search_url = f'https://www.discinstock.no/?name={search}'
     
     def scrape(self):
         soup = self.get_page(1)
@@ -95,10 +95,10 @@ class DiscInStock(Scraper):
             self.discs.append(disc)
 
 class FrisbeeFeber(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'frisbeefeber.no'
-        self.search_url = f'https://www.frisbeefeber.no/search_result?keywords={disc_search}'
+        self.search_url = f'https://www.frisbeefeber.no/search_result?keywords={search}'
     
     def scrape(self):
         soup = self.get_page()
@@ -111,7 +111,7 @@ class FrisbeeFeber(Scraper):
             disc = Disc()
             disc.name = product.find("a", class_="title col-md-12").getText()
             # Search engine gives false results, check if the disc name is correct
-            if (self.disc_search.lower() not in disc.name.lower()):
+            if (self.search.lower() not in disc.name.lower()):
                 continue
             div_manufacturer = product.find("div", class_="manufacturer-box")
             alt_manufacturer = div_manufacturer.find("img", alt=True)
@@ -125,10 +125,10 @@ class FrisbeeFeber(Scraper):
 
 # Sune Sport does not contain disc manufacturer
 class SuneSport(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'sunesport.no'
-        self.search_url = f'https://sunesport.no/product/search.html?search={disc_search}&category_id=268&sub_category=true'
+        self.search_url = f'https://sunesport.no/product/search.html?search={search}&category_id=268&sub_category=true'
     
     def scrape(self):
         soup = self.get_page()
@@ -148,11 +148,11 @@ class SuneSport(Scraper):
             self.discs.append(disc)
 
 class Xxl(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search.replace(" ", "+"))
+    def __init__(self, search):
+        super().__init__(search.replace(" ", "+"))
         self.url = 'xxl.no'
         self.product_url = 'https://www.xxl.no'
-        self.search_url = f'https://www.xxl.no/search?query={self.disc_search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
+        self.search_url = f'https://www.xxl.no/search?query={self.search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
     
     def scrape(self):
         soup = self.get_page(1)
@@ -171,7 +171,7 @@ class Xxl(Scraper):
             product_info = product.find("div", class_="product-card__info-wrapper")
             name = product_info.find("p").getText().split(", ")[0]
             # Must check since xxl.no returns false results
-            if (self.disc_search.lower() not in name.lower()):
+            if (self.search.lower() not in name.lower()):
                 continue
             disc = Disc()
             disc.name = product_info.find("p").getText().split(", ")[0]
@@ -185,17 +185,17 @@ class Xxl(Scraper):
 
 # Discexpress does not contain disc manufacturer
 class DiscExpress(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'discexpress.se'
         self.url_product = 'https://www.discexpress.se'
-        self.search_url = f'https://www.discexpress.se/a/search?type=product&q={disc_search}'
+        self.search_url = f'https://www.discexpress.se/a/search?type=product&q={search}'
     
     def scrape(self):
         soup = self.get_page()
 
         for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
-            if (self.disc_search.lower() not in grid_item.find("p").getText().lower()): # Search engine gives false response
+            if (self.search.lower() not in grid_item.find("p").getText().lower()): # Search engine gives false response
                 continue
 
             disc = Disc()
@@ -209,10 +209,10 @@ class DiscExpress(Scraper):
             self.discs.append(disc)
 
 class Discconnection(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'discconnection.dk'
-        self.search_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={disc_search}'
+        self.search_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={search}'
     
     def scrape(self):
         soup = self.get_page()
@@ -244,10 +244,10 @@ class Discconnection(Scraper):
             self.discs.append(disc)
 
 class Discsport(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'discsport.se'
-        self.search_url = f'https://discsport.se/shopping/?search_adv=&name={disc_search}&selBrand=0&selCat=1&selType=0&selStatus=0&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
+        self.search_url = f'https://discsport.se/shopping/?search_adv=&name={search}&selBrand=0&selCat=1&selType=0&selStatus=0&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
     
     def scrape(self):
         soup = self.get_page()
@@ -269,11 +269,11 @@ class Discsport(Scraper):
                 self.discs.append(disc)
 
 class Discmania(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'discmania.net'
         self.url_product = 'https://europe.discmania.net'
-        self.search_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={disc_search}'
+        self.search_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={search}'
     
     def scrape(self):
         soup = self.get_page()
@@ -281,7 +281,7 @@ class Discmania(Scraper):
         for product in soup.findAll("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
             name = product.find("h3", class_= "product__title h4").getText()
 
-            if self.disc_search.lower() not in name.lower(): # Gives some false products
+            if self.search.lower() not in name.lower(): # Gives some false products
                 continue
 
             disc = Disc()
@@ -295,11 +295,11 @@ class Discmania(Scraper):
 
 # Latitude64
 class Latitude64(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'store.latitude64.se'
         self.url_product = 'https://store.latitude64.se/'
-        self.search_url = f'https://store.latitude64.se/search?q={disc_search}'
+        self.search_url = f'https://store.latitude64.se/search?q={search}'
     
     def scrape(self):
         soup = self.get_page(1)
@@ -318,11 +318,11 @@ class Latitude64(Scraper):
 
 # DiscRepublic
 class Discrepublic(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'discrepublic.ca'
         self.url_product = 'https://discrepublic.ca'
-        self.search_url = f'https://discrepublic.ca/search?type=product&collection=in-stock&q=*{disc_search}*'
+        self.search_url = f'https://discrepublic.ca/search?type=product&collection=in-stock&q=*{search}*'
     
     def scrape(self):
         soup = self.get_page(1)
@@ -338,7 +338,7 @@ class Discrepublic(Scraper):
             # Is the product a disc?
             if plastic is None:
                 continue                
-            if self.disc_search.lower() not in f'{mold.lower()} {plastic.getText().lower()}':
+            if self.search.lower() not in f'{mold.lower()} {plastic.getText().lower()}':
                 continue
 
             disc = Disc()
@@ -362,14 +362,14 @@ class Discrepublic(Scraper):
 
 # MarshallStreet, fetches flight info
 class MarshallStreetFlight(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.search_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
 
     def scrape(self):
         soup = self.get_page(1)
         for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
-            if (disc_item.getText().lower() == self.disc_search.lower()):
+            if (disc_item.getText().lower() == self.search.lower()):
                 disc = Disc()
                 disc.name = disc_item.getText()
                 disc.flight_url = disc_item['data-pic']
@@ -381,7 +381,7 @@ class MarshallStreetFlight(Scraper):
                 return
         for putter in soup.findAll("div", class_="putter-child pc-entry"):
             putter_name = putter['data-putter']
-            if (putter_name.lower() == self.disc_search.lower()):
+            if (putter_name.lower() == self.search.lower()):
                 disc = Disc()
                 disc.name = putter_name
                 disc.flight_url = putter['data-image']
@@ -393,15 +393,15 @@ class MarshallStreetFlight(Scraper):
                 return       
 
 class RocketDiscs(Scraper):
-    def __init__(self, disc_search):
-        super().__init__(disc_search)
+    def __init__(self, search):
+        super().__init__(search)
         self.url = 'rocketdiscs.com'
         self.url_product = 'https://rocketdiscs.com'
         self.search_url = 'https://rocketdiscs.com/Disc-Matrix'
     
     def get_disc_from_matrix(self):
         soup = self.get_page(3)
-        disc = re.compile(f'.*{self.disc_search}.*', re.IGNORECASE)
+        disc = re.compile(f'.*{self.search}.*', re.IGNORECASE)
         product = soup.find("a", title=disc)
         self.manufaturer = product["href"].split("-")[0][1:]
         self.url_product += product["href"]

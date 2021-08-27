@@ -29,10 +29,10 @@ class Discs(commands.Cog):
             await ctx.send('No disc specified, see %help disc search')
             return
 
-        disc_search = sep.join(args)
+        search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
         
-        scrapers = scraper.Scrapers(disc_search)
+        scrapers = scraper.Scrapers(search)
         scraper_list = []
         scraper_list.extend(scrapers.norwegian)
         scraper_list.extend(scrapers.voec)
@@ -57,7 +57,7 @@ class Discs(commands.Cog):
         else:
             print(len(embed))
             await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
-            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {search} discs! ({len(self.discs)}!) ')
 
         await self.bot.change_presence(activity=discord.Game(name="Disc golf"))       
 
@@ -68,10 +68,10 @@ class Discs(commands.Cog):
             await ctx.send('No disc specified, see %help disc_all')
             return
 
-        disc_search = sep.join(args)
+        search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
 
-        scrapers = scraper.Scrapers(disc_search)
+        scrapers = scraper.Scrapers(search)
         scraper_list = []
         scraper_list.extend(scrapers.norwegian)
         scraper_list.extend(scrapers.voec)
@@ -97,7 +97,7 @@ class Discs(commands.Cog):
         else:
             print(len(embed))
             await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
-            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {disc_search} discs! ({len(self.discs)}!) ')
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {search} discs! ({len(self.discs)}!) ')
 
         await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
 
@@ -108,10 +108,10 @@ class Discs(commands.Cog):
             await ctx.send('No disc specified, see %help flight')
             return
 
-        disc_search = sep.join(args)
+        search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
         
-        scraper_list = [scraper.MarshallStreetFlight(disc_search)]
+        scraper_list = [scraper.MarshallStreetFlight(search)]
         await self.scrape(scraper_list)
 
         if (len(self.discs) == 1):
@@ -122,4 +122,4 @@ class Discs(commands.Cog):
             embed.set_thumbnail(url=(ctx.author.avatar_url))
             await ctx.send(embed=embed)            
         else:
-            await ctx.send(f'Could not find flight path for {disc_search} {ctx.author.mention}')  
+            await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')  

@@ -3,8 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import scraper
 
 # Get scrape info:
-disc_search = "firebird"
-# disc_search = "reaper"
+search = "firebird"
 
 class ScrapeBench():
   def __init__(self, search):
@@ -32,6 +31,6 @@ class ScrapeBench():
 
 
 # Run test scrape
-workbench = ScrapeBench(disc_search)
+workbench = ScrapeBench(search)
 workbench.testScrape()
 workbench.printDiscs()
