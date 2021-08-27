@@ -1,9 +1,10 @@
+import os
 import time
 import re
 import urllib.parse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 
 class Disc():
     def __init__(self):
@@ -17,6 +18,13 @@ class Disc():
         self.glide = ''
         self.turn = ''
         self.fade = ''
+        
+    def __str__(self):
+        return f'name: {self.name}\n'\
+               f'manufacturer: {self.manufacturer}\n'\
+               f'price: {self.price}\n'\
+               f'store: {self.store}\n'\
+               f'url: {self.url}\n'
 
 class Scraper():
     def __init__(self, disc_search):
@@ -64,7 +72,8 @@ class Scrapers():
         self.voec =          [DiscExpress(disc_search),
                               Discconnection(disc_search),
                               Discsport(disc_search),
-                              Discmania(disc_search)]
+                              Discmania(disc_search),
+                              RocketDiscs(disc_search)]
         self.international = [Latitude64(disc_search),
                               Discrepublic(disc_search)]
 
@@ -384,3 +393,33 @@ class MarshallStreetFlight(Scraper):
                 disc.fade = putter['data-fade']
                 self.discs.append(disc)
                 return       
+
+class RocketDiscs(Scraper):
+    def __init__(self, disc_search):
+        super().__init__(disc_search)
+        self.url = 'https://rocketdiscs.com/'
+        self.url_product = 'https://rocketdiscs.com'
+        self.search_url = 'https://rocketdiscs.com/Disc-Matrix'
+    
+    def get_disc_from_matrix(self):
+        soup = self.get_page(3)
+        disc = re.compile(f'.*{self.disc_search}.*', re.IGNORECASE)
+        product = soup.find("a", title=disc)
+        self.manufaturer = product["href"].split("-")[0][1:]
+        self.url_product += product["href"]
+        self.search_url = self.url_product
+        
+    def scrape(self):
+        self.get_disc_from_matrix()
+        soup = self.get_page()
+        if soup.find("div", id="ContentPlaceHolder1_bannerText") == None:
+            name = soup.find("h1", id="ContentPlaceHolder1_lblDiscName").text
+            price = soup.find("td", id="ContentPlaceHolder1_lblOurPrice").text
+            
+            disc = Disc()
+            disc.name = name
+            disc.url = f'{self.url_product}'
+            disc.manufacturer = self.manufaturer
+            disc.price = price
+            disc.store = self.url
+            self.discs.append(disc)
