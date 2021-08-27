@@ -5,7 +5,6 @@ import urllib.parse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup, SoupStrainer
-from lxml import etree
 
 class Disc():
     def __init__(self):
@@ -425,7 +424,6 @@ class RocketDiscs(Scraper):
             soup = BeautifulSoup(content, "html.parser")
             # Check if there is an Out of stock banner
             if soup.find("div", id="ContentPlaceHolder1_bannerText") == None:
-                print(f'Found disc in stock!')
                 name = soup.find("h1", id="ContentPlaceHolder1_lblDiscName").text
                 price = soup.find("td", id="ContentPlaceHolder1_lblOurPrice").text
                 
@@ -435,5 +433,4 @@ class RocketDiscs(Scraper):
                 disc.manufacturer = self.manufaturer
                 disc.price = price
                 disc.store = self.url
-                print(disc)
                 self.discs.append(disc)
