@@ -1,10 +1,8 @@
-import os
 import time
 import re
 import urllib.parse
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from bs4 import BeautifulSoup, SoupStrainer
+from bs4 import BeautifulSoup
 
 class Disc():
     def __init__(self):
