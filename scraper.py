@@ -397,7 +397,7 @@ class MarshallStreetFlight(Scraper):
 class RocketDiscs(Scraper):
     def __init__(self, disc_search):
         super().__init__(disc_search)
-        self.url = 'https://rocketdiscs.com/'
+        self.url = 'rocketdiscs.com'
         self.url_product = 'https://rocketdiscs.com'
         self.search_url = 'https://rocketdiscs.com/Disc-Matrix'
     
