@@ -403,12 +403,16 @@ class RocketDiscs(Scraper):
         soup = self.get_page(3)
         disc = re.compile(f'.*{self.search}.*', re.IGNORECASE)
         product = soup.find("a", title=disc)
+        if product is None:
+            return False
         self.manufaturer = product["href"].split("-")[0][1:]
         self.url_product += product["href"]
         self.search_url = self.url_product
+        return True
         
     def scrape(self):
-        self.get_disc_from_matrix()
+        if self.get_disc_from_matrix() is False:
+            return
         soup = self.get_page()
         if soup.find("div", id="ContentPlaceHolder1_bannerText") == None:
             name = soup.find("h1", id="ContentPlaceHolder1_lblDiscName").text
