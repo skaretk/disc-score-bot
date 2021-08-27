@@ -118,7 +118,7 @@ class Discs(commands.Cog):
             disc = self.discs[0]
             embed = discord.Embed(title=disc.name, color=0xFF5733)
             embed.add_field(name='Flight', value=f'Speed: {disc.speed} Glide:{disc.glide} Turn: {disc.turn} Fade: {disc.fade}', inline=True)    
-            embed.set_image(url=disc.img_url)
+            embed.set_image(url=disc.flight_url)
             embed.set_thumbnail(url=(ctx.author.avatar_url))
             await ctx.send(embed=embed)            
         else:

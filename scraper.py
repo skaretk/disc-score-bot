@@ -13,7 +13,7 @@ class Disc():
         self.price = ''
         self.store = ''
         self.url = ''
-        self.img_url = ''
+        self.flight_url = ''
         self.speed = ''
         self.glide = ''
         self.turn = ''
@@ -369,12 +369,12 @@ class MarshallStreetFlight(Scraper):
         self.search_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
 
     def scrape(self):
-        soup = self.get_page()
+        soup = self.get_page(1)
         for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
             if (disc_item.getText().lower() == self.disc_search.lower()):
                 disc = Disc()
                 disc.name = disc_item.getText()
-                disc.img_url = disc_item['data-pic']
+                disc.flight_url = disc_item['data-pic']
                 disc.speed = disc_item['data-speed']
                 disc.glide = disc_item['data-glide']
                 disc.turn = disc_item['data-turn']
@@ -386,7 +386,7 @@ class MarshallStreetFlight(Scraper):
             if (putter_name.lower() == self.disc_search.lower()):
                 disc = Disc()
                 disc.name = putter_name
-                disc.img_url = putter['data-image']
+                disc.flight_url = putter['data-image']
                 disc.speed = putter['data-speed']
                 disc.glide = putter['data-glide']
                 disc.turn = putter['data-turn']
