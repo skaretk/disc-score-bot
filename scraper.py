@@ -72,7 +72,8 @@ class Scrapers():
         self.voec =          [DiscExpress(disc_search),
                               Discconnection(disc_search),
                               Discsport(disc_search),
-                              Discmania(disc_search)]
+                              Discmania(disc_search),
+                              RocketDiscs(disc_search)]
         self.international = [Latitude64(disc_search),
                               Discrepublic(disc_search)]
 
