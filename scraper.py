@@ -111,7 +111,7 @@ class FrisbeeFeber(Scraper):
             disc = Disc()
             disc.name = product.find("a", class_="title col-md-12").getText()
             # Search engine gives false results, check if the disc name is correct
-            if (self.search.lower() not in disc.name.lower()):
+            if re.search(self.search, disc.name, re.IGNORECASE) is None:
                 continue
             div_manufacturer = product.find("div", class_="manufacturer-box")
             alt_manufacturer = div_manufacturer.find("img", alt=True)
@@ -171,7 +171,7 @@ class Xxl(Scraper):
             product_info = product.find("div", class_="product-card__info-wrapper")
             name = product_info.find("p").getText().split(", ")[0]
             # Must check since xxl.no returns false results
-            if (self.search.lower() not in name.lower()):
+            if re.search(self.search, name, re.IGNORECASE) is None:
                 continue
             disc = Disc()
             disc.name = product_info.find("p").getText().split(", ")[0]
@@ -195,15 +195,16 @@ class DiscExpress(Scraper):
         soup = self.get_page()
 
         for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
-            if (self.search.lower() not in grid_item.find("p").getText().lower()): # Search engine gives false response
+            name = grid_item.find("p").getText()
+            if re.search(self.search, name, re.IGNORECASE) is None: # Search engine gives false response
                 continue
 
             disc = Disc()
-            disc.name = grid_item.find("p").getText()
+            disc.name = name
             a = grid_item.find('a', href=True)
             disc.url = f'{self.url_product}{a["href"]}'
             for hidden_item in grid_item.findAll("span", class_="visually-hidden"):
-                if("kr" in hidden_item.getText().lower()):
+                if re.search("kr", hidden_item.getText(), re.IGNORECASE):
                     disc.price = hidden_item.getText()                 
             disc.store = self.url
             self.discs.append(disc)
@@ -281,7 +282,7 @@ class Discmania(Scraper):
         for product in soup.findAll("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
             name = product.find("h3", class_= "product__title h4").getText()
 
-            if self.search.lower() not in name.lower(): # Gives some false products
+            if re.search(self.search, name, re.IGNORECASE) is None: # Gives some false products
                 continue
 
             disc = Disc()
@@ -338,7 +339,7 @@ class Discrepublic(Scraper):
             # Is the product a disc?
             if plastic is None:
                 continue                
-            if self.search.lower() not in f'{mold.lower()} {plastic.getText().lower()}':
+            if re.search(self.search, f'{mold} {plastic.getText()}', re.IGNORECASE) is None:
                 continue
 
             disc = Disc()
