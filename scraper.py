@@ -88,7 +88,7 @@ class DiscInStock(Scraper):
             disc.manufacturer = a.find("h6", class_="text-muted font-monospace h-100").getText()
             disc.name = a.find("span", class_="fs-5").getText()                
             disc.price = a.find("span", class_="flex-shrink-1 display-6 mt-1").getText()
-            disc.store = a.find("span", class_="mx-auto text-muted").getText()
+            disc.store = a.find("span", class_="mx-auto").getText()
             link = a.find('a', href=True)
             disc.url = link['href']
 
