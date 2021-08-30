@@ -94,8 +94,7 @@ class DiscInStock(Scraper):
             disc.url = link['href']
 
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'DiscInStock scraper: {end_time - start_time}')
+        print(f'DiscInStock scraper: {time.time() - start_time}')
 
 class FrisbeeFeber(Scraper):
     def __init__(self, search):
@@ -126,8 +125,7 @@ class FrisbeeFeber(Scraper):
             disc.url = url['href']
 
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'FrisbeeFeber scraper: {end_time - start_time}')
+        print(f'FrisbeeFeber scraper: {time.time() - start_time}')
 
 # Sune Sport does not contain disc manufacturer
 class SuneSport(Scraper):
@@ -153,8 +151,7 @@ class SuneSport(Scraper):
             disc.price = re.search(r" (.*?)Ekskl.", caption.find("p", class_="price").getText()).group(1)
             disc.store = self.url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'SuneSport scraper: {end_time - start_time}')
+        print(f'SuneSport scraper: {time.time() - start_time}')
 
 class Xxl(Scraper):
     def __init__(self, search):
@@ -192,8 +189,7 @@ class Xxl(Scraper):
             disc.url = f'{self.product_url}{a["href"]}'
             disc.store = self.url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'XXL scraper: {end_time - start_time}')
+        print(f'XXL scraper: {time.time() - start_time}')
 
 # Discexpress does not contain disc manufacturer
 class DiscExpress(Scraper):
@@ -221,8 +217,7 @@ class DiscExpress(Scraper):
                     disc.price = hidden_item.getText()                 
             disc.store = self.url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'DiscExpress scraper: {end_time - start_time}')
+        print(f'DiscExpress scraper: {time.time() - start_time}')
 
 class Discconnection(Scraper):
     def __init__(self, search):
@@ -259,8 +254,7 @@ class Discconnection(Scraper):
             disc.store = self.url
             disc.url = self.search_url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'Discconnection scraper: {end_time - start_time}')
+        print(f'Discconnection scraper: {time.time() - start_time}')
 
 class Discsport(Scraper):
     def __init__(self, search):
@@ -287,8 +281,7 @@ class Discsport(Scraper):
                 disc.price = product.find("div", class_="text-center").find("p").getText()
                 disc.store = self.url
                 self.discs.append(disc)
-        end_time = time.time()
-        print(f'Discsport scraper: {end_time - start_time}')
+        print(f'Discsport scraper: {time.time() - start_time}')
 
 class Discmania(Scraper):
     def __init__(self, search):
@@ -315,8 +308,7 @@ class Discmania(Scraper):
             disc.price = product.find("span", class_="money").getText()
             disc.store = self.url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'Discmania scraper: {end_time - start_time}')
+        print(f'Discmania scraper: {time.time() - start_time}')
 
 # Latitude64
 class Latitude64(Scraper):
@@ -341,8 +333,7 @@ class Latitude64(Scraper):
             disc.price = prodHeader.find("span", class_="money").getText()
             disc.store = self.url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'Latitude64 scraper: {end_time - start_time}')
+        print(f'Latitude64 scraper: {time.time() - start_time}')
 
 # DiscRepublic
 class Discrepublic(Scraper):
@@ -388,8 +379,7 @@ class Discrepublic(Scraper):
             disc.store = self.url                
 
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'Discrepublic scraper: {end_time - start_time}')
+        print(f'Discrepublic scraper: {time.time() - start_time}')
 
 # MarshallStreet, fetches flight info
 class MarshallStreetFlight(Scraper):
@@ -410,8 +400,7 @@ class MarshallStreetFlight(Scraper):
                 disc.turn = disc_item['data-turn']
                 disc.fade = disc_item['data-fade']
                 self.discs.append(disc)
-                end_time = time.time()
-                print(f'MarshallStreetFlight scraper: {end_time - start_time}')
+                print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
                 return
         for putter in soup.findAll("div", class_="putter-child pc-entry"):
             putter_name = putter['data-putter']
@@ -424,11 +413,9 @@ class MarshallStreetFlight(Scraper):
                 disc.turn = putter['data-turn']
                 disc.fade = putter['data-fade']
                 self.discs.append(disc)
-                end_time = time.time()
-                print(f'MarshallStreetFlight scraper: {end_time - start_time}')
+                print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
                 return
-        end_time = time.time()
-        print(f'MarshallStreetFlight scraper: No disc found: {end_time - start_time}')
+        print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
 
 class RocketDiscs(Scraper):
     def __init__(self, search):
@@ -451,8 +438,7 @@ class RocketDiscs(Scraper):
     def scrape(self):
         start_time = time.time()
         if self.get_disc_from_matrix() is False:
-            end_time = time.time()
-            print(f'RocketDiscs no disc found: {end_time - start_time}')
+            print(f'RocketDiscs scraper: {time.time() - start_time}')
             return
         soup = self.get_page()        
         if soup.find("div", id="ContentPlaceHolder1_bannerText") == None:
@@ -466,5 +452,4 @@ class RocketDiscs(Scraper):
             disc.price = price
             disc.store = self.url
             self.discs.append(disc)
-        end_time = time.time()
-        print(f'RocketDiscs scraper: {end_time - start_time}')
+        print(f'RocketDiscs scraper: {time.time() - start_time}')

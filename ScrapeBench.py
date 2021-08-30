@@ -18,8 +18,7 @@ class ScrapeBench():
       with ThreadPoolExecutor(max_workers=1) as executor:
           future = executor.submit(test_scraper.scrape)
 
-      end_time = time.time()
-      print(f'Spent {end_time - start_time} scraping')
+      print(f'Spent {time.time() - start_time} scraping')
 
       self.discs.extend(test_scraper.discs)
       print(f'Found {len(self.discs)} disc(s) in stock!')
