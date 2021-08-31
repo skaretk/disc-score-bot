@@ -102,3 +102,5 @@ class Discs(commands.Cog):
             await ctx.send(embed=embed)            
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
+        
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf")) 
