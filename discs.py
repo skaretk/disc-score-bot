@@ -39,7 +39,7 @@ class Discs(commands.Cog):
         else:
             print(len(embed))
             await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
-            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of {search} discs! ({len(self.discs)}!) ')
+            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of discs! ({len(self.discs)}!) ')
 
         await self.bot.change_presence(activity=discord.Game(name="Disc golf")) 
 
@@ -47,7 +47,7 @@ class Discs(commands.Cog):
     async def disc(self, ctx, *args, sep=" "):
         self.discs = []
         if len(args) == 0:
-            await ctx.send('No disc specified, see %help disc search')
+            await ctx.send('No disc specified, see %help disc')
             return
 
         search = sep.join(args)
