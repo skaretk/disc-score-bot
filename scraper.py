@@ -469,7 +469,6 @@ class RocketDiscs(Scraper):
         driver.close()
 
         disc.name = soup_product.find("h1", id="ContentPlaceHolder1_lblDiscName").text
-        disc.url = f'{self.url_product}'
         disc.price = soup_product.find("td", id="ContentPlaceHolder1_lblOurPrice").text
         disc.store = self.url
         self.discs.append(disc)        
