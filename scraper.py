@@ -57,6 +57,27 @@ class Scraper():
                 time.sleep(sleep_time)
             soup = BeautifulSoup(driver.page_source, "html.parser")
             return soup
+    
+    # Driver needs to be closed afterwards
+    def get_driver(self, sleep_time = 0):
+        driver = self.get_chrome()
+        url = urllib.parse.quote(self.search_url, safe='?:/=&+')
+        driver.get(url)
+        if sleep_time:
+            time.sleep(sleep_time)
+        return driver
+    
+    # Driver needs to be closed afterwards
+    def get_page_and_driver(self, sleep_time = 0):
+        driver = self.get_chrome()
+        url = urllib.parse.quote(self.search_url, safe='?:/=&+')
+        driver.get(url)
+        if sleep_time:
+            time.sleep(sleep_time)
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        return soup, driver
+
+    
 
     async def scrape(self):
         pass
@@ -422,34 +443,34 @@ class RocketDiscs(Scraper):
         super().__init__(search)
         self.url = 'rocketdiscs.com'
         self.url_product = 'https://rocketdiscs.com'
-        self.search_url = 'https://rocketdiscs.com/Disc-Matrix'
-    
-    def get_disc_from_matrix(self):
-        soup = self.get_page(3)
-        disc = re.compile(f'.*{self.search}.*', re.IGNORECASE)
-        product = soup.find("a", title=disc)
-        if product is None:
-            return False
-        self.manufaturer = product["href"].split("-")[0][1:]
-        self.url_product += product["href"]
-        self.search_url = self.url_product
-        return True
+        self.search_url = f'https://rocketdiscs.com/Search-Results?search_text={search}'    
+        
         
     def scrape(self):
         start_time = time.time()
-        if self.get_disc_from_matrix() is False:
+
+        soup_search, driver = self.get_page_and_driver()
+
+        product = soup_search.find("div", class_="list-group-item padding0")
+        if product is None:
+            driver.close()
             print(f'RocketDiscs scraper: {time.time() - start_time}')
             return
-        soup = self.get_page()        
-        if soup.find("div", id="ContentPlaceHolder1_bannerText") == None:
-            name = soup.find("h1", id="ContentPlaceHolder1_lblDiscName").text
-            price = soup.find("td", id="ContentPlaceHolder1_lblOurPrice").text
-            
-            disc = Disc()
-            disc.name = name
-            disc.url = f'{self.url_product}'
-            disc.manufacturer = self.manufaturer
-            disc.price = price
-            disc.store = self.url
-            self.discs.append(disc)
+
+        disc = Disc()
+        disc.manufacturer = product.find("p", class_="meta").getText().split("|")[0].replace("\n", "").replace(" ", "")
+        url = product.find("a", class_="pull-left", href=True)
+        disc.url = f'{self.url_product}{url["href"]}'
+
+        driver_button = driver.find_element_by_class_name("pull-left")
+        driver.execute_script("arguments[0].click();", driver_button)        
+        driver.refresh()
+        soup_product = BeautifulSoup(driver.page_source, "html.parser")
+        driver.close()
+
+        disc.name = soup_product.find("h1", id="ContentPlaceHolder1_lblDiscName").text
+        disc.url = f'{self.url_product}'
+        disc.price = soup_product.find("td", id="ContentPlaceHolder1_lblOurPrice").text
+        disc.store = self.url
+        self.discs.append(disc)        
         print(f'RocketDiscs scraper: {time.time() - start_time}')
