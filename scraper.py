@@ -84,8 +84,7 @@ class Scraper():
 
 class Scrapers():
     def __init__(self, search):
-        self.norwegian =     [DiscInStock(search), 
-                              FrisbeeFeber(search),
+        self.norwegian =     [DiscInStock(search),                               
                               SuneSport(search),
                               Xxl(search)]
         self.voec =          [DiscExpress(search),
@@ -117,6 +116,7 @@ class DiscInStock(Scraper):
             self.discs.append(disc)
         print(f'DiscInStock scraper: {time.time() - start_time}')
 
+# This site has been added into DiscInStock site
 class FrisbeeFeber(Scraper):
     def __init__(self, search):
         super().__init__(search)
