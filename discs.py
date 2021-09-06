@@ -9,7 +9,7 @@ class Discs(commands.Cog):
         self.bot = bot
         self.discs = []
 
-    async def scrape(self, scraper_list):
+    async def scrape(self, scraper_list):    
         start_time = time.time()
         with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
             for disc_scraper in scraper_list:
