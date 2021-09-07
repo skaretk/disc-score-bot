@@ -9,7 +9,7 @@ class Discs(commands.Cog):
         self.bot = bot
         self.discs = []
 
-    async def scrape(self, scraper_list):    
+    def scrape(self, scraper_list):    
         start_time = time.time()
         with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
             for disc_scraper in scraper_list:
@@ -44,41 +44,49 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=discord.Game(name="Disc golf")) 
 
     @commands.command(aliases=['d'], brief='Search for disc (Norway & VOEC)', description='Search for disc in norwegian and VOEC approved sites')
-    async def disc(self, ctx, *args, sep=" "):
-        self.discs = []
+    async def disc(self, ctx, *args, sep=" "):        
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc')
             return
 
         search = sep.join(args)
+        search_list = search.split(", ")        
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
-        
-        scrapers = scraper.Scrapers(search)
-        scraper_list = []
-        scraper_list.extend(scrapers.norwegian)
-        scraper_list.extend(scrapers.voec)
 
-        await self.scrape(scraper_list)
-        await self.print_discs(ctx)
+        start_time = time.time()
+        
+        for search_item in search_list:
+            self.discs = []
+            scrapers = scraper.Scrapers(search_item)
+            scraper_list = []
+            scraper_list.extend(scrapers.norwegian)
+            scraper_list.extend(scrapers.voec)
+
+            self.scrape(scraper_list)
+            await self.print_discs(ctx)
+
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
     @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
     async def disc_all(self, ctx, *args, sep=" "):
-        self.discs = []
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc_all')
             return
 
         search = sep.join(args)
+        search_list = search.split(", ")    
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
 
-        scrapers = scraper.Scrapers(search)
-        scraper_list = []
-        scraper_list.extend(scrapers.norwegian)
-        scraper_list.extend(scrapers.voec)
-        scraper_list.extend(scrapers.international)
+        for search_item in search_list:
+            self.discs = []
+            scrapers = scraper.Scrapers(search_item)
+            scraper_list = []
+            scraper_list.extend(scrapers.norwegian)
+            scraper_list.extend(scrapers.voec)
+            scraper_list.extend(scrapers.international)
 
-        await self.scrape(scraper_list)
-        await self.print_discs(ctx)
+            self.scrape(scraper_list)
+            await self.print_discs(ctx)
 
     @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
     async def disc_flight(self, ctx, *args, sep=" "):
@@ -91,7 +99,7 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
         
         scraper_list = [scraper.MarshallStreetFlight(search)]
-        await self.scrape(scraper_list)
+        self.scrape(scraper_list)
 
         if (len(self.discs) == 1):
             disc = self.discs[0]
