@@ -298,8 +298,11 @@ class Discsport(Scraper):
         products = soup.find('ul', class_="products")
         if (products is not None):
             for product in products.findAll("li"):
-                if product.find("div", class_="upperLeftLabel"): # Not in stock
-                    continue
+                label = product.find("div", class_="upperLeftLabel")
+                if label is not None:
+                    if label.getText().replace("\n", "") != "NEW":
+                        continue # Not in stock / Restock Delayed
+
                 disc = Disc()
                 a = product.find("h3", class_="shop_item").find('a', href=True)
                 disc.name = a.getText().replace("\n", " ").replace("\t", " ")
