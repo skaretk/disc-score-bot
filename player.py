@@ -4,6 +4,9 @@ class PlayerName:
         self.name = name
         self.alias = alias
 
+    def __str__(self):
+        return self.name
+
     def __eq__(self, other):
         if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
             return True
@@ -16,12 +19,12 @@ class Player:
     def __init__(self, player_name, total, score):
         self.player_name = player_name
         self.total = total
-        self.score = score
+        self.score = int(score)
         self.holes = []
         self.score_cards = 1
 
     def __str__(self):
-        return f'{self.player_name.name} **{self.score}**'
+        return f'{self.player_name} **{self.score}**'
     
     def __eq__(self, other):
         if self.player_name == other.player_name:
@@ -51,7 +54,7 @@ class Player:
             return scores
     
     def get_first_name(self):
-        return self.player_name.name.split(' ', 1)[0]
+        return self.player_name.split(' ', 1)[0]
 
     def get_full_info(self):
      return f'{self} Kast: {self.total} - Scorecards: {self.score_cards}'
