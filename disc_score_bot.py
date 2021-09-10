@@ -9,11 +9,11 @@ load_dotenv('token.env')
 token = getenv("TOKEN")
 
 # cogs
-from attachment import Attachment
-from scores import Scores
-from emojis import Emojis
-from files import Files
-from discs import Discs
+from udisc.files.attachment import Attachment
+from udisc.scores import Scores
+from emoji.emojis import Emojis
+from udisc.files.filereader import FileReader
+from discs.discs import Discs
 
 # discord client
 bot = commands.Bot(command_prefix='%')
@@ -30,7 +30,7 @@ async def on_message(message):
 bot.add_cog(Attachment(bot))
 bot.add_cog(Scores(bot))
 bot.add_cog(Emojis(bot))
-bot.add_cog(Files(bot))
+bot.add_cog(FileReader(bot))
 bot.add_cog(Discs(bot))
 
 bot.run(token)

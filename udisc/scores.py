@@ -2,9 +2,9 @@ import os
 from discord.ext import commands
 from datetime import datetime
 
-from scorecardreader import ScorecardReader
-from alias import Alias
-from scorecards import Scorecards
+from udisc.files.scorecardreader import ScorecardReader
+from udisc.alias import Alias
+from udisc.scorecards import Scorecards
 import utilities
 
 def get_scorecards(path, alias):

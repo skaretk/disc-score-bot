@@ -2,7 +2,7 @@ from discord.ext import commands
 import utilities
 import os
 
-class Files(commands.Cog):
+class FileReader(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

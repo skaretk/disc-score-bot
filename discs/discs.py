@@ -2,7 +2,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 import discord
 from discord.ext import commands
-import scraper
+from web import scraper
 
 class Discs(commands.Cog):
     def __init__(self, bot):
@@ -111,4 +111,4 @@ class Discs(commands.Cog):
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         
-        await self.bot.change_presence(activity=discord.Game(name="Disc golf")) 
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))   

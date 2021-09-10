@@ -54,7 +54,7 @@ class Player:
             return scores
     
     def get_first_name(self):
-        return self.player_name.split(' ', 1)[0]
+        return self.player_name.name.split(' ', 1)[0]
 
     def get_full_info(self):
      return f'{self} Kast: {self.total} - Scorecards: {self.score_cards}'
