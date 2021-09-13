@@ -9,10 +9,10 @@ load_dotenv('token.env')
 token = getenv("TOKEN")
 
 # cogs
-from udisc.files.attachment import Attachment
-from udisc.scores import Scores
+from score.files.attachment import Attachment
+from score.scores import Scores
 from emoji.emojis import Emojis
-from udisc.files.filereader import FileReader
+from score.files.filereader import FileReader
 from discs.discs import Discs
 
 # discord client

@@ -1,0 +1,43 @@
+import time
+from web.scraper import Scraper
+from discs.disc import DiscFlight
+
+class MarshallStreet(Scraper):
+    def __init__(self, search):
+        super().__init__(search)
+
+class DiscFlightScraper(MarshallStreet):
+    def __init__(self, search):
+        super().__init__(search)
+        self.search_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
+
+    def scrape(self):
+        start_time = time.time()
+        soup = self.get_page(1)        
+        for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
+            if (disc_item.getText().lower() == self.search.lower()):
+                disc = DiscFlight()
+                disc.name = disc_item.getText()
+                disc.flight_url = disc_item['data-pic']
+                disc.speed = disc_item['data-speed']
+                disc.glide = disc_item['data-glide']
+                disc.turn = disc_item['data-turn']
+                disc.fade = disc_item['data-fade']
+                self.discs.append(disc)
+                print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
+                return
+        for putter in soup.findAll("div", class_="putter-child pc-entry"):
+            putter_name = putter['data-putter']
+            if (putter_name.lower() == self.search.lower()):
+                disc = DiscFlight()
+                disc.name = putter_name
+                disc.flight_url = putter['data-image']
+                disc.speed = putter['data-speed']
+                disc.glide = putter['data-glide']
+                disc.turn = putter['data-turn']
+                disc.fade = putter['data-fade']
+                self.discs.append(disc)
+                print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
+                return
+        self.search_time = time.time() - start_time
+        print(f'MarshallStreetFlight scraper: {self.get_search_time()}')

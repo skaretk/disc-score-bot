@@ -1,6 +1,6 @@
 import os
 from discord.ext import commands
-from udisc.files.scorecardreader import ScorecardReader
+from score.files.scorecardreader import ScorecardReader
 
 class Attachment(commands.Cog):
     def __init__(self, bot):

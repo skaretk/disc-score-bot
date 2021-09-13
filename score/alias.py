@@ -1,6 +1,6 @@
 import os.path
 import json
-from udisc.player import PlayerName
+from score.player import PlayerName
 
 class Alias:
     def __init__(self, server):

@@ -1,10 +1,13 @@
 import os
 from discord.ext import commands
 from datetime import datetime
+import time
+from concurrent.futures import ThreadPoolExecutor
 
-from udisc.files.scorecardreader import ScorecardReader
-from udisc.alias import Alias
-from udisc.scorecards import Scorecards
+from score.files.scorecardreader import ScorecardReader
+from score.alias import Alias
+from score.scorecards import Scorecards
+from web.udisc import LeagueScraper
 import utilities
 
 def get_scorecards(path, alias):
@@ -44,6 +47,14 @@ def get_scorecards_date(path, alias, date, date_to = ''):
 class Scores(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    def scrape(self, scraper_list):    
+        start_time = time.time()
+        with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
+            for scraper in scraper_list:
+                future = executor.submit(scraper.scrape)
+        
+        print(f'Spent {time.time() - start_time} scraping')
 
     # Checks
     def has_scorecards():
@@ -168,4 +179,18 @@ class Scores(commands.Cog):
         if (scorecards.scorecards):               
             await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url)) 
         else:
-            await ctx.send("No courses found")    
+            await ctx.send("No courses found")
+
+    @commands.command(name='udiscleague', aliases=['uleague'], brief='uDiscLeague', description='Parse uDisc League')
+    async def ukesgolf(self, ctx, *args,):
+        if len(args) == 0:
+            await ctx.send('No league specified, see %help udiscleague')
+            return
+        
+        udisc_league = LeagueScraper(args[0])
+        scraper_list = [udisc_league]
+        self.scrape(scraper_list)
+
+        #udisc_league.score_card.get_embed_full()
+
+        await ctx.send(embed=udisc_league.score_card.get_embed_full(ctx.author.avatar_url))         

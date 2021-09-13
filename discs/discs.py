@@ -2,7 +2,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 import discord
 from discord.ext import commands
-from web import scraper
+from web.discScrapers import DiscScrapers
+from web.marshallstreet import MarshallStreet
 
 class Discs(commands.Cog):
     def __init__(self, bot):
@@ -57,7 +58,7 @@ class Discs(commands.Cog):
         
         for search_item in search_list:
             self.discs = []
-            scrapers = scraper.Scrapers(search_item)
+            scrapers = DiscScrapers(search_item)
             scraper_list = []
             scraper_list.extend(scrapers.norwegian)
             scraper_list.extend(scrapers.voec)
@@ -79,7 +80,7 @@ class Discs(commands.Cog):
 
         for search_item in search_list:
             self.discs = []
-            scrapers = scraper.Scrapers(search_item)
+            scrapers = DiscScrapers(search_item)
             scraper_list = []
             scraper_list.extend(scrapers.norwegian)
             scraper_list.extend(scrapers.voec)
@@ -98,7 +99,7 @@ class Discs(commands.Cog):
         search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
         
-        scraper_list = [scraper.MarshallStreetFlight(search)]
+        scraper_list = [MarshallStreet(search)]
         self.scrape(scraper_list)
 
         if (len(self.discs) == 1):
@@ -111,4 +112,5 @@ class Discs(commands.Cog):
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         
-        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))   
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
+    

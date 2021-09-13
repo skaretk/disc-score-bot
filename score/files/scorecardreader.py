@@ -1,8 +1,8 @@
 import csv
 import datetime
-from udisc.player import Player
-from udisc.player import PlayerName
-from udisc.scorecard import Scorecard
+from score.player import Player
+from score.player import PlayerName
+from score.scorecard import Scorecard
 
 class ScorecardReader:
     def __init__(self, path, file):
