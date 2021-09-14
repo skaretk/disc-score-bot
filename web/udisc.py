@@ -13,7 +13,7 @@ class LeagueScraper(Udisc):
     def __init__(self, url):
         super().__init__("")
         self.search_url = url
-        self.score_card = Scorecard("", "2021-01-01 12:00", 0)
+        self.score_card = Scorecard("", "", "2021-01-01 12:00", 0)
         
     def scrape(self):
         start_time = time.time()
@@ -29,6 +29,9 @@ class LeagueScraper(Udisc):
         if course_name is None:
             return
         self.score_card.coursename = course_name.getText().replace(" ", "")
+
+        # Layout Name
+        self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss123 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
 
         date = header.find("p", class_="MuiTypography-root jss100 MuiTypography-body1")
         if date is None:

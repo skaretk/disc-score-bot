@@ -199,7 +199,7 @@ class Scores(commands.Cog):
         self.scrape(scraper_list)
 
         date = udisc_league.score_card.date_time.strftime('%Y-%m-%d%H%M')
-        file_name = f'{date}-{udisc_league.score_card.coursename}-Udisc.csv'
+        file_name = f'{date}-{udisc_league.score_card.coursename}-{udisc_league.score_card.layoutname}-Udisc.csv'
         scorecard_writer = ScorecardWriter(str(f'{ctx.guild.name}\{ctx.channel}'), file_name)
         header, data = udisc_league.score_card.get_csv()
         scorecard_writer.write(header, data)

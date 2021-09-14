@@ -14,7 +14,7 @@ class ScorecardReader:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
-                    scorecard = Scorecard(row['CourseName'], row['Date'], int(row['Total']))
+                    scorecard = Scorecard(row['CourseName'], row['LayoutName'], row['Date'], int(row['Total']))
                     for i in range(1, 28):
                         try:
                             if row[f'Hole{i}'] is not None:
@@ -34,7 +34,7 @@ class ScorecardReader:
             for row in reader:
                 if reader.line_num == 2:
                     if course.lower() in row['CourseName'].lower():
-                        scorecard = Scorecard(row['CourseName'], row['Date'], int(row['Total']) )
+                        scorecard = Scorecard(row['CourseName'], row['LayoutName'], row['Date'], int(row['Total']) )
                     else:
                         return None
                 else:
@@ -62,7 +62,7 @@ class ScorecardReader:
                             add_scorecard = False
                     
                     if (add_scorecard):
-                        scorecard = Scorecard(row['CourseName'], row['Date'], int(row['Total']) )
+                        scorecard = Scorecard(row['CourseName'], row['LayoutName'], row['Date'], int(row['Total']) )
                     else:
                         return None
                 else:

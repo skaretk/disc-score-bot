@@ -2,8 +2,9 @@ import datetime
 import discord
 
 class Scorecard:
-    def __init__(self, coursename, date_time, par):
+    def __init__(self, coursename, layoutname, date_time, par):
         self.coursename = coursename
+        self.layoutname = layoutname
         self.date_time = datetime.datetime.strptime(date_time,'%Y-%m-%d %H:%M')
         self.par = par
         self.players = []
@@ -20,14 +21,14 @@ class Scorecard:
         data = []
         date = self.date_time.strftime('%Y-%m-%d %H:%M')
         header = ['PlayerName', 'CourseName', 'LayoutName', 'Date', 'Total', '+/-']
-        course_header = ['Par', self.coursename, 'LayoutName', date, self.par, '']
+        course_header = ['Par', self.coursename, self.layoutname, date, self.par, '']
         for hole in self.holes:
             header.append(hole.name)
             course_header.append(hole.par)
         data.append(course_header)
 
         for player in self.players:
-            player_csv = [player.player_name, self.coursename, 'LayoutName', date, player.total, player.score]
+            player_csv = [player.player_name, self.coursename, self.layoutname, date, player.total, player.score]
             for score in player.holes:
                 player_csv.append(score)
             data.append(player_csv)
