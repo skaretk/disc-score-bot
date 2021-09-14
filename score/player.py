@@ -24,7 +24,7 @@ class Player:
         self.score_cards = 1
 
     def __str__(self):
-        return f'{self.player_name} **{self.score}**'
+        return f'{self.player_name} {self.score}'
     
     def __eq__(self, other):
         if self.player_name == other.player_name:

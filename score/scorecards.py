@@ -17,7 +17,7 @@ class Scorecards:
                 no += no_same_scores + 1
                 no_same_scores = 0
             
-            msg += f'\n> {no}: {player.get_full_info()}'
+            msg += f'\n{no}: {player.get_full_info()}'
 
             last_score = player.score
             
@@ -61,8 +61,9 @@ class Scorecards:
     def get_embed(self, thumbnail=''):
         embed=discord.Embed(title="Disc Score Bot", url="", description="", color=0xFF5733)
         for scorecard in self.scorecards:
-            embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)    
-        embed.add_field(name="Total", value=self, inline=False)
+            embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)
+            if (len(self.scorecards) > 1):
+                embed.set_footer(text=f'Total{self}')
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))
 

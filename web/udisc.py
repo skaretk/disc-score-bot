@@ -36,7 +36,6 @@ class LeagueScraper(Udisc):
         # Date, varies between two formats ("September 12th 2021, or "Sept 12")
         date_text = date.getText().split("·")[1]
         self.score_card.date_time = parse(date_text)
-
         
         tour_id = soup.find("div", id="tour-leaderboard")
         # Add par

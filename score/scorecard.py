@@ -15,6 +15,24 @@ class Scorecard:
             msg += f'\n{player}'
         return msg
 
+    def get_csv(self):
+        header = []
+        data = []
+        date = self.date_time.strftime('%Y-%m-%d %H:%M')
+        header = ['PlayerName', 'CourseName', 'LayoutName', 'Date', 'Total', '+/-']
+        course_header = ['Par', self.coursename, 'LayoutName', date, self.par, '']
+        for hole in self.holes:
+            header.append(hole.name)
+            course_header.append(hole.par)
+        data.append(course_header)
+
+        for player in self.players:
+            player_csv = [player.player_name, self.coursename, 'LayoutName', date, player.total, player.score]
+            for score in player.holes:
+                player_csv.append(score)
+            data.append(player_csv)
+        return header, data
+
     class Hole:
         def __init__(self, name, par):
             self.name = name
@@ -27,7 +45,7 @@ class Scorecard:
     def get_players(self):
         players = ''
         for player in self.players:
-            players += f'\n> {player}'
+            players += f'\n{player}'
         return players
 
     def add_player(self, player):

@@ -3,8 +3,8 @@ from discord.ext import commands
 from datetime import datetime
 import time
 from concurrent.futures import ThreadPoolExecutor
-
 from score.files.scorecardreader import ScorecardReader
+from score.files.scorecardwriter import ScorecardWriter
 from score.alias import Alias
 from score.scorecards import Scorecards
 from web.udisc import LeagueScraper
@@ -73,8 +73,15 @@ class Scores(commands.Cog):
             alias.parse()
 
             scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
-            if (scorecards.scorecards):               
-                await ctx.send(embed=scorecards.get_embed(ctx.author.avatar_url))  
+
+            if (scorecards.scorecards):
+                embed = scorecards.get_embed(ctx.author.avatar_url)
+                print(f'Scores embed length: {len(embed)}')
+                if (len(embed) < 6000): # Size limit for embeds
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+                    await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
             else:
                 await ctx.send("No courses found")
 
@@ -191,6 +198,10 @@ class Scores(commands.Cog):
         scraper_list = [udisc_league]
         self.scrape(scraper_list)
 
-        #udisc_league.score_card.get_embed_full()
+        date = udisc_league.score_card.date_time.strftime('%Y-%m-%d%H%M')
+        file_name = f'{date}-{udisc_league.score_card.coursename}-Udisc.csv'
+        scorecard_writer = ScorecardWriter(str(f'{ctx.guild.name}\{ctx.channel}'), file_name)
+        header, data = udisc_league.score_card.get_csv()
+        scorecard_writer.write(header, data)
 
         await ctx.send(embed=udisc_league.score_card.get_embed_full(ctx.author.avatar_url))         
