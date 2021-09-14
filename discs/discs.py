@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import discord
 from discord.ext import commands
 from web.discScrapers import DiscScrapers
-from web.marshallstreet import MarshallStreet
+from web.marshallstreet import DiscFlightScraper
 
 class Discs(commands.Cog):
     def __init__(self, bot):
@@ -99,7 +99,7 @@ class Discs(commands.Cog):
         search = sep.join(args)
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
         
-        scraper_list = [MarshallStreet(search)]
+        scraper_list = [DiscFlightScraper(search)]
         self.scrape(scraper_list)
 
         if (len(self.discs) == 1):
