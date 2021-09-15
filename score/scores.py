@@ -76,14 +76,34 @@ class Scores(commands.Cog):
 
             if (scorecards.scorecards):
                 embed = scorecards.get_embed(ctx.author.avatar_url)
+                print(f'Scores footer length: {len(embed.footer.text)}')
                 print(f'Scores embed length: {len(embed)}')
-                if (len(embed) < 6000): # Size limit for embeds
+                if (len(embed) < 6000  or len(embed.footer.text) < 2048): # Size limit for embeds
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                     await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
             else:
                 await ctx.send("No courses found")
+    
+    @commands.command(name='scores_min', aliases=['s_min'], brief='minimal scores', description='Get minimal scores')
+    @has_scorecards()
+    async def scores_min(self, ctx):
+        alias = Alias(ctx.guild.name)
+        alias.parse()
+        scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
+
+        if (scorecards.scorecards):
+            embed = scorecards.get_embed_min(ctx.author.avatar_url)
+            print(f'Scores description length: {len(embed.description)}')
+            print(f'Scores embed length: {len(embed)}')
+            if (len(embed) < 6000 or len(embed.description) < 4096): # Size limit for embeds
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+                await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
+        else:
+            await ctx.send("No courses found")
 
     @scores.error
     async def scores_error(self, ctx, error):

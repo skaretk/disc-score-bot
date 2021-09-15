@@ -57,4 +57,4 @@ class Player:
         return self.player_name.name.split(' ', 1)[0]
 
     def get_full_info(self):
-     return f'{self} Kast: {self.total} - Scorecards: {self.score_cards}'
+     return f'{self} Kast: {self.total} - Kort: {self.score_cards}'

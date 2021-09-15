@@ -59,11 +59,24 @@ class Scorecards:
             print(player)
     
     def get_embed(self, thumbnail=''):
-        embed=discord.Embed(title="Disc Score Bot", url="", description="", color=0xFF5733)
+        embed=discord.Embed(title="Scores", url="", description="", color=0xFF5733)
         for scorecard in self.scorecards:
             embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)
             if (len(self.scorecards) > 1):
                 embed.set_footer(text=f'Total{self}')
+        if thumbnail != '':
+            embed.set_thumbnail(url=(thumbnail))
+
+        return embed
+    
+    def get_embed_min(self, thumbnail=''):
+        embed=discord.Embed(title="Total", url="", description=f'{self}', color=0xFF5733)
+        
+        score_cards = ''
+        for scorecard in self.scorecards:
+            score_cards += f'{scorecard.date_time.date()} - {scorecard.coursename}\n'
+        embed.add_field(name="Kort", value=f'{score_cards}')
+            
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))
 
