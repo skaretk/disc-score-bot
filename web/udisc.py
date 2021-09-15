@@ -28,7 +28,7 @@ class LeagueScraper(Udisc):
         course_name = header.find("a", class_="MuiTypography-root MuiLink-root MuiLink-underlineHover jss101 MuiTypography-colorPrimary")
         if course_name is None:
             return
-        self.score_card.coursename = course_name.getText().replace(" ", "")
+        self.score_card.coursename = course_name.getText().rstrip()
 
         # Layout Name
         self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss123 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
