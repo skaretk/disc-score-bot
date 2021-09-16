@@ -18,7 +18,7 @@ class PlayerName:
 class Player:
     def __init__(self, player_name, total, score):
         self.player_name = player_name
-        self.total = total
+        self.total = int(total)
         self.score = int(score)
         self.holes = []
         self.score_cards = 1

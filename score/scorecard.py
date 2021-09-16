@@ -56,6 +56,12 @@ class Scorecard:
     def sort_players(self):
         self.players.sort(key=lambda x: x.score)
 
+    def get_total_throws(self):
+        throws = 0
+        for player in self.players:
+            throws += player.total
+        return throws
+
     def get_max_length_player_name(self, only_first_name = False):
         max_length = 0
         for player in self.players:

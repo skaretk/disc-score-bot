@@ -53,6 +53,12 @@ class Scorecards:
     def sort_players(self):
         self.players.sort(key=lambda x: x.score)
 
+    def get_total_throws(self):
+        throws = 0
+        for scorecard in self.scorecards:
+            throws += scorecard.get_total_throws()
+        return throws
+
     def print_scores(self):
         print("Total Scores")
         for player in self.players:
