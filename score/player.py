@@ -6,6 +6,9 @@ class PlayerName:
 
     def __str__(self):
         return self.name
+    
+    def __len__(self):
+        return len(self.name)
 
     def __eq__(self, other):
         if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", ""):

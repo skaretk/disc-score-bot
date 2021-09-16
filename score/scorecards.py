@@ -76,13 +76,11 @@ class Scorecards:
         return embed
     
     def get_embed_min(self, thumbnail=''):
-        embed=discord.Embed(title="Total", url="", description=f'{self}', color=0xFF5733)
-        
+        embed=discord.Embed(title="Total", url="", description=f'{self}', color=0xFF5733)        
         score_cards = ''
         for scorecard in self.scorecards:
             score_cards += f'{scorecard.date_time.date()} - {scorecard.coursename}\n'
-        embed.add_field(name="Kort", value=f'{score_cards}')
-            
+        embed.add_field(name="Kort", value=f'{score_cards}')            
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))
 

@@ -70,7 +70,7 @@ class LeagueScraper(Udisc):
             self.score_card.add_player(scorecard_player)
             print(scorecard_player)
         for i in range(0, len(scorecard_player.holes)):
-            self.score_card.add_hole(f'Hole{i+1}', '3')
+            self.score_card.add_hole(i+1, 3) # TODO: Add REAL PAR!
         
         self.search_time = time.time() - start_time
         print(f'UdiscLeague scraper: {self.get_search_time()}')

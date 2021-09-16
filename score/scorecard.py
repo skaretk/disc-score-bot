@@ -8,7 +8,7 @@ class Scorecard:
         self.date_time = datetime.datetime.strptime(date_time,'%Y-%m-%d %H:%M')
         self.par = par
         self.players = []
-        self.holes = []
+        self.holes = {}
 
     def __str__(self):
         msg = f'{self.coursename} Dato: {self.date_time} Par: {self.par}'
@@ -22,9 +22,10 @@ class Scorecard:
         date = self.date_time.strftime('%Y-%m-%d %H:%M')
         header = ['PlayerName', 'CourseName', 'LayoutName', 'Date', 'Total', '+/-']
         course_header = ['Par', self.coursename, self.layoutname, date, self.par, '']
+
         for hole in self.holes:
-            header.append(hole.name)
-            course_header.append(hole.par)
+            header.append(f'Hole{hole}')
+            course_header.append(self.holes[hole])
         data.append(course_header)
 
         for player in self.players:
@@ -34,14 +35,8 @@ class Scorecard:
             data.append(player_csv)
         return header, data
 
-    class Hole:
-        def __init__(self, name, par):
-            self.name = name
-            self.par = par
-
-    def add_hole(self, name, par):
-        hole = self.Hole(name, par)
-        self.holes.append(hole)
+    def add_hole(self, no, par):
+        self.holes[no] = par
     
     def get_players(self):
         players = ''
@@ -70,8 +65,8 @@ class Scorecard:
                 if len(first_name) > max_length:
                     max_length = len(first_name)
             else:
-                if len(player.name) > max_length:
-                    max_length = len(player.name)
+                if len(player.player_name) > max_length:
+                    max_length = len(player.player_name)
         return max_length
     
     def get_embed_header(self, str, only_first_name = False):        
@@ -81,15 +76,16 @@ class Scorecard:
 
     def get_embed_par(self, from_hole = '', to_hole = ''):
             pars = ''
-            if from_hole and to_hole:
-                current_hole = from_hole
-                for hole in self.holes[from_hole-1:to_hole]:
-                    if current_hole <= 9:
-                        pars += f'{hole.par} '
-                    else:
-                        pars += f'{hole.par}  '
-                    current_hole += 1
-
+            for hole in self.holes:
+                if (hole < from_hole):
+                    continue
+                elif (hole > to_hole):
+                    break
+                print(hole, '-> Par', self.holes[hole])
+                if (hole <= 9):
+                    pars += f'{self.holes[hole]} '
+                else:
+                    pars += f'{self.holes[hole]}  '  
             return pars
     
     def get_embed_holes(self, from_hole = '', to_hole = ''):
@@ -155,7 +151,7 @@ class Scorecard:
             scores_2 = ''
             scores_3 = ''
             for player in self.players:
-                player_str = self.get_embed_header(player.get_first_name())
+                player_str = self.get_embed_header(player.get_first_name(), True)
                 scores_1 += f'{player_str}{player.get_scores(1,9)}\n'
                 scores_2 += f'{player_str}{player.get_scores(10, 18)}\n'
                 scores_3 += f'{player_str}{player.get_scores(19, no_of_holes)}\n'

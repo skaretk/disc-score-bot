@@ -18,7 +18,7 @@ class ScorecardReader:
                     for i in range(1, 28):
                         try:
                             if row[f'Hole{i}'] is not None:
-                                scorecard.add_hole(f'Hole{i}', row[f'Hole{i}'])
+                                scorecard.add_hole(i, int(row[f'Hole{i}']))
                         except:
                             break 
                 else:
