@@ -81,7 +81,6 @@ class Scorecard:
                     continue
                 elif (hole > to_hole):
                     break
-                print(hole, '-> Par', self.holes[hole])
                 if (hole <= 9):
                     pars += f'{self.holes[hole]} '
                 else:

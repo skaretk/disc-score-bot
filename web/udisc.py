@@ -44,33 +44,33 @@ class LeagueScraper(Udisc):
         # Add par
         par = tour_id.find("p", class_="jss146 jss182 undefined").getText()
         self.score_card.par = int(par)
+        # Add par for holes
+        hole_par_list = tour_id.find_all("p", class_="jss146 jss182")
+        for i in range(len(hole_par_list)):
+            self.score_card.add_hole(i+1, int(hole_par_list[i].getText()))
 
         # Add players and scores
         for player in tour_id.find_all("tr", class_="jss148 false collapsed"):
             player_name = PlayerName("")
-            total = ""
             score = ""
             scores = []
-            no = 0
-            for text in player.find_all("td", class_="jss150 jss183"):
-                if(no == 0):
-                    player_name.name = text.getText()
-                elif (no == 1):
-                    if (text.getText() == "E"):
+            player_row = player.find_all("td", class_="jss150 jss183")
+            for row_no in range(len(player_row)):
+                if(row_no == 0):
+                    player_name.name = player_row[row_no].getText()
+                elif (row_no == 1):
+                    if (player_row[row_no].getText() == "E"):
                         score = "0"
                     else:
-                        score = text.getText().replace("+", "")
-                elif(no > 2):
-                    scores.append(text.getText())
-                no += 1
+                        score = player_row[row_no].getText().replace("+", "")
+                elif(row_no > 2):
+                    scores.append(player_row[row_no].getText())
+
             total = scores.pop()
             scorecard_player = Player(player_name, total, score)
             for hole_score in scores:
                 scorecard_player.add_hole(hole_score)
             self.score_card.add_player(scorecard_player)
-            print(scorecard_player)
-        for i in range(0, len(scorecard_player.holes)):
-            self.score_card.add_hole(i+1, 3) # TODO: Add REAL PAR!
         
         self.search_time = time.time() - start_time
         print(f'UdiscLeague scraper: {self.get_search_time()}')
