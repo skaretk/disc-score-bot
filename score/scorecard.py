@@ -47,9 +47,25 @@ class Scorecard:
     def add_player(self, player):
         self.players.append(player)
         self.sort_players()
+        self.add_player_position()
     
     def sort_players(self):
         self.players.sort(key=lambda x: x.score)
+    
+    def add_player_position(self):
+        last_score = ""
+        no = 0
+        no_same_scores = 0
+        for player in self.players:  
+            if last_score == player.score:
+                no_same_scores += 1
+            else:
+                no += no_same_scores + 1
+                no_same_scores = 0
+
+            player.score_cards_position.clear()
+            player.score_cards_position.append(no)
+            last_score = player.score
 
     def get_total_throws(self):
         throws = 0

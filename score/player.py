@@ -25,6 +25,7 @@ class Player:
         self.score = int(score)
         self.holes = []
         self.score_cards = 1
+        self.score_cards_position = []
 
     def __str__(self):
         return f'{self.player_name} {self.score}'
@@ -38,6 +39,7 @@ class Player:
     def __add__(self, other):
         player = Player(PlayerName(self.player_name.name, self.player_name.alias), self.total + other.total, self.score + other.score)
         player.score_cards = self.score_cards + 1
+        player.score_cards_position = self.score_cards_position + other.score_cards_position
         return player
 
     def add_hole(self, score):
@@ -55,6 +57,9 @@ class Player:
                     current_hole += 1
 
             return scores
+
+    def get_average_result(self):
+        return sum(self.score_cards_position) / len(self.score_cards_position)
     
     def get_first_name(self):
         return self.player_name.name.split(' ', 1)[0]

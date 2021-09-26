@@ -52,6 +52,9 @@ class Scorecards:
     
     def sort_players(self):
         self.players.sort(key=lambda x: x.score)
+    
+    def sort_players_position(self):
+        self.players.sort(key=lambda x: x.get_average_result())
 
     def get_total_throws(self):
         throws = 0
