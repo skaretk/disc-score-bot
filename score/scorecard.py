@@ -1,5 +1,6 @@
 import datetime
 import discord
+from score.validate_embed import ValidateEmbed
 
 class Scorecard:
     def __init__(self, coursename, layoutname, date_time, par):
@@ -41,7 +42,7 @@ class Scorecard:
     def get_players(self):
         players = ''
         for player in self.players:
-            players += f'\n{player}'
+            players += f'\n{player.score_cards_position[0]} {player}'
         return players
 
     def add_player(self, player):
@@ -114,6 +115,19 @@ class Scorecard:
             return holes
 
     def get_embed(self, thumbnail=''):
+        embed = self.get_embed_max(thumbnail)
+        validate_embed = ValidateEmbed(embed)
+        if (validate_embed.validate() == True):
+            return embed
+        else:
+            embed = self.get_embed_min(thumbnail)
+            validate_embed = ValidateEmbed(embed)
+            if (validate_embed.validate() == True):
+                return embed
+            else:
+                return None
+
+    def get_embed_min(self, thumbnail=''):
         embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
         if thumbnail != '':
@@ -121,7 +135,7 @@ class Scorecard:
 
         return embed
     
-    def get_embed_full(self, thumbnail=''):
+    def get_embed_max(self, thumbnail=''):
         embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
         
@@ -174,7 +188,6 @@ class Scorecard:
             embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
             embed.add_field(name=f'Holes 10-18', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
             embed.add_field(name=f'Holes 19-{no_of_holes}', value=f'```{header_holes}{holes_3}\n{header_par}{pars_3}\n{scores_3}```', inline=False)        
-        
         
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))

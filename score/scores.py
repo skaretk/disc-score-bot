@@ -216,5 +216,9 @@ class Scores(commands.Cog):
         header, data = udisc_league.score_card.get_csv()
         scorecard_writer.write(header, data)
 
-        embed = udisc_league.score_card.get_embed_full(ctx.author.avatar_url)
-        await self.validate_and_send_embed(embed, ctx)    
+
+        embed = udisc_league.score_card.get_embed(ctx.author.avatar_url)
+        if (embed != None):
+            await ctx.send(embed=embed)
+        else:
+            ctx.send("Scorecard stored, but scores is to big to display!")

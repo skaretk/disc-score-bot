@@ -21,6 +21,11 @@ class Attachment(commands.Cog):
                 
                     scorecard_reader = ScorecardReader(path, attachment.filename)
                     scorecard = scorecard_reader.parse()
-                
-                    await message.channel.send(embed=scorecard.get_embed_full(message.author.avatar_url))
+
+                    embed = scorecard.get_embed(message.author.avatar_url)
+                    if (embed != None):
+                        await message.channel.send(embed=embed)
+                    else:
+                        message.channel.send("Scorecard stored, but scores is to big to display!")
+                    
                     await message.delete()                    

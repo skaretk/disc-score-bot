@@ -70,7 +70,7 @@ class Scorecards:
     
     # Check and return the biggeest embed, return None if not possible
     def get_embed(self, thumbnail=''):        
-        embed = self.get_embed_full(thumbnail)
+        embed = self.get_embed_max(thumbnail)
         validate_embed = ValidateEmbed(embed)
         if (validate_embed.validate() == True):
             return embed
@@ -82,7 +82,7 @@ class Scorecards:
             else:
                 return None
     
-    def get_embed_full(self, thumbnail=''):
+    def get_embed_max(self, thumbnail=''):
         embed=discord.Embed(title="Scores", url="", description="", color=0xFF5733)
         for scorecard in self.scorecards:
             embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)
