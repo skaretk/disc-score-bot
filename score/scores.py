@@ -7,7 +7,6 @@ from score.files.scorecardreader import ScorecardReader
 from score.files.scorecardwriter import ScorecardWriter
 from score.alias import Alias
 from score.scorecards import Scorecards
-from score.validate_embed import ValidateEmbed
 from web.udisc import LeagueScraper
 import utilities
 
@@ -65,17 +64,6 @@ class Scores(commands.Cog):
             else:            
                 return True
         return commands.check(predicate)
-    
-    async def validate_and_send_embed(self, embed, ctx):
-        validate_embed = ValidateEmbed(embed)
-        if (validate_embed.validate() == True):
-            print("Embed OK")
-            await ctx.send(embed=embed)
-        else:
-            print("Embed not OK")
-            await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
-            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)') 
-
 
     @commands.group(pass_context=True, brief='Print stored scores', description='Prints all stored scorecards for this channel, including total')
     @has_scorecards()
@@ -88,22 +76,14 @@ class Scores(commands.Cog):
 
             if (scorecards.scorecards):
                 embed = scorecards.get_embed(ctx.author.avatar_url)
-                await self.validate_and_send_embed(embed, ctx)
+                if (embed != None):
+                    await ctx.send(embed=embed)
+                else:
+                    print("Embed not OK")
+                    await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+                    await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')                        
             else:
-                await ctx.send("No courses found")
-    
-    @commands.command(name='scores_min', aliases=['s_min'], brief='minimal scores', description='Get minimal scores')
-    @has_scorecards()
-    async def scores_min(self, ctx):
-        alias = Alias(ctx.guild.name)
-        alias.parse()
-        scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
-
-        if (scorecards.scorecards):
-            embed = scorecards.get_embed_min(ctx.author.avatar_url)
-            await self.validate_and_send_embed(embed, ctx)
-        else:
-            await ctx.send("No courses found")
+                await ctx.send("No courses found") 
 
     @scores.error
     async def scores_error(self, ctx, error):
@@ -147,7 +127,12 @@ class Scores(commands.Cog):
         scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)
         if (scorecards.scorecards):
             embed = scorecards.get_embed(ctx.author.avatar_url)
-            await self.validate_and_send_embed(embed, ctx)
+            if (embed != None):
+                await ctx.send(embed=embed)
+            else:
+                print("Embed not OK")
+                await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+                await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:
             await ctx.send("No courses found!")  
 
@@ -206,7 +191,12 @@ class Scores(commands.Cog):
 
         if (scorecards.scorecards):
             embed = scorecards.get_embed(ctx.author.avatar_url)
-            await self.validate_and_send_embed(embed, ctx)
+            if (embed != None):
+                await ctx.send(embed=embed)
+            else:
+                print("Embed not OK")
+                await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
+                await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:
             await ctx.send("No courses found")
 

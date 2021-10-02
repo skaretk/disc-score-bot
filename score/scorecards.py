@@ -1,4 +1,5 @@
 import discord
+from score.validate_embed import ValidateEmbed
 
 class Scorecards:
     def __init__(self):
@@ -67,7 +68,21 @@ class Scorecards:
         for player in self.players:
             print(player)
     
-    def get_embed(self, thumbnail=''):
+    # Check and return the biggeest embed, return None if not possible
+    def get_embed(self, thumbnail=''):        
+        embed = self.get_embed_full(thumbnail)
+        validate_embed = ValidateEmbed(embed)
+        if (validate_embed.validate() == True):
+            return embed
+        else:
+            embed = self.get_embed_min(thumbnail)
+            validate_embed = ValidateEmbed(embed)
+            if (validate_embed.validate() == True):
+                return embed
+            else:
+                return None
+    
+    def get_embed_full(self, thumbnail=''):
         embed=discord.Embed(title="Scores", url="", description="", color=0xFF5733)
         for scorecard in self.scorecards:
             embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)
