@@ -42,7 +42,11 @@ class Scorecard:
     def get_players(self):
         players = ''
         for player in self.players:
-            players += f'\n{player.score_cards_position[0]} {player}'
+            curr_player_str = f'{player.score_cards_position[0]} {player}'
+            if player == self.players[0]:
+                players += curr_player_str
+            else:
+                players += f'\n{curr_player_str}'
         return players
 
     def add_player(self, player):
@@ -128,7 +132,7 @@ class Scorecard:
                 return None
 
     def get_embed_min(self, thumbnail=''):
-        embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time} Par:{self.par}', color=0xFF5733)
+        embed=discord.Embed(title=self.coursename, url="", description=f'{self.date_time}', color=0xFF5733)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))

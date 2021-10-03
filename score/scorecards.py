@@ -85,7 +85,7 @@ class Scorecards:
     def get_embed_max(self, thumbnail=''):
         embed=discord.Embed(title="Scores", url="", description="", color=0xFF5733)
         for scorecard in self.scorecards:
-            embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=True)
+            embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=False)
             if (len(self.scorecards) > 1):
                 embed.set_footer(text=f'Total{self}')
         if thumbnail != '':
