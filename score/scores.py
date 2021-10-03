@@ -200,6 +200,21 @@ class Scores(commands.Cog):
         else:
             await ctx.send("No courses found")
 
+    @commands.command(name='scores_stats', brief='statistics', description='Get statistics for saved scorecards')
+    @has_scorecards()
+    async def scores_stats(self, ctx):
+        
+        alias = Alias(ctx.guild.name)
+        alias.parse()
+
+        scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
+
+        if (scorecards.scorecards):
+            embed = scorecards.get_embed_stats(ctx.author.avatar_url)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("No courses found")
+
     @commands.command(name='udiscleague', aliases=['uleague'], brief='uDiscLeague', description='Parse uDisc League')
     async def ukesgolf(self, ctx, *args,):
         if len(args) == 0:

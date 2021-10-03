@@ -103,3 +103,14 @@ class Scorecards:
             embed.set_thumbnail(url=(thumbnail))
 
         return embed
+    
+    def get_embed_stats(self, thumbnail=''):        
+        embed=discord.Embed(title="Stats", url="", description="Statistics for saved scorecards", color=0xFF5733)
+        embed.add_field(name="Scorecards", value=f'{len(self.scorecards)}', inline=False)
+        embed.add_field(name="Players", value=f'{len(self.players)}', inline=False)
+        embed.add_field(name="Throws", value=f'{self.get_total_throws()}', inline=False)
+
+        if thumbnail != '':
+            embed.set_thumbnail(url=(thumbnail))
+
+        return embed
