@@ -1,0 +1,45 @@
+import time
+import re
+from web.scraper import Scraper
+from discs.disc import DiscShop
+
+# DiscImport
+class DiscImport(Scraper):
+    def __init__(self, search):
+        super().__init__(search)
+        self.url = 'discimport.dk'
+
+class DiscScraper(DiscImport):
+    def __init__(self, search):
+        super().__init__(search)
+        self.url_product = 'https://discimport.dk'
+        self.search_url = f'https://discimport.dk/search?search={search}'
+    
+    def scrape(self):
+        start_time = time.time()
+        soup = self.get_page()
+
+        for product_list in soup.findAll("div", class_="product-teaser-inner"):
+            # Check if product is in stock
+            in_stock = product_list.find("span", class_="product-teaser-availability instock")
+            if re.search("Ikke", in_stock.getText(), re.IGNORECASE):
+                continue
+
+            a = product_list.find('a', href=True)
+
+            title = product_list.find("div", class_="product-teaser-title").getText()
+            if re.search(self.search, title, re.IGNORECASE) is None: # Check false results
+                continue
+
+            currency = product_list.find("span", class_="product-teaser-currency").getText() 
+            price = product_list.find("span", class_="product-teaser-price").getText()
+
+            disc = DiscShop()
+            disc.name = title
+            disc.price = f'{price} {currency}'
+            disc.manufacturer = product_list.find("div", class_="product-teaser-brand").getText()
+            disc.url = a['href']
+            disc.store = self.url
+            self.discs.append(disc)
+        self.search_time = time.time() - start_time
+        print(f'DiscImport scraper: {self.get_search_time()}')
