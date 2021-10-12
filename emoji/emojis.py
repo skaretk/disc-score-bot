@@ -13,12 +13,12 @@ class Emojis(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.guild.id == 597085958244139022:
+        if message.guild.id == 885085437448839209: # EDK
             for word in self.disc_golf_words:
                 if findWholeWord(word)(message.content.lower()) is not None:
-                    emoji = '<a:shutupandtakemymoney:751168620339527830>'
+                    emoji = '<a:shutupandtakemymoney:897176782346784778>'
                     await message.add_reaction(emoji)
-                    break 
+                    break
         
             if 'bomb' in message.content.lower():
                 emoji = '💣'
@@ -28,13 +28,9 @@ class Emojis(commands.Cog):
                 emoji = '🥏'
                 await message.add_reaction(emoji)
             
-            if findWholeWord('tilt')(message.content.lower()) is not None:
-                emoji = '<a:tilt:874612488505806878>'
-                await message.add_reaction(emoji)
-
             for word in self.ace_golf_words:
                 if findWholeWord(word)(message.content.lower()) is not None:
-                    emoji = '⛳'
+                    emoji = '<a:ace:897177537908703232>'
                     await message.add_reaction(emoji)  
                     break
             
