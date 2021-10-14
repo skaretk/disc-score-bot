@@ -31,7 +31,11 @@ class DiscScraper(Discconnection):
         for prodPriceWeight in soup.findAll("td", class_="prodPriceWeight"):
             b = prodPriceWeight.find("b")
             if b is not None:
-                prices.append(b.getText())            
+                prices.append(b.getText())  
+            else:
+                discount = prodPriceWeight.find("div", class_="discount")
+                if discount is not None:
+                    prices.append(discount.getText()) 
 
         for i in range(len(names)):
             disc = DiscShop()
