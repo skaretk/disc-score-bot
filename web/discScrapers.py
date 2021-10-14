@@ -9,6 +9,7 @@ from web import rocketdiscs
 from web import latitude64
 from web import discrepublic
 from web import discimport
+from web import armspeed
 
 class DiscScrapers():
     def __init__(self, search):
@@ -20,6 +21,7 @@ class DiscScrapers():
                               discsport.DiscScraper(search),
                               discmania.DiscScraper(search),
                               rocketdiscs.DiscScraper(search),
-                              discimport.DiscScraper(search)]
+                              discimport.DiscScraper(search),
+                              armspeed.DiscScraper(search)]
         self.international = [latitude64.DiscScraper(search),
                               discrepublic.DiscScraper(search)]
