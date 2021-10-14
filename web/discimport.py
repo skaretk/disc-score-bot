@@ -22,7 +22,7 @@ class DiscScraper(DiscImport):
         for product_list in soup.findAll("div", class_="product-teaser-inner"):
             # Check if product is in stock
             in_stock = product_list.find("span", class_="product-teaser-availability instock")
-            if re.search("Ikke", in_stock.getText(), re.IGNORECASE):
+            if in_stock is None:
                 continue
 
             a = product_list.find('a', href=True)
