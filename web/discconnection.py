@@ -47,7 +47,8 @@ class DiscScraper(Discconnection):
                     # Discounted price? Contains: TILBUD: 300 - spar 50 DKK
                     discount = prodPriceWeight.find("div", class_="discount")
                     if discount is not None:
-                        prices.append(discount.getText()) 
+                        price = discount.getText().split()
+                        prices.append(f'{price[1]} DKK') 
 
         for i in range(len(names)):
             disc = DiscShop()
