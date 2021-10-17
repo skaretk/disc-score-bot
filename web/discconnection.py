@@ -11,6 +11,7 @@ class DiscScraper(Discconnection):
     def __init__(self, search):
         super().__init__(search)
         self.search_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={search}'
+        self.valid_categories = ["Andre discs", "Brugte discs", "Collectors discs", "Golf discs"]
     
     def scrape(self):
         start_time = time.time()
@@ -20,22 +21,33 @@ class DiscScraper(Discconnection):
         manufacturers = []
         prices = []
 
-        # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
-        for prodHeader in soup.findAll("td", class_="prodHeader"):
-            b = prodHeader.find_all("b")
-            prodHeader_list = b[0].getText().split()
-            manufacturers.append(prodHeader_list[0])
-            names.append(b[0].getText())
+        categories = soup.findAll("div", class_="bigText")
+        product_list = soup.findAll("table", class_="productlist")
 
-        # Contains: Pris inkl. moms: 120,00 DKK
-        for prodPriceWeight in soup.findAll("td", class_="prodPriceWeight"):
-            b = prodPriceWeight.find("b")
-            if b is not None:
-                prices.append(b.getText())  
+        for idx, category in enumerate(categories):
+            valid = any(category.getText() in string for string in self.valid_categories)
+            if (valid == False):
+                continue
             else:
-                discount = prodPriceWeight.find("div", class_="discount")
-                if discount is not None:
-                    prices.append(discount.getText()) 
+                print(f'Found valid category {category.getText()} in index {idx}')            
+
+            # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
+            for prodHeader in product_list[idx].findAll("td", class_="prodHeader"):
+                text = prodHeader.getText().replace("\xa0", "").split("•")
+                manufacturer = text[0].split()[0]
+                manufacturers.append(manufacturer)
+                names.append(f'{text[0]} - {text[1].replace("Plastic: ", "")}')
+
+            # Contains: Pris inkl. moms: 120,00 DKK
+            for prodPriceWeight in product_list[idx].findAll("td", class_="prodPriceWeight"):
+                b = prodPriceWeight.find("b")
+                if b is not None:
+                    prices.append(b.getText())  
+                else:
+                    # Discounted price? Contains: TILBUD: 300 - spar 50 DKK
+                    discount = prodPriceWeight.find("div", class_="discount")
+                    if discount is not None:
+                        prices.append(discount.getText()) 
 
         for i in range(len(names)):
             disc = DiscShop()
