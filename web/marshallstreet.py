@@ -10,6 +10,7 @@ class DiscFlightScraper(MarshallStreet):
     def __init__(self, search):
         super().__init__(search)
         self.search_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
+        self.icon_url= f'https://www.marshallstreetdiscgolf.com/wp-content/uploads/2017/12/cropped-favicon-1-32x32.png'
 
     def scrape(self):
         start_time = time.time()
@@ -18,6 +19,7 @@ class DiscFlightScraper(MarshallStreet):
             if (disc_item.getText().lower() == self.search.lower()):
                 disc = DiscFlight()
                 disc.name = disc_item.getText()
+                disc.manufacturer = disc_item['data-brand']
                 disc.flight_url = disc_item['data-pic']
                 disc.speed = disc_item['data-speed']
                 disc.glide = disc_item['data-glide']
@@ -31,6 +33,7 @@ class DiscFlightScraper(MarshallStreet):
             if (putter_name.lower() == self.search.lower()):
                 disc = DiscFlight()
                 disc.name = putter_name
+                disc.manufacturer = putter['data-brand']
                 disc.flight_url = putter['data-image']
                 disc.speed = putter['data-speed']
                 disc.glide = putter['data-glide']

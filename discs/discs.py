@@ -104,11 +104,15 @@ class Discs(commands.Cog):
 
         if (len(self.discs) == 1):
             disc = self.discs[0]
-            embed = discord.Embed(title=disc.name, color=0xFF5733)
-            embed.add_field(name='Flight', value=f'Speed: {disc.speed} Glide:{disc.glide} Turn: {disc.turn} Fade: {disc.fade}', inline=True)    
+            if (disc.manufacturer == "Other"):
+                embed = discord.Embed(title=f'{disc.name}', color=0xFF5733)
+            else:
+                embed = discord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0xFF5733)
+            embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
-            embed.set_thumbnail(url=(ctx.author.avatar_url))
-            await ctx.send(embed=embed)            
+            embed.set_footer(text="Powered by Marshall Street", icon_url=scraper_list[0].icon_url)
+            await ctx.send(ctx.message.author.mention)
+            await ctx.send(embed=embed)
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         
