@@ -49,6 +49,9 @@ class DiscScraper(RocketDiscs):
             driver.refresh()
             soup_product = BeautifulSoup(driver.page_source, "html.parser")
             disc.price = soup_product.find("td", id="ContentPlaceHolder1_lblOurPrice").text
+            img = soup_product.find("img", id="ContentPlaceHolder1_discImage")
+            if (img is not None):
+                disc.img = f'{self.url_product}{img["src"]}'
             disc.store = self.url
             self.discs.append(disc)
             break
