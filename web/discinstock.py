@@ -18,7 +18,9 @@ class DiscScraper(DiscInStock):
         for a in soup.findAll("div", class_="col"):
             disc = DiscShop()
             disc.manufacturer = a.find("h6", class_="text-muted font-monospace h-100").getText()
-            disc.name = a.find("span", class_="fs-5").getText()                
+            disc.name = a.find("span", class_="fs-5").getText()
+            img = a.find("img", class_="px-1 pt-1")
+            disc.img = img["src"]
             disc.price = a.find("span", class_="flex-shrink-1 display-6 mt-1").getText()
             disc.store = a.find("span", class_="mx-auto").getText()
             link = a.find('a', href=True)
