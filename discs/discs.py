@@ -31,9 +31,16 @@ class Discs(commands.Cog):
             embed_title = f'Found {len(self.discs)} Discs!'
         embed = discord.Embed(title=embed_title, color=0xFF5733)
 
+        img_set = False
         for disc in self.discs:            
             embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.url})')
-        embed.set_thumbnail(url=(ctx.author.avatar_url))
+            if (disc.img and img_set == False):
+                if (disc.img.lower().endswith(('.png', '.jpg', '.jpeg'))):
+                    embed.set_thumbnail(url=(disc.img))
+                    img_set = True
+        
+        if (img_set == False):
+            embed.set_thumbnail(url=(ctx.author.avatar_url))
 
         if (len(embed) < 6000): # Size limit for embeds
             await ctx.send(ctx.author.mention)

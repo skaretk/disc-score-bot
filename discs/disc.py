@@ -10,6 +10,7 @@ class DiscShop(Disc):
         self.price = ''
         self.store = ''
         self.url = ''
+        self.img = ''
     
     def __str__(self):
         return f'name: {self.name}\n'\
