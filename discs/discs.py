@@ -36,6 +36,7 @@ class Discs(commands.Cog):
         embed.set_thumbnail(url=(ctx.author.avatar_url))
 
         if (len(embed) < 6000): # Size limit for embeds
+            await ctx.send(ctx.author.mention)
             await ctx.send(embed=embed)
         else:
             print(len(embed))
@@ -93,7 +94,7 @@ class Discs(commands.Cog):
     async def disc_flight(self, ctx, *args, sep=" "):
         self.discs = []
         if len(args) == 0:
-            await ctx.send('No disc specified, see %help flight')
+            await ctx.send(f'No disc specified {ctx.message.author.mention}, see %help disc_flight')
             return
 
         search = sep.join(args)
@@ -110,7 +111,7 @@ class Discs(commands.Cog):
                 embed = discord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0xFF5733)
             embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
-            embed.set_footer(text="Powered by Marshall Street", icon_url=scraper_list[0].icon_url)
+            embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
             await ctx.send(ctx.message.author.mention)
             await ctx.send(embed=embed)
         else:
