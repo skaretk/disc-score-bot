@@ -23,13 +23,16 @@ class DiscScraper(Discmania):
 
             if re.search(self.search, name, re.IGNORECASE) is None: # Gives some false products
                 continue
+            money = product.find("span", class_="money")
+            if (money == None): # Not in stock
+                continue
 
             disc = DiscShop()
             disc.name = name
             disc.manufacturer = product.find("h4", class_= "product__vendor h6").getText()
             a = product.find("a", class_="product-link", href=True)
             disc.url = f'{self.url_product}{a["href"]}'
-            disc.price = product.find("span", class_="money").getText()
+            disc.price = money.getText()
             disc.store = self.url
             self.discs.append(disc)
         self.search_time = time.time() - start_time
