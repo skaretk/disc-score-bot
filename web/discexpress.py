@@ -29,9 +29,9 @@ class DiscScraper(DiscExpress):
             disc.name = name
             a = grid_item.find('a', href=True)
             disc.url = f'{self.url_product}{a["href"]}'
-            img = grid_item.find("img", class_="no-js lazyautosizes lazyloaded")["data-srcset"]
+            img = grid_item.find("img", class_="no-js lazyautosizes lazyloaded")
             if (img is not None):
-                disc.img = f'https:{img.split()[8].split("?v=", 1)[0]}' #fetch 540 width image
+                disc.img = f'https:{img["data-srcset"].split()[8].split("?v=", 1)[0]}' #fetch 540 width image
 
             for hidden_item in grid_item.findAll("span", class_="visually-hidden"):
                 if re.search("kr", hidden_item.getText(), re.IGNORECASE):
