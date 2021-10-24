@@ -31,7 +31,10 @@ class DiscScraper(Discsport):
                 disc.url = a["href"]
                 manufacturer = re.search(r"]<br/>(.*?)\|", a["title"]).group(1).replace("\xa0", "")
                 if (manufacturer is not None):
-                    disc.manufacturer = manufacturer                    
+                    disc.manufacturer = manufacturer
+                img = product.find("img", class_="lozad")
+                if (img is not None):
+                    disc.img = img["src"]
                 disc.price = product.find("div", class_="text-center").find("p").getText()
                 disc.store = self.url
                 self.discs.append(disc)
