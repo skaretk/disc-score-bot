@@ -20,6 +20,7 @@ class DiscScraper(Discconnection):
         names = []
         manufacturers = []
         prices = []
+        images = []
 
         categories = soup.findAll("div", class_="bigText")
         product_list = soup.findAll("table", class_="productlist")
@@ -27,9 +28,7 @@ class DiscScraper(Discconnection):
         for idx, category in enumerate(categories):
             valid = any(category.getText() in string for string in self.valid_categories)
             if (valid == False):
-                continue
-            else:
-                print(f'Found valid category {category.getText()} in index {idx}')            
+                continue          
 
             # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
             for prodHeader in product_list[idx].findAll("td", class_="prodHeader"):
@@ -48,7 +47,11 @@ class DiscScraper(Discconnection):
                     discount = prodPriceWeight.find("div", class_="discount")
                     if discount is not None:
                         price = discount.getText().split()
-                        prices.append(f'{price[1]} DKK') 
+                        prices.append(f'{price[1]} DKK')
+            
+            for discImage in product_list[idx].findAll("img"):
+                images.append(discImage["src"])
+
 
         for i in range(len(names)):
             disc = DiscShop()
@@ -56,6 +59,8 @@ class DiscScraper(Discconnection):
             disc.manufacturer = manufacturers[i]
             disc.price = prices[i]
             disc.store = self.url
+            if ("empty" not in images[i]): # empty.jpg is not a picture of the disc
+                disc.img = images[i]
             disc.url = self.search_url
             self.discs.append(disc)
         self.search_time = time.time() - start_time
