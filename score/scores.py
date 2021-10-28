@@ -7,7 +7,7 @@ from score.files.scorecardreader import ScorecardReader
 from score.files.scorecardwriter import ScorecardWriter
 from score.alias import Alias
 from score.scorecards import Scorecards
-from web.udisc import LeagueScraper
+from scrapers.udisc import LeagueScraper
 import utilities
 
 def get_scorecards(path, alias):
