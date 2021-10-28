@@ -1,15 +1,15 @@
-from web import discinstock
-from web import sunesport
-from web import xxl
-from web import discexpress
-from web import discconnection
-from web import discsport
-from web import discmania
-from web import rocketdiscs
-from web import latitude64
-from web import discrepublic
-from web import discimport
-from web import armspeed
+from scrapers import discinstock
+from scrapers import sunesport
+from scrapers import xxl
+from scrapers import discexpress
+from scrapers import discconnection
+from scrapers import discsport
+from scrapers import discmania
+from scrapers import rocketdiscs
+from scrapers import latitude64
+from scrapers import discrepublic
+from scrapers import discimport
+from scrapers import armspeed
 
 class DiscScrapers():
     def __init__(self, search):

@@ -1,6 +1,6 @@
 import time
 import re
-from web.scraper import Scraper
+from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Xxl(Scraper):

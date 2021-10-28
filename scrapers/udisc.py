@@ -1,6 +1,6 @@
 import time
 from dateutil.parser import parse
-from web.scraper import Scraper
+from scrapers.scraper import Scraper
 from score.scorecard import Scorecard
 from score.player import Player, PlayerName
 

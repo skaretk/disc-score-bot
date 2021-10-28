@@ -2,8 +2,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 import discord
 from discord.ext import commands
-from web.discScrapers import DiscScrapers
-from web.marshallstreet import DiscFlightScraper
+from scrapers.discScrapers import DiscScrapers
+from scrapers.marshallstreet import DiscFlightScraper
 
 class Discs(commands.Cog):
     def __init__(self, bot):
