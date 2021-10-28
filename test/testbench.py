@@ -10,7 +10,7 @@ class TestBench():
         self.search_times = []        
 
     def test_scrape(self, print_discs):
-        test_scraper = discScrapers.discsport.Discsport(self.search)
+        test_scraper = discsport.Discsport(self.search)
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(test_scraper.scrape)
 
