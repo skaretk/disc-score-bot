@@ -1,7 +1,7 @@
 import time
 import re
 from bs4 import BeautifulSoup
-from web.scraper import Scraper
+from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class RocketDiscs(Scraper):

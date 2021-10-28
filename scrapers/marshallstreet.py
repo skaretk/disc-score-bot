@@ -1,5 +1,5 @@
 import time
-from web.scraper import Scraper
+from scrapers.scraper import Scraper
 from discs.disc import DiscFlight
 
 class MarshallStreet(Scraper):
