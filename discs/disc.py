@@ -1,3 +1,4 @@
+import urllib.parse
 
 class Disc():
     def __init__(self):
@@ -10,7 +11,15 @@ class DiscShop(Disc):
         self.price = ''
         self.store = ''
         self.url = ''
-        self.img = ''
+        self._img = ''
+    
+    @property
+    def img(self):
+        return self._img
+    
+    @img.setter
+    def img(self, i):
+        self._img = urllib.parse.quote(i, safe='?:/=&+')
     
     def __str__(self):
         return f'name: {self.name}\n'\
