@@ -4,6 +4,10 @@ class Disc():
     def __init__(self):
         self.name = ''
         self.manufacturer = ''
+        self.speed = ''
+        self.glide = ''
+        self.turn = ''
+        self.fade = ''
 
 class DiscShop(Disc):
     def __init__(self):
@@ -32,10 +36,6 @@ class DiscFlight(Disc):
     def __init__(self):
         super().__init__()
         self.flight_url = ''
-        self.speed = ''
-        self.glide = ''
-        self.turn = ''
-        self.fade = ''
     
     def __str__(self):
         return f'name: {self.name}\n'\
@@ -44,4 +44,16 @@ class DiscFlight(Disc):
                f'glide: {self.glide}\n'\
                f'turn: {self.turn}\n'\
                f'fade: {self.fade}\n'\
-               f'flight_url: {self.flight_url}\n'               
+               f'flight_url: {self.flight_url}\n'
+
+class DiscBag(Disc):
+    def __init__(self):
+        super().__init__()
+        self.url = ''
+        self.info = ''
+    
+    def __str__(self):
+        return f'{self.name}'
+    
+    def flight(self):
+            return f'{self.speed}/{self.glide}/{self.turn}/{self.fade}'
