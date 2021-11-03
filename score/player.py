@@ -66,3 +66,6 @@ class Player:
 
     def get_full_info(self):
      return f'{self} Kast: {self.total} - Kort: {self.score_cards}'
+
+    def get_full_info_min(self):
+        return f'{self}: {self.total}: {self.score_cards}'

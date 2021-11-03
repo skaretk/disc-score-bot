@@ -80,6 +80,7 @@ class Scores(commands.Cog):
                     await ctx.send(embed=embed)
                 else:
                     print("Embed not OK")
+                    scorecards.save_scorecards_text(f'{ctx.guild.name}\{ctx.channel}\scores.txt')
                     await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                     await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')                        
             else:

@@ -18,7 +18,7 @@ class Scorecards:
                 no += no_same_scores + 1
                 no_same_scores = 0
             
-            msg += f'\n{no}: {player.get_full_info()}'
+            msg += f'\n{no}: {player.get_full_info_min()}'
 
             last_score = player.score
             
@@ -114,3 +114,11 @@ class Scorecards:
             embed.set_thumbnail(url=(thumbnail))
 
         return embed
+    
+    def save_scorecards_text(self, file):
+        str = f'{self}\n'
+        for scorecard in self.scorecards:
+            str += f'\n{scorecard.date_time.date()} - {scorecard.coursename}'
+        f = open(file, "a")
+        f.write(str)
+        f.close()
