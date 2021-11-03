@@ -28,5 +28,3 @@ class Alias:
 
     def set_player_alias(self, player, new_alias):
         pass
-
-

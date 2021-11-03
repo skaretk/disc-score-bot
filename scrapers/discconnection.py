@@ -28,7 +28,7 @@ class DiscScraper(Discconnection):
         for idx, category in enumerate(categories):
             valid = any(category.getText() in string for string in self.valid_categories)
             if (valid == False):
-                continue          
+                continue
 
             # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
             for prodHeader in product_list[idx].findAll("td", class_="prodHeader"):
