@@ -1,5 +1,6 @@
 import time
 import re
+from bs4 import BeautifulSoup
 from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
@@ -16,7 +17,13 @@ class DiscScraper(Discrepublic):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page(1)        
+        driver = self.get_driver(1)
+        # add cookie in order to get price in NOK
+        driver.add_cookie({"name": "cart_currency", "value": "NOK"})
+        driver.refresh()
+        soup = self.get_page_from_driver(driver)
+        #soup = BeautifulSoup(driver.page_source, "html.parser")
+        driver.close()
 
         # Check if the disc is sold out
         for product in soup.findAll("div", class_="product-item-wrapper col-sm-2"):

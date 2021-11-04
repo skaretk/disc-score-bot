@@ -73,6 +73,11 @@ class Scraper():
             time.sleep(sleep_time)
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup, driver
+    
+    # Driver needs to be closed afterwards
+    def get_page_from_driver(self, driver):
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        return soup
 
     async def scrape(self):
         pass
