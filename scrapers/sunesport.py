@@ -7,12 +7,13 @@ from discs.disc import DiscShop
 class SuneSport(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'sunesport.no'
+        self.name = 'sunesport.no'
+        self.url = 'https://sunesport.no'
 
 class DiscScraper(SuneSport):
     def __init__(self, search):
         super().__init__(search)
-        self.search_url = f'https://sunesport.no/product/search.html?search={search}&category_id=268&sub_category=true'
+        self.scrape_url = f'https://sunesport.no/product/search.html?search={search}&category_id=268&sub_category=true'
     
     def scrape(self):
         start_time = time.time()
@@ -29,7 +30,7 @@ class DiscScraper(SuneSport):
             disc.name = a.getText()
             disc.url = a["href"]
             disc.price = re.search(r" (.*?)Ekskl.", caption.find("p", class_="price").getText()).group(1)
-            disc.store = self.url
+            disc.store = self.name
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'SuneSport scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'SuneSport scraper: {self.scraper_time}')

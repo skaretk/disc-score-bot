@@ -7,13 +7,13 @@ from discs.disc import DiscShop
 class DiscImport(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'discimport.dk'
+        self.name = 'discimport.dk'
+        self.url = 'https://discimport.dk'
 
 class DiscScraper(DiscImport):
     def __init__(self, search):
-        super().__init__(search)
-        self.url_product = 'https://discimport.dk'
-        self.search_url = f'https://discimport.dk/search?search={search}'
+        super().__init__(search)        
+        self.scrape_url = f'https://discimport.dk/search?search={search}'
     
     def scrape(self):
         start_time = time.time()
@@ -39,7 +39,7 @@ class DiscScraper(DiscImport):
             disc.price = f'{price} {currency}'
             disc.manufacturer = product_list.find("div", class_="product-teaser-brand").getText()
             disc.url = a['href']
-            disc.store = self.url
+            disc.store = self.name
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'DiscImport scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'DiscImport scraper: {self.scraper_time}')

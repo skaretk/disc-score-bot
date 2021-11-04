@@ -7,14 +7,14 @@ from discs.disc import DiscShop
 class ArmSpeed(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'armspeed.se'
+        self.name = 'armspeed.se'
+        self.url = 'https://armspeed.se'
 
 # Armspeed does not contain manufacturer
 class DiscScraper(ArmSpeed):
     def __init__(self, search):
         super().__init__(search)
-        self.url_product = 'https://armspeed.se'
-        self.search_url = f'https://armspeed.se/shop/search?s={search}'
+        self.scrape_url = f'https://armspeed.se/shop/search?s={search}'
         self.currency = "SEK"
     
     def scrape(self):
@@ -35,8 +35,8 @@ class DiscScraper(ArmSpeed):
             disc = DiscShop()
             disc.name = product_text
             disc.price = f'{price} {self.currency}'
-            disc.url = f'{self.url_product}{url}'
-            disc.store = self.url
+            disc.url = f'{self.url}{url}'
+            disc.store = self.name
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'DiscImport scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'DiscImport scraper: {self.scraper_time}')

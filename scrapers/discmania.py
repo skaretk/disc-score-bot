@@ -6,13 +6,13 @@ from discs.disc import DiscShop
 class Discmania(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'discmania.net'
+        self.name = 'discmania.net'
+        self.url = 'https://europe.discmania.net'
 
 class DiscScraper(Discmania):
     def __init__(self, search):
-        super().__init__(search)
-        self.url_product = 'https://europe.discmania.net'
-        self.search_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={search}'
+        super().__init__(search)        
+        self.scrape_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={search}'
     
     def scrape(self):
         start_time = time.time()
@@ -31,12 +31,12 @@ class DiscScraper(Discmania):
             disc.name = name
             disc.manufacturer = product.find("h4", class_= "product__vendor h6").getText()
             a = product.find("a", class_="product-link", href=True)
-            disc.url = f'{self.url_product}{a["href"]}'
+            disc.url = f'{self.url}{a["href"]}'
             img = product.find("img", class_="product__img lazyautosizes lazyloaded")
             if (img is not None):
                 disc.img = f'https:{img["data-srcset"].split()[8].split("?v=", 1)[0]}' #fetch 540 width image
             disc.price = money.getText()
-            disc.store = self.url
+            disc.store = self.name
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'Discmania scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'Discmania scraper: {self.scraper_time}')

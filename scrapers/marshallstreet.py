@@ -5,11 +5,13 @@ from discs.disc import DiscFlight
 class MarshallStreet(Scraper):
     def __init__(self, search):
         super().__init__(search)
+        self.name = 'marshallstreetdiscgolf.com'
+        self.url = 'https://www.marshallstreetdiscgolf.com'
 
 class DiscFlightScraper(MarshallStreet):
     def __init__(self, search):
         super().__init__(search)
-        self.search_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
+        self.scrape_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
         self.icon_url= f'https://www.marshallstreetdiscgolf.com/wp-content/uploads/2017/12/cropped-favicon-1-32x32.png'
 
     def scrape(self):
@@ -42,5 +44,5 @@ class DiscFlightScraper(MarshallStreet):
                 self.discs.append(disc)
                 print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
                 return
-        self.search_time = time.time() - start_time
-        print(f'MarshallStreetFlight scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'MarshallStreetFlight scraper: {self.scraper_time}')

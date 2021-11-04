@@ -7,12 +7,13 @@ from score.player import Player, PlayerName
 class Udisc(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'udisc.com'
+        self.name = 'udisc.com'
+        self.url = 'https://udisc.com'
 
 class LeagueScraper(Udisc):
     def __init__(self, url):
         super().__init__("")
-        self.search_url = url
+        self.scrape_url = url
         self.score_card = Scorecard("", "", "2021-01-01 12:00", 0)
         
     def scrape(self):
@@ -72,5 +73,5 @@ class LeagueScraper(Udisc):
                 scorecard_player.add_hole(hole_score)
             self.score_card.add_player(scorecard_player)
         
-        self.search_time = time.time() - start_time
-        print(f'UdiscLeague scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'UdiscLeague scraper: {self.scraper_time}')

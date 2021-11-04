@@ -9,7 +9,7 @@ class DiscInStock(Scraper):
 class DiscScraper(DiscInStock):
     def __init__(self, search):
         super().__init__(search)
-        self.search_url = f'https://www.discinstock.no/?name={search}'
+        self.scrape_url = f'https://www.discinstock.no/?name={search}'
     
     def scrape(self):
         start_time = time.time()
@@ -27,5 +27,5 @@ class DiscScraper(DiscInStock):
             disc.url = link['href']
 
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'DiscInStock scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'DiscInStock scraper: {self.scraper_time}')

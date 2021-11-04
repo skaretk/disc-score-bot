@@ -16,7 +16,7 @@ class Discs(commands.Cog):
             for disc_scraper in scraper_list:
                 future = executor.submit(disc_scraper.scrape)
         
-        print(f'Spent {time.time() - start_time} scraping')
+        print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
         for disc_scraper in scraper_list:
             self.discs.extend(disc_scraper.discs)

@@ -7,14 +7,13 @@ from discs.disc import DiscShop
 class DiscExpress(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'discexpress.se'
+        self.name = 'discexpress.se'
+        self.url = 'https://www.discexpress.se'
 
 class DiscScraper(DiscExpress):
     def __init__(self, search):
-        super().__init__(search)
-        self.url = 'discexpress.se'
-        self.url_product = 'https://www.discexpress.se'
-        self.search_url = f'https://www.discexpress.se/a/search?type=product&q={search}'
+        super().__init__(search)        
+        self.scrape_url = f'https://www.discexpress.se/a/search?type=product&q={search}'
     
     def scrape(self):
         start_time = time.time()
@@ -28,7 +27,7 @@ class DiscScraper(DiscExpress):
             disc = DiscShop()
             disc.name = name
             a = grid_item.find('a', href=True)
-            disc.url = f'{self.url_product}{a["href"]}'
+            disc.url = f'{self.url}{a["href"]}'
             img = grid_item.find("img", class_="no-js lazyautosizes lazyloaded")
             if (img is not None):
                 disc.img = f'https:{img["data-srcset"].split()[8].split("?v=", 1)[0]}' #fetch 540 width image
@@ -38,5 +37,5 @@ class DiscScraper(DiscExpress):
                     disc.price = hidden_item.getText()                 
             disc.store = self.url
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'DiscExpress scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'DiscExpress scraper: {self.scraper_time}')

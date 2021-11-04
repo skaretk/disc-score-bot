@@ -6,13 +6,13 @@ from discs.disc import DiscShop
 class Discrepublic(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'discrepublic.ca'
+        self.name = 'discrepublic.ca'
+        self.url = 'https://discrepublic.ca'
 
 class DiscScraper(Discrepublic):
     def __init__(self, search):
-        super().__init__(search)
-        self.url_product = 'https://discrepublic.ca'
-        self.search_url = f'https://discrepublic.ca/search?type=product&collection=in-stock&q=*{search}*'
+        super().__init__(search)        
+        self.scrape_url = f'https://discrepublic.ca/search?type=product&collection=in-stock&q=*{search}*'
     
     def scrape(self):
         start_time = time.time()
@@ -39,7 +39,7 @@ class DiscScraper(Discrepublic):
             # manufacturer is fetched from an alt string
             img = product.find('img', class_="not-rotation img-responsive front")
             disc.manufacturer = img["alt"].split(" ")[0]
-            disc.url = f'{self.url_product}{title["href"]}'
+            disc.url = f'{self.url}{title["href"]}'
 
             # If the disc is on sale, there is two prices. Check and use correct
             normal_price = product.find("span", class_="price_sale price_normal")
@@ -47,8 +47,8 @@ class DiscScraper(Discrepublic):
                 disc.price = product.find("span", class_="price_sale").getText().replace("\n", "")
             else:
                 disc.price = normal_price.getText().replace("\n", "")
-            disc.store = self.url                
+            disc.store = self.name
 
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'Discrepublic scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'Discrepublic scraper: {self.scraper_time}')

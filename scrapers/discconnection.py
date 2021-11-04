@@ -5,12 +5,13 @@ from discs.disc import DiscShop
 class Discconnection(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'discconnection.dk'
+        self.name = 'discconnection.dk'
+        self.url = 'https://discconnection.dk'
 
 class DiscScraper(Discconnection):
     def __init__(self, search):
         super().__init__(search)
-        self.search_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={search}'
+        self.scrape_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={search}'
         self.valid_categories = ["Andre discs", "Brugte discs", "Collectors discs", "Golf discs"]
     
     def scrape(self):
@@ -58,10 +59,10 @@ class DiscScraper(Discconnection):
             disc.name = names[i]
             disc.manufacturer = manufacturers[i]
             disc.price = prices[i]
-            disc.store = self.url
+            disc.store = self.name
             if ("empty" not in images[i]): # empty.jpg is not a picture of the disc
                 disc.img = images[i]
-            disc.url = self.search_url
+            disc.url = self.scrape_url
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'Discconnection scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'Discconnection scraper: {self.scraper_time}')

@@ -7,12 +7,13 @@ from discs.disc import DiscShop
 class FrisbeeFeber(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'frisbeefeber.no'
+        self.name = 'frisbeefeber.no'
+        self.url = 'https://www.frisbeefeber.no'
 
 class DiscScraper(FrisbeeFeber):
     def __init__(self, search):
         super().__init__(search)
-        self.search_url = f'https://www.frisbeefeber.no/search_result?keywords={search}'
+        self.scrape_url = f'https://www.frisbeefeber.no/search_result?keywords={search}'
     
     def scrape(self):
         start_time = time.time()
@@ -32,10 +33,10 @@ class DiscScraper(FrisbeeFeber):
             alt_manufacturer = div_manufacturer.find("img", alt=True)
             disc.manufacturer = alt_manufacturer['alt']
             disc.price = product.find("div", class_="price col-md-12").getText()
-            disc.store = self.url
+            disc.store = self.name
             url = product.find('a', href=True)
             disc.url = url['href']
 
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'FrisbeeFeber scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'FrisbeeFeber scraper: {self.scraper_time}')

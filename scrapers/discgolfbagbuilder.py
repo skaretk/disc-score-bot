@@ -6,8 +6,9 @@ from discs.disc import DiscBag
 class DiscgolfBagBuilder(Scraper):
     def __init__(self, url):
         super().__init__(url)
-        self.url = 'https://www.discgolfbagbuilder.com'
-        self.search_url = url
+        self.name = 'discgolfbagbuilder.com'
+        self.url = 'https://www.discgolfbagbuilder.com'        
+        self.scrape_url = url
         self.bag_name = "Bag"
         self.icon_url = 'https://pbs.twimg.com/profile_images/1298004778224619520/XfPTj4i1.jpg'
         self.image_file = "flight.png"
@@ -22,7 +23,6 @@ class DiscgolfBagBuilder(Scraper):
         # add cookie in order to get meters instead of feet
         driver.add_cookie({"name": "measurement_unit", "value": "meters"})
         driver.refresh()
-        time.sleep(1)
 
         #element = driver.find_element_by_tag_name("x-flight-chart")
         element = driver.find_element_by_class_name('labels')
@@ -76,5 +76,5 @@ class DiscgolfBagBuilder(Scraper):
             else:
                 print(f'Unknown category {category.getText()}')
 
-        self.search_time = time.time() - start_time
-        print(f'DiscgolfBagBuilder scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'DiscgolfBagBuilder scraper: {self.scraper_time}')

@@ -6,13 +6,13 @@ from discs.disc import DiscShop
 class Xxl(Scraper):
     def __init__(self, search):
         super().__init__(search)
-        self.url = 'xxl.no'
+        self.name = 'xxl.no'
+        self.url = 'https://www.xxl.no'
 
 class DiscScraper(Xxl):
     def __init__(self, search):
-        super().__init__(search.replace(" ", "+"))
-        self.product_url = 'https://www.xxl.no'
-        self.search_url = f'https://www.xxl.no/search?query={self.search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
+        super().__init__(search.replace(" ", "+"))        
+        self.scrape_url = f'https://www.xxl.no/search?query={self.search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
     
     def scrape(self):
         start_time = time.time()
@@ -40,8 +40,8 @@ class DiscScraper(Xxl):
             product_price = product.find("div", class_="product-card__price-wrapper")                
             disc.price = product_price.find("p").getText()
             a = product.find('a', href=True)
-            disc.url = f'{self.product_url}{a["href"]}'
-            disc.store = self.url
+            disc.url = f'{self.url}{a["href"]}'
+            disc.store = self.name
             self.discs.append(disc)
-        self.search_time = time.time() - start_time
-        print(f'XXL scraper: {self.get_search_time()}')
+        self.scraper_time = time.time() - start_time
+        print(f'XXL scraper: {self.scraper_time}')

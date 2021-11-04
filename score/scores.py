@@ -54,7 +54,7 @@ class Scores(commands.Cog):
             for scraper in scraper_list:
                 future = executor.submit(scraper.scrape)
         
-        print(f'Spent {time.time() - start_time} scraping')
+        print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
     # Checks
     def has_scorecards():

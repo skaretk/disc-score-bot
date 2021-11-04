@@ -6,11 +6,28 @@ from bs4 import BeautifulSoup
 
 class Scraper():
     def __init__(self, search):
+        self.name = ''
         self.url = ''
-        self.search_url = ''
+        self._scrape_url = ''
         self.search = search
-        self.search_time = ''
+        self._scraper_time = ''
         self.discs = []
+    
+    @property
+    def scrape_url(self):
+        return self._scrape_url
+
+    @scrape_url.setter
+    def scrape_url(self, url):
+        self._scrape_url = urllib.parse.quote(url, safe='?:/=&+')
+    
+    @property
+    def scraper_time(self):
+        return round(self._scraper_time, 2)
+
+    @scraper_time.setter
+    def scraper_time(self, time):
+        self._scraper_time = time
     
     def get_chrome(self):
         opt = webdriver.ChromeOptions()
@@ -34,8 +51,7 @@ class Scraper():
     
     def get_page(self, sleep_time = 0):
         with self.get_chrome() as driver:
-            url = urllib.parse.quote(self.search_url, safe='?:/=&+')
-            driver.get(url)
+            driver.get(self.scrape_url)
             if sleep_time:
                 time.sleep(sleep_time)
             soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -44,8 +60,7 @@ class Scraper():
     # Driver needs to be closed afterwards
     def get_driver(self, sleep_time = 0):
         driver = self.get_chrome()
-        url = urllib.parse.quote(self.search_url, safe='?:/=&+')
-        driver.get(url)
+        driver.get(self.scrape_url)
         if sleep_time:
             time.sleep(sleep_time)
         return driver
@@ -53,15 +68,11 @@ class Scraper():
     # Driver needs to be closed afterwards
     def get_page_and_driver(self, sleep_time = 0):
         driver = self.get_chrome()
-        url = urllib.parse.quote(self.search_url, safe='?:/=&+')
-        driver.get(url)
+        driver.get(self.scrape_url)
         if sleep_time:
             time.sleep(sleep_time)
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup, driver
-
-    def get_search_time(self):
-        return round(self.search_time, 2)
 
     async def scrape(self):
         pass
