@@ -35,7 +35,7 @@ class DiscScraper(Discsport):
                     disc.manufacturer = manufacturer
                 img = product.find("img", class_="lozad")
                 if (img is not None):
-                    disc.img = img["src"]
+                    disc.img = img["data-src"]
                 disc.price = product.find("div", class_="text-center").find("p").getText()
                 disc.store = self.name
                 self.discs.append(disc)
