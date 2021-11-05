@@ -22,7 +22,6 @@ class DiscScraper(Discrepublic):
         driver.add_cookie({"name": "cart_currency", "value": "NOK"})
         driver.refresh()
         soup = self.get_page_from_driver(driver)
-        #soup = BeautifulSoup(driver.page_source, "html.parser")
         driver.close()
 
         # Check if the disc is sold out
