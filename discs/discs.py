@@ -21,9 +21,9 @@ class Discs(commands.Cog):
         for disc_scraper in scraper_list:
             self.discs.extend(disc_scraper.discs)
 
-    async def print_discs(self, ctx):
+    async def print_discs(self, ctx, search_item):
         if(len(self.discs) == 0):
-            await ctx.send(f'Found no discs in stock {ctx.author.mention}')
+            await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
             return        
         elif(len(self.discs)) == 1:
             embed_title = f'Found {len(self.discs)} Disc!'            
@@ -43,16 +43,15 @@ class Discs(commands.Cog):
             embed.set_thumbnail(url=(ctx.author.avatar_url))
 
         if (len(embed) < 6000): # Size limit for embeds
-            await ctx.send(ctx.author.mention)
-            await ctx.send(embed=embed)
+            await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
         else:
             print(len(embed))
-            await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
-            await ctx.send(f'WOW {ctx.author.mention}, thats a lot of discs! ({len(self.discs)}!) ')
+            await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)')
+            await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=discord.Game(name="Disc golf")) 
 
-    @commands.command(aliases=['d'], brief='Search for disc (Norway & VOEC)', description='Search for disc in norwegian and VOEC approved sites')
+    @commands.command(aliases=['d'], brief='%disc [disc1, disc2, etc]', description='Search for disc in norwegian and VOEC approved sites')
     async def disc(self, ctx, *args, sep=" "):        
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc')
@@ -72,9 +71,7 @@ class Discs(commands.Cog):
             scraper_list.extend(scrapers.voec)
 
             self.scrape(scraper_list)
-            await self.print_discs(ctx)
-
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+            await self.print_discs(ctx, search_item)
 
     @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
     async def disc_all(self, ctx, *args, sep=" "):
@@ -95,7 +92,7 @@ class Discs(commands.Cog):
             scraper_list.extend(scrapers.international)
 
             self.scrape(scraper_list)
-            await self.print_discs(ctx)
+            await self.print_discs(ctx, search_item)
 
     @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
     async def disc_flight(self, ctx, *args, sep=" "):
