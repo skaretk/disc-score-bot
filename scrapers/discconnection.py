@@ -3,15 +3,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Discconnection(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'discconnection.dk'
         self.url = 'https://discconnection.dk'
 
 class DiscScraper(Discconnection):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={search}'
+        self.discs = []
         self.valid_categories = ["Andre discs", "Brugte discs", "Collectors discs", "Golf discs"]
     
     def scrape(self):

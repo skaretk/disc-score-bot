@@ -3,15 +3,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Latitude64(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'store.latitude64.se'
         self.url = 'https://store.latitude64.se/'
 
 class DiscScraper(Latitude64):
     def __init__(self, search):
-        super().__init__(search)        
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://store.latitude64.se/search?q={search}'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

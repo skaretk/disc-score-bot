@@ -5,15 +5,17 @@ from discs.disc import DiscShop
 
 # Sune Sport does not contain disc manufacturer
 class SuneSport(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'sunesport.no'
         self.url = 'https://sunesport.no'
 
 class DiscScraper(SuneSport):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://sunesport.no/product/search.html?search={search}&category_id=268&sub_category=true'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

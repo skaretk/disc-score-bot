@@ -4,14 +4,13 @@ from concurrent.futures import ThreadPoolExecutor
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
+# Base class
 class Scraper():
-    def __init__(self, search):
+    def __init__(self):
         self.name = ''
         self.url = ''
         self._scrape_url = ''
-        self.search = search
         self._scraper_time = ''
-        self.discs = []
     
     @property
     def scrape_url(self):

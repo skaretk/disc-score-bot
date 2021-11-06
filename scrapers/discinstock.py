@@ -3,13 +3,15 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class DiscInStock(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
 
 class DiscScraper(DiscInStock):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://www.discinstock.no/?name={search}'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

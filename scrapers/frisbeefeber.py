@@ -5,15 +5,17 @@ from discs.disc import DiscShop
 # This site has been added into DiscInStock site
 
 class FrisbeeFeber(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'frisbeefeber.no'
         self.url = 'https://www.frisbeefeber.no'
 
 class DiscScraper(FrisbeeFeber):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://www.frisbeefeber.no/search_result?keywords={search}'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

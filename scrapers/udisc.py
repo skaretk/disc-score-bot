@@ -5,14 +5,14 @@ from score.scorecard import Scorecard
 from score.player import Player, PlayerName
 
 class Udisc(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'udisc.com'
         self.url = 'https://udisc.com'
 
 class LeagueScraper(Udisc):
     def __init__(self, url):
-        super().__init__("")
+        super().__init__()
         self.scrape_url = url
         self.score_card = Scorecard("", "", "2021-01-01 12:00", 0)
         

@@ -5,15 +5,17 @@ from discs.disc import DiscShop
 
 # DiscImport
 class DiscImport(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'discimport.dk'
         self.url = 'https://discimport.dk'
 
 class DiscScraper(DiscImport):
     def __init__(self, search):
-        super().__init__(search)        
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://discimport.dk/search?search={search}'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

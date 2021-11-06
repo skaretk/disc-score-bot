@@ -5,16 +5,18 @@ from discs.disc import DiscShop
 
 # Armspeed
 class ArmSpeed(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'armspeed.se'
         self.url = 'https://armspeed.se'
 
 # Armspeed does not contain manufacturer
 class DiscScraper(ArmSpeed):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://armspeed.se/shop/search?s={search}'
+        self.discs = []
         self.currency = "SEK"
     
     def scrape(self):

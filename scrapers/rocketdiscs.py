@@ -5,15 +5,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class RocketDiscs(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'rocketdiscs.com'
         self.url = 'https://rocketdiscs.com'
 
 class DiscScraper(RocketDiscs):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://rocketdiscs.com/Search-Results?search_text={search}'
+        self.discs = []
 
     def any_products(self, soup):
         if soup.find("div", class_="list-group-item padding0") is None:

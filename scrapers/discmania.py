@@ -4,15 +4,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Discmania(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'discmania.net'
         self.url = 'https://europe.discmania.net'
 
 class DiscScraper(Discmania):
     def __init__(self, search):
-        super().__init__(search)        
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={search}'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

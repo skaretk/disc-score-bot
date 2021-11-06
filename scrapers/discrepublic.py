@@ -1,19 +1,20 @@
 import time
 import re
-from bs4 import BeautifulSoup
 from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Discrepublic(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'discrepublic.ca'
         self.url = 'https://discrepublic.ca'
 
 class DiscScraper(Discrepublic):
     def __init__(self, search):
-        super().__init__(search)        
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://discrepublic.ca/search?type=product&collection=in-stock&q=*{search}*'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

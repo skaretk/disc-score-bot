@@ -3,15 +3,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscFlight
 
 class MarshallStreet(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'marshallstreetdiscgolf.com'
         self.url = 'https://www.marshallstreetdiscgolf.com'
 
 class DiscFlightScraper(MarshallStreet):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
+        self.discs = []
         self.icon_url= f'https://www.marshallstreetdiscgolf.com/wp-content/uploads/2017/12/cropped-favicon-1-32x32.png'
 
     def scrape(self):

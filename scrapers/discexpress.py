@@ -5,15 +5,17 @@ from discs.disc import DiscShop
 
 # Discexpress does not contain disc manufacturer
 class DiscExpress(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'discexpress.se'
         self.url = 'https://www.discexpress.se'
 
 class DiscScraper(DiscExpress):
     def __init__(self, search):
-        super().__init__(search)        
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://www.discexpress.se/a/search?type=product&q={search}'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

@@ -4,15 +4,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Discsport(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'discsport.se'
         self.url = 'https://discsport.se'
 
 class DiscScraper(Discsport):
     def __init__(self, search):
-        super().__init__(search)
+        super().__init__()
+        self.search = search
         self.scrape_url = f'https://discsport.se/shopping/?search_adv=&name={search}&selBrand=0&selCat=1&selType=0&selStatus=0&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

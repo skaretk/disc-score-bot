@@ -4,15 +4,17 @@ from scrapers.scraper import Scraper
 from discs.disc import DiscShop
 
 class Xxl(Scraper):
-    def __init__(self, search):
-        super().__init__(search)
+    def __init__(self):
+        super().__init__()
         self.name = 'xxl.no'
         self.url = 'https://www.xxl.no'
 
 class DiscScraper(Xxl):
     def __init__(self, search):
-        super().__init__(search.replace(" ", "+"))        
+        super().__init__()
+        self.search = search.replace(" ", "+")
         self.scrape_url = f'https://www.xxl.no/search?query={self.search}&sort=relevance&Frisbeegolffilters_string_mv=Driver&Frisbeegolffilters_string_mv=Putter&Frisbeegolffilters_string_mv=Mid+range+frisbee'
+        self.discs = []
     
     def scrape(self):
         start_time = time.time()

@@ -5,7 +5,7 @@ from discs.disc import DiscBag
 # DiscgolfBagBuilder does not contain disc manufacturer
 class DiscgolfBagBuilder(Scraper):
     def __init__(self, url):
-        super().__init__(url)
+        super().__init__()
         self.name = 'discgolfbagbuilder.com'
         self.url = 'https://www.discgolfbagbuilder.com'        
         self.scrape_url = url
