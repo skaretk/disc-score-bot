@@ -30,6 +30,10 @@ class LeagueScraper(Udisc):
         if course_name is None:
             return
         self.score_card.coursename = course_name.getText().rstrip()
+        # Course link
+        course_url = course_name['href']
+        if course_url is not None:
+            self.score_card.course_url = f'{self.url}{course_url}'
 
         # Layout Name
         self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss124 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
