@@ -16,10 +16,9 @@ class ScorecardReader:
                 if reader.line_num == 2:
                     scorecard = Scorecard(row['CourseName'], row['LayoutName'], row['Date'], int(row['Total']))
                     for i in range(1, 28):
-                        try:
-                            if row[f'Hole{i}'] is not None:
+                        if f'Hole{i}' in row:
                                 scorecard.add_hole(i, int(row[f'Hole{i}']))
-                        except:
+                        else:
                             break 
                 else:
                     player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
