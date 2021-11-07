@@ -116,8 +116,7 @@ class Discs(commands.Cog):
             embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
             embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
-            await ctx.send(ctx.message.author.mention)
-            await ctx.send(embed=embed)
+            await ctx.send(ctx.author.mention, embed=embed)
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         
