@@ -1,5 +1,5 @@
 import discord
-from score.validate_embed import ValidateEmbed
+from discord_utils.validate_embed import ValidateEmbed
 
 class Scorecards:
     def __init__(self):

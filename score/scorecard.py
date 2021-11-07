@@ -1,6 +1,6 @@
 import datetime
 import discord
-from score.validate_embed import ValidateEmbed
+from discord_utils.validate_embed import ValidateEmbed
 
 class Scorecard:
     def __init__(self, coursename, layoutname, date_time, par):
