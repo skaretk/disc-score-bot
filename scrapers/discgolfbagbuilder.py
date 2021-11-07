@@ -10,6 +10,7 @@ class DiscgolfBagBuilder(Scraper):
         self.url = 'https://www.discgolfbagbuilder.com'        
         self.scrape_url = url
         self.bag_name = "Bag"
+        self.bag_description = ""
         self.icon_url = 'https://pbs.twimg.com/profile_images/1298004778224619520/XfPTj4i1.jpg'
         self.image_file = "flight.png"
         self.distance_drivers = []
@@ -24,14 +25,17 @@ class DiscgolfBagBuilder(Scraper):
         driver.add_cookie({"name": "measurement_unit", "value": "meters"})
         driver.refresh()
 
-        #element = driver.find_element_by_tag_name("x-flight-chart")
         element = driver.find_element_by_class_name('labels')
         element.screenshot(self.image_file)
         driver.close()
-
-        bag_name = soup.find("h2", class_="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:leading-9 sm:truncate")
-        if (bag_name is not None):
-            self.bag_name = bag_name.getText()
+        
+        meta_properties = soup.findAll("meta", property=True)
+        for property in meta_properties:
+            if (property["property"] is not None):
+                if (property["property"] == "og:title"): # Contains bag name
+                    self.bag_name = property["content"]
+                elif (property["property"] == "og:description"):
+                    self.bag_description = property["content"]
 
         categories = soup.findAll("h2", class_="text-xl pt-6 mb-2 border-b border-gray-600")
         discs = soup.findAll("div", class_="grid grid-cols-1 gap-y-1 gap-x-4")

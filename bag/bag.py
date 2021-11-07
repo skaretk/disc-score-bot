@@ -31,7 +31,7 @@ class Bag(commands.Cog):
             await ctx.send(f'Added your bag {user.mention}')
     
     async def print_discs(self, ctx, bag_scraper):
-        embed = discord.Embed(title=bag_scraper.bag_name, url=bag_scraper.scrape_url, color=0xFF5733)
+        embed = discord.Embed(title=bag_scraper.bag_name, description=bag_scraper.bag_description, url=bag_scraper.scrape_url, color=0xFF5733)
         file = discord.File(bag_scraper.image_file, filename="flight.png")
         embed.set_image(url="attachment://flight.png")
 
