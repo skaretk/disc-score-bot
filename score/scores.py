@@ -65,7 +65,7 @@ class Scores(commands.Cog):
                 return True
         return commands.check(predicate)
 
-    @commands.group(pass_context=True, brief='Print stored scores', description='Prints all stored scorecards for this channel, including total')
+    @commands.group(pass_context=True, brief='scores [course / dates / files]', description='Prints scorecards for this channel')
     @has_scorecards()
     async def scores(self, ctx):    
         if ctx.invoked_subcommand is None:
@@ -90,14 +90,49 @@ class Scores(commands.Cog):
     async def scores_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('No scores stored for this channel')
+    
+    @scores.command(brief='Print stored scorecards', description='Lists all scorecard files stored in this discord channel')
+    async def files(self, ctx):
+        path = str(f'{ctx.guild.name}\{ctx.channel}')
 
-    @scores.group(pass_context=True, brief='scores related to a course')
+        if utilities.is_path_empty(path):
+            await ctx.send('No files stored for this channel')
+            return
+        
+        msg_to_send = ''
+        file_count = 0
+        for file in os.listdir(path):
+            if file.endswith(".csv"):
+                file_count += 1
+                print(os.path.join(f'{path}\{file}'))
+                msg_to_send += f'\n{file}'
+    
+        if file_count:     
+            await ctx.send(f'No of files: {file_count}\n{msg_to_send}')
+        else:
+            await ctx.send('No .csv files stored for this channel')
+    
+    @scores.command(name='stats', brief='Print statistics', description='Print statistics for saved scorecards')
+    async def stats(self, ctx):
+        
+        alias = Alias(ctx.guild.name)
+        alias.parse()
+
+        scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
+
+        if (scorecards.scorecards):
+            embed = scorecards.get_embed_stats(ctx.author.avatar_url)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("No courses found")
+
+    @scores.group(pass_context=True, brief='[list / search]', description='List or search for courses')
     async def course(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('Missing subcommand, see %help scores course')
             return  
 
-    @course.command(pass_context=True, name='list', brief='List courses', description='Lists courses stored in this channel')
+    @course.command(pass_context=True, name='list', brief='Print courses', description='Print stored courses in this channel')
     async def course_list(self, ctx):    
         course_list = []
         for file in os.listdir(f'{ctx.guild.name}\{ctx.channel}'):
@@ -116,7 +151,7 @@ class Scores(commands.Cog):
         await ctx.send(msg)
         pass
 
-    @course.command(pass_context=True, name="search", brief='Search for scorecards for a course', description='Search and prints all scorecards for a course in this channel')
+    @course.command(pass_context=True, name="search", brief='[Coursename]', description='Search and print scorecards for course')
     async def search_course(self, ctx, arg = ''):
         if arg == '':
             await ctx.send('No course specified, see %help course search')
@@ -137,13 +172,13 @@ class Scores(commands.Cog):
         else:
             await ctx.send("No courses found!")  
 
-    @scores.group(pass_context=True, brief='scores related to dates')
+    @scores.group(pass_context=True, brief='[list / search]', description='List or search within dates')
     async def dates(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('Missing subcommands, see %help scores dates')
             return 
 
-    @dates.command(pass_context=True, name='list', brief='List dates', description='Lists all dates for scorecards stored in this channel')
+    @dates.command(pass_context=True, name='list', brief='Print stored dates', description='print all dates for scorecards stored in this channel')
     async def date_list(self, ctx):    
         date_list = []
         for file in os.listdir(f'{ctx.guild.name}\{ctx.channel}'):
@@ -162,7 +197,7 @@ class Scores(commands.Cog):
         await ctx.send(msg)
         pass
     
-    @dates.command(pass_context=True, name='search', brief='Search for scorecards', description='Search and print scorecards for date(s) given\nSearch one date: 1.1.1990\nSearch between two dates: 1.1.1990 1.12.1990')
+    @dates.command(pass_context=True, name='search', brief='[1.1.2021 31.12.2021]', description='Search for scorecards within date(s) \search 1.1.1990\nsearch 1.1.1990 1.12.1990')
     async def dates_search(self, ctx, *args):
         if len(args) == 0:
             await ctx.send("Missing date(s)")
@@ -199,24 +234,9 @@ class Scores(commands.Cog):
                 await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:
-            await ctx.send("No courses found")
+            await ctx.send("No courses found")    
 
-    @commands.command(name='scores_stats', brief='statistics', description='Get statistics for saved scorecards')
-    @has_scorecards()
-    async def scores_stats(self, ctx):
-        
-        alias = Alias(ctx.guild.name)
-        alias.parse()
-
-        scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
-
-        if (scorecards.scorecards):
-            embed = scorecards.get_embed_stats(ctx.author.avatar_url)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("No courses found")
-
-    @commands.command(name='udiscleague', aliases=['uleague'], brief='uDiscLeague', description='Parse uDisc League')
+    @commands.command(name='udiscleague', aliases=['uleague'], brief='[uDiscLeague-link]', description='Parse uDisc League link to a scorecard')
     async def ukesgolf(self, ctx, *args,):
         if len(args) == 0:
             await ctx.send('No league specified, see %help udiscleague')

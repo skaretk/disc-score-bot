@@ -12,7 +12,6 @@ token = getenv("TOKEN")
 from score.files.attachment import Attachment
 from score.scores import Scores
 from emoji.emojis import Emojis
-from score.files.filereader import FileReader
 from discs.discs import Discs
 from bag.bag import Bag
 
@@ -31,7 +30,6 @@ async def on_message(message):
 bot.add_cog(Attachment(bot))
 bot.add_cog(Scores(bot))
 bot.add_cog(Emojis(bot))
-bot.add_cog(FileReader(bot))
 bot.add_cog(Discs(bot))
 bot.add_cog(Bag(bot))
 

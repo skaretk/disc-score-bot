@@ -72,6 +72,8 @@ class Discs(commands.Cog):
 
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
+        
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
     @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
     async def disc_all(self, ctx, *args, sep=" "):

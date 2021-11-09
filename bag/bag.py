@@ -7,7 +7,7 @@ class Bag(commands.Cog):
     def __init__(self, bot):
         self.bot = bot    
     
-    @commands.command(brief='bag <@user>', description='Get your bag, or tagged user')
+    @commands.command(brief='bag [@user - optional]', description='%bag - Get your bag\n%bag @user - Get users bag')
     async def bag(self, ctx, user: discord.Member=None ):
         if (user == None):
             user = ctx.author
@@ -20,7 +20,7 @@ class Bag(commands.Cog):
         else:
             await ctx.send(f'Could not find any bag for player {user.display_name}')
     
-    @commands.command(brief='bag_add <link>', description='Add your bag, or modify current link')
+    @commands.command(brief='bag_add [link]', description='Add your bag, or modify current bag-link')
     async def bag_add(self, ctx, bag_link):
         user = ctx.author
         bags = Bags(ctx.guild.name, user.display_name)
