@@ -83,7 +83,7 @@ class Scorecards:
                 return None
     
     def get_embed_max(self, thumbnail=''):
-        embed=discord.Embed(title="Scores", url="", description="", color=0xFF5733)
+        embed=discord.Embed(title="Scores", url="", description="", color=0x004899)
         for scorecard in self.scorecards:
             embed.add_field(name=scorecard.coursename, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=False)
             if (len(self.scorecards) > 1):
@@ -94,7 +94,7 @@ class Scorecards:
         return embed
     
     def get_embed_min(self, thumbnail=''):
-        embed=discord.Embed(title="Total", url="", description=f'{self}', color=0xFF5733)        
+        embed=discord.Embed(title="Total", url="", description=f'{self}', color=0x004899)        
         score_cards = ''
         for scorecard in self.scorecards:
             score_cards += f'{scorecard.date_time.date()} - {scorecard.coursename}\n'
@@ -105,7 +105,7 @@ class Scorecards:
         return embed
     
     def get_embed_stats(self, thumbnail=''):        
-        embed=discord.Embed(title="Stats", url="", description="Statistics for saved scorecards", color=0xFF5733)
+        embed=discord.Embed(title="Stats", url="", description="Statistics for saved scorecards", color=0x004899)
         embed.add_field(name="Scorecards", value=f'{len(self.scorecards)}', inline=False)
         embed.add_field(name="Players", value=f'{len(self.players)}', inline=False)
         embed.add_field(name="Throws", value=f'{self.get_total_throws()}', inline=False)

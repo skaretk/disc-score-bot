@@ -29,7 +29,7 @@ class Discs(commands.Cog):
             embed_title = f'Found {len(self.discs)} Disc!'            
         else:
             embed_title = f'Found {len(self.discs)} Discs!'
-        embed = discord.Embed(title=embed_title, color=0xFF5733)
+        embed = discord.Embed(title=embed_title, color=0x004899)
 
         img_set = False
         for disc in self.discs:            
@@ -112,9 +112,9 @@ class Discs(commands.Cog):
         if (len(self.discs) == 1):
             disc = self.discs[0]
             if (disc.manufacturer == "Other"):
-                embed = discord.Embed(title=f'{disc.name}', color=0xFF5733)
+                embed = discord.Embed(title=f'{disc.name}', color=0x004899)
             else:
-                embed = discord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0xFF5733)
+                embed = discord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)
             embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
             embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
