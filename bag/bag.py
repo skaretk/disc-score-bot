@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from bag.bags import Bags
 from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
+from discord_utils.embed_validation import validate_embed
 
 class Bag(commands.Cog):
     def __init__(self, bot):
@@ -73,9 +74,9 @@ class Bag(commands.Cog):
             embed.add_field(name="\u200b", value="\u200b", inline=True)  
             embed.set_footer(text="Provided by discgolfbagbuilder.com", icon_url=bag_scraper.icon_url)
 
-        if (len(embed) < 6000): # Size limit for embeds
+        # Validate and send embed
+        if (validate_embed(embed) == True):
             await ctx.send(file=file, embed=embed)
         else:
-            print(len(embed))
             await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
             await ctx.send('WOW, thats a lot of discs in the bag!')

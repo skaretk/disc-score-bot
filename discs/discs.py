@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from scrapers.discScrapers import DiscScrapers
 from scrapers.marshallstreet import DiscFlightScraper
+from discord_utils.embed_validation import validate_embed
 
 class Discs(commands.Cog):
     def __init__(self, bot):
@@ -41,15 +42,13 @@ class Discs(commands.Cog):
         
         if (img_set == False):
             embed.set_thumbnail(url=(ctx.author.avatar_url))
-
-        if (len(embed) < 6000): # Size limit for embeds
+        
+        # Validate and send Embed
+        if (validate_embed(embed) == True):
             await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
         else:
-            print(len(embed))
             await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)')
             await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
-
-        await self.bot.change_presence(activity=discord.Game(name="Disc golf")) 
 
     @commands.command(aliases=['d'], brief='%disc [disc1, disc2, etc]', description='Search for disc in norwegian and VOEC approved sites')
     async def disc(self, ctx, *args, sep=" "):        
@@ -73,6 +72,7 @@ class Discs(commands.Cog):
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
         
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
     @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
@@ -83,7 +83,9 @@ class Discs(commands.Cog):
 
         search = sep.join(args)
         search_list = search.split(", ")    
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))
+
+        start_time = time.time()
 
         for search_item in search_list:
             self.discs = []
@@ -95,6 +97,9 @@ class Discs(commands.Cog):
 
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
+        
+        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
     @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
     async def disc_flight(self, ctx, *args, sep=" "):
@@ -118,7 +123,13 @@ class Discs(commands.Cog):
             embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
             embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
-            await ctx.send(ctx.author.mention, embed=embed)
+            
+            # Validate and send Embed
+            if (validate_embed(embed) == True):
+                await ctx.send(ctx.author.mention, embed=embed)
+            else:
+                await ctx.send(f'{ctx.author.mention}, Could not show the disc flight for {search}!)')
+                await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         

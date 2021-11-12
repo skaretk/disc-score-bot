@@ -1,5 +1,5 @@
 import discord
-from discord_utils.validate_embed import ValidateEmbed
+from discord_utils.embed_validation import validate_embed
 
 class Scorecards:
     def __init__(self):
@@ -71,13 +71,11 @@ class Scorecards:
     # Check and return the biggeest embed, return None if not possible
     def get_embed(self, thumbnail=''):        
         embed = self.get_embed_max(thumbnail)
-        validate_embed = ValidateEmbed(embed)
-        if (validate_embed.validate() == True):
+        if (validate_embed(embed) == True):
             return embed
         else:
             embed = self.get_embed_min(thumbnail)
-            validate_embed = ValidateEmbed(embed)
-            if (validate_embed.validate() == True):
+            if (validate_embed(embed) == True):
                 return embed
             else:
                 return None
