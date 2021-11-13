@@ -31,7 +31,7 @@ class DiscScraper(SuneSport):
             a = h4.find('a', href=True)
             disc.name = a.getText()
             disc.url = a["href"]
-            disc.price = re.search(r" (.*?)Ekskl.", caption.find("p", class_="price").getText()).group(1)
+            disc.price = re.search(r" (.*?)Ekskl.", caption.find("p", class_="price").getText()).group(1).rstrip().lstrip()
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
