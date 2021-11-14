@@ -18,7 +18,7 @@ class Scorecards:
                 no += no_same_scores + 1
                 no_same_scores = 0
             
-            msg += f'\n{no}: {player.get_full_info_min()}'
+            msg += f'\n{no}: {player.get_full_info()}'
 
             last_score = player.score
             
@@ -54,6 +54,27 @@ class Scorecards:
     def sort_players(self):
         self.players.sort(key=lambda x: x.score)
     
+    def sort_players_points(self):
+        self.players.sort(key=lambda x: x.league_pts, reverse=True)
+    
+    def get_league_str(self):
+        msg = ''
+        no = 0
+        last_pts = ''
+        no_same_pts = 0
+        for player in self.players:  
+            if last_pts == player.league_pts:
+                no_same_pts += 1
+            else:
+                no += no_same_pts + 1
+                no_same_pts = 0
+            
+            msg += f'\n{no}: {player.get_league_info(len(self.scorecards))}'
+
+            last_pts = player.league_pts
+            
+        return msg
+    
     def sort_players_position(self):
         self.players.sort(key=lambda x: x.get_average_result())
 
@@ -79,6 +100,18 @@ class Scorecards:
                 return embed
             else:
                 return None
+
+    def get_embed_league(self, thumbnail=''):
+        embed=discord.Embed(title="EDK League", url="", description="", color=0x004899)
+        embed.set_footer(text=f'Total{self.get_league_str()}')
+        if thumbnail != '':
+            embed.set_thumbnail(url=(thumbnail))
+        
+        if (validate_embed(embed) == True):
+            return embed
+        else:
+            return None
+     
     
     def get_embed_max(self, thumbnail=''):
         embed=discord.Embed(title="Scores", url="", description="", color=0x004899)
@@ -114,7 +147,7 @@ class Scorecards:
         return embed
     
     def save_scorecards_text(self, file):
-        str = f'{self}\n'
+        str = f'{self.get_league_str()}\n'
         for scorecard in self.scorecards:
             str += f'\n{scorecard.date_time.date()} - {scorecard.coursename}'
         f = open(file, "a")

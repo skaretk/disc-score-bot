@@ -75,7 +75,12 @@ class Scores(commands.Cog):
             scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
 
             if (scorecards.scorecards):
-                embed = scorecards.get_embed(ctx.author.avatar_url)
+                if ("ukesgolf" in ctx.channel.name):
+                    embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
+                    scorecards.sort_players_points()
+                else:
+                    embed = scorecards.get_embed(ctx.author.avatar_url)
+                
                 if (embed != None):
                     await ctx.send(embed=embed)
                 else:
@@ -161,12 +166,19 @@ class Scores(commands.Cog):
         alias.parse()
     
         scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)
+
         if (scorecards.scorecards):
-            embed = scorecards.get_embed(ctx.author.avatar_url)
+            if ("ukesgolf" in ctx.channel.name):
+                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
+                scorecards.sort_players_points()
+            else:
+                embed = scorecards.get_embed(ctx.author.avatar_url)
+
             if (embed != None):
                 await ctx.send(embed=embed)
             else:
                 print("Embed not OK")
+                scorecards.save_scorecards_text(f'{ctx.guild.name}\{ctx.channel}\scores.txt')
                 await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:
@@ -223,14 +235,21 @@ class Scores(commands.Cog):
                 await ctx.send("Invalid format in date 2 - should be 01.12.2021")
                 return
 
-            scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to)                                 
+            scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to)
 
+        
         if (scorecards.scorecards):
-            embed = scorecards.get_embed(ctx.author.avatar_url)
+            if ("ukesgolf" in ctx.channel.name):
+                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
+                scorecards.sort_players_points()
+            else:
+                embed = scorecards.get_embed(ctx.author.avatar_url)
+
             if (embed != None):
                 await ctx.send(embed=embed)
             else:
                 print("Embed not OK")
+                scorecards.save_scorecards_text(f'{ctx.guild.name}\{ctx.channel}\scores.txt')
                 await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:

@@ -1,4 +1,6 @@
 
+from score.point_system import PointSystem
+
 class PlayerName:
     def __init__(self, name, alias = ''):
         self.name = name
@@ -26,6 +28,8 @@ class Player:
         self.holes = []
         self.score_cards = 1
         self.score_cards_position = []
+        self.league_pts = 0
+        self.league_attendence = 0
 
     def __str__(self):
         return f'{self.player_name} {self.score}'
@@ -64,8 +68,23 @@ class Player:
     def get_first_name(self):
         return self.player_name.name.split(' ', 1)[0]
 
+    def calculate_scores(self):
+        for position in self.score_cards_position:
+            self.league_pts += PointSystem.get_points(position)
+    
+    def calculate_attendence(self, no_scorecards):
+         percentage = (self.score_cards / no_scorecards)*100
+         self.league_attendence = percentage.__round__(2)
+
     def get_full_info(self):
      return f'{self} Kast: {self.total} - Kort: {self.score_cards}'
 
     def get_full_info_min(self):
         return f'{self}: {self.total}: {self.score_cards}'
+
+    def get_league_info(self, scorecards):
+        if (self.league_pts == 0):
+            self.calculate_scores()
+            self.calculate_attendence(scorecards)
+        return f'{self}: Kast: {self.total}: Kort: {self.score_cards} ({self.league_attendence}%) Pts: {self.league_pts}'
+           
