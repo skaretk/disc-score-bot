@@ -50,6 +50,7 @@ class DiscScraper(RocketDiscs):
             driver.execute_script("arguments[0].click();", driver_button)
             driver.refresh()
             soup_product = BeautifulSoup(driver.page_source, "html.parser")
+            # Todo: Might fail here?
             disc.price = soup_product.find("td", id="ContentPlaceHolder1_lblOurPrice").text
             img = soup_product.find("img", id="ContentPlaceHolder1_discImage")
             if (img is not None):

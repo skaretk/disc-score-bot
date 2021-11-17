@@ -1,10 +1,12 @@
 import discord
 from discord_utils.embed_validation import validate_embed
+from score.statistics import Statistics
 
 class Scorecards:
     def __init__(self):
         self.scorecards = []
         self.players = []
+        self.statistics = Statistics()
     
     def __str__(self):
         msg = ''
@@ -84,6 +86,10 @@ class Scorecards:
             throws += scorecard.get_total_throws()
         return throws
 
+    def get_total_stats(self):
+        for player in self.players:
+            self.statistics += player.player_stats
+
     def print_scores(self):
         print("Total Scores")
         for player in self.players:
@@ -111,7 +117,6 @@ class Scorecards:
             return embed
         else:
             return None
-     
     
     def get_embed_max(self, thumbnail=''):
         embed=discord.Embed(title="Scores", url="", description="", color=0x004899)
@@ -139,7 +144,16 @@ class Scorecards:
         embed=discord.Embed(title="Stats", url="", description="Statistics for saved scorecards", color=0x004899)
         embed.add_field(name="Scorecards", value=f'{len(self.scorecards)}', inline=False)
         embed.add_field(name="Players", value=f'{len(self.players)}', inline=False)
+        self.get_total_stats()
         embed.add_field(name="Throws", value=f'{self.get_total_throws()}', inline=False)
+        embed.add_field(name="Aces", value=f'{self.statistics.ace}', inline=False )
+        embed.add_field(name="Eagles", value=f'{self.statistics.eagle}', inline=False )
+        embed.add_field(name="Birdies", value=f'{self.statistics.birdie}', inline=False )
+        embed.add_field(name="Pars", value=f'{self.statistics.par}', inline=False )
+        embed.add_field(name="Bogey", value=f'{self.statistics.bogey}', inline=False )
+        embed.add_field(name="Double Bogey", value=f'{self.statistics.double_bogey}', inline=False )
+        embed.add_field(name="Triple Bogey+", value=f'{self.statistics.triple_bogey_plus}', inline=False )
+        
 
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))

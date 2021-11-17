@@ -3,6 +3,27 @@ import datetime
 from score.player import Player
 from score.player import PlayerName
 from score.scorecard import Scorecard
+from score.statistics import Statistics
+
+def get_golf_score(statistics:Statistics, score, par):
+    if (score == 1):
+        statistics.ace += 1
+    elif (score == par-4):
+        statistics.kondor += 1
+    elif (score == par-3):
+        statistics.albatross += 1
+    elif (score == par-2):
+        statistics.eagle += 1
+    elif (score == par-1):
+        statistics.birdie += 1
+    elif (score == par):
+        statistics.par += 1
+    elif (score == par+1):
+        statistics.bogey += 1
+    elif (score == par+2):
+        statistics.double_bogey += 1
+    elif (score >= par+3):
+        statistics.triple_bogey_plus += 1
 
 class ScorecardReader:
     def __init__(self, path, file):
@@ -23,7 +44,9 @@ class ScorecardReader:
                 else:
                     player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
                     for i in range(0, len(scorecard.holes)):
-                        player.add_hole(int(row[f'Hole{i+1}']))
+                        score = int(row[f'Hole{i+1}'])
+                        player.add_hole(score)
+                        get_golf_score(player.player_stats, score, scorecard.holes[i+1])
                     scorecard.add_player(player)
         return scorecard
     

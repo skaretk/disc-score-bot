@@ -9,7 +9,7 @@ class Bags:
         self.file = "bags.json"
 
     def get_player_bag(self):
-        if os.path.isfile(f'{self.server}\{self.file}') == False:
+        if os.path.isfile(f'{os.getcwd()}\{self.server}\{self.file}') == False:
             print(f'No Bags stored for {self.server}')
             return None
 

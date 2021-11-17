@@ -59,7 +59,7 @@ class Scores(commands.Cog):
     # Checks
     def has_scorecards():
         def predicate(ctx):    
-            if utilities.is_path_empty(f'{ctx.guild.name}\{ctx.channel}'):
+            if utilities.is_path_empty(f'{os.getcwd()}\{ctx.guild.name}\{ctx.channel}'):
                 return False
             else:            
                 return True
@@ -98,8 +98,7 @@ class Scores(commands.Cog):
     
     @scores.command(brief='Print stored scorecards', description='Lists all scorecard files stored in this discord channel')
     async def files(self, ctx):
-        path = str(f'{ctx.guild.name}\{ctx.channel}')
-
+        path = str(f'{os.getcwd()}\{ctx.guild.name}\{ctx.channel}')
         if utilities.is_path_empty(path):
             await ctx.send('No files stored for this channel')
             return

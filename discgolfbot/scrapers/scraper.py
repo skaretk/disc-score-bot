@@ -1,3 +1,4 @@
+import os
 import time
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
@@ -43,7 +44,7 @@ class Scraper():
         opt.add_argument("--disable-webgl")
         opt.add_argument("--disable-popup-blocking")
         opt.page_load_strategy = 'eager'
-        browser = webdriver.Chrome(options=opt)
+        browser = webdriver.Chrome(executable_path=f'{os.getcwd()}/chromedriver.exe', options=opt) 
         browser.implicitly_wait(10)
         browser.set_page_load_timeout(30)
         return browser

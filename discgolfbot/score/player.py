@@ -1,4 +1,5 @@
 
+from score.statistics import Statistics
 from score.point_system import PointSystem
 
 class PlayerName:
@@ -30,6 +31,7 @@ class Player:
         self.score_cards_position = []
         self.league_pts = 0
         self.league_attendence = 0
+        self.player_stats = Statistics()
 
     def __str__(self):
         return f'{self.player_name} {self.score}'
@@ -44,6 +46,7 @@ class Player:
         player = Player(PlayerName(self.player_name.name, self.player_name.alias), self.total + other.total, self.score + other.score)
         player.score_cards = self.score_cards + 1
         player.score_cards_position = self.score_cards_position + other.score_cards_position
+        player.player_stats = self.player_stats + other.player_stats
         return player
 
     def add_hole(self, score):
@@ -67,10 +70,6 @@ class Player:
     
     def get_first_name(self):
         return self.player_name.name.split(' ', 1)[0]
-
-    def calculate_scores(self):
-        for position in self.score_cards_position:
-            self.league_pts += PointSystem.get_points(position)
     
     def calculate_attendence(self, no_scorecards):
          percentage = (self.score_cards / no_scorecards)*100
@@ -84,7 +83,7 @@ class Player:
 
     def get_league_info(self, scorecards):
         if (self.league_pts == 0):
-            self.calculate_scores()
+            self.league_pts = PointSystem.calculate_scores(self.score_cards_position)
             self.calculate_attendence(scorecards)
         return f'{self}: Kast: {self.total}: Kort: {self.score_cards} ({self.league_attendence}%) Pts: {self.league_pts}'
            

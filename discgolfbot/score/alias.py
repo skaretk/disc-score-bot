@@ -9,7 +9,7 @@ class Alias:
         self.alias_list = []        
 
     def parse(self):
-        if os.path.isfile(f'{self.server}\{self.file}') == False:
+        if os.path.isfile(f'{os.getcwd()}\{self.server}\{self.file}') == False:
             print(f'No Aliases stored for {self.server}')
             return
 

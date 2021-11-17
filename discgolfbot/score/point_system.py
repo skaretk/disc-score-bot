@@ -57,3 +57,9 @@ class PointSystem():
             49: 2,
             50: 2
         }.get(position, 0)
+    
+    def calculate_scores(positions):
+        points = 0
+        for position in positions:
+            points += PointSystem.get_points(position)
+        return points
