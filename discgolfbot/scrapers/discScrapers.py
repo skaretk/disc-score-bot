@@ -16,12 +16,12 @@ class DiscScrapers():
         self.norwegian =     [discinstock.DiscScraper(search),                               
                               sunesport.DiscScraper(search),
                               xxl.DiscScraper(search)]
-        self.voec =          [discexpress.DiscScraper(search),
-                              discconnection.DiscScraper(search),
-                              discsport.DiscScraper(search),
-                              discmania.DiscScraper(search),
+        self.voec =          [discsport.DiscScraper(search),
                               rocketdiscs.DiscScraper(search),
+                              discmania.DiscScraper(search),
+                              latitude64.DiscScraper(search),
+                              discexpress.DiscScraper(search),
+                              discconnection.DiscScraper(search),
                               discimport.DiscScraper(search),
                               armspeed.DiscScraper(search)]
-        self.international = [latitude64.DiscScraper(search),
-                              discrepublic.DiscScraper(search)]
+        self.international = [discrepublic.DiscScraper(search)]
