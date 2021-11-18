@@ -1,8 +1,8 @@
+from bs4 import BeautifulSoup
 import time
 import re
-from bs4 import BeautifulSoup
-from scrapers.scraper import Scraper
 from discs.disc import DiscShop
+from .scraper import Scraper
 
 class RocketDiscs(Scraper):
     def __init__(self):

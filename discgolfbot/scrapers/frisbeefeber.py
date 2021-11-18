@@ -1,7 +1,7 @@
 import time
 import re
-from scrapers.scraper import Scraper
 from discs.disc import DiscShop
+from .scraper import Scraper
 # This site has been added into DiscInStock site
 
 class FrisbeeFeber(Scraper):

@@ -1,6 +1,6 @@
 import time
-from scrapers.scraper import Scraper
 from discs.disc import DiscShop
+from .scraper import Scraper
 
 class Latitude64(Scraper):
     def __init__(self):

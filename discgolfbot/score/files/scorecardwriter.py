@@ -1,6 +1,5 @@
-
-import os
 import csv
+import os
 
 class ScorecardWriter:
     def __init__(self, path, file):

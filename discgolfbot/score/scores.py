@@ -1,14 +1,14 @@
-import os
+from concurrent.futures import ThreadPoolExecutor
 from discord.ext import commands
 from datetime import datetime
+import os
 import time
-from concurrent.futures import ThreadPoolExecutor
-from score.files.scorecardreader import ScorecardReader
-from score.files.scorecardwriter import ScorecardWriter
-from score.alias import Alias
-from score.scorecards import Scorecards
 from scrapers.udisc import LeagueScraper
 import utilities
+from .files.scorecardreader import ScorecardReader
+from .files.scorecardwriter import ScorecardWriter
+from .alias import Alias
+from .scorecards import Scorecards
 
 def get_scorecards(path, alias):
     scorecards = Scorecards()

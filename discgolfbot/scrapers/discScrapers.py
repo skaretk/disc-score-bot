@@ -1,15 +1,16 @@
-from scrapers import discinstock
-from scrapers import sunesport
-from scrapers import xxl
-from scrapers import discexpress
-from scrapers import discconnection
-from scrapers import discsport
-from scrapers import discmania
-from scrapers import rocketdiscs
-from scrapers import latitude64
-from scrapers import discrepublic
-from scrapers import discimport
-from scrapers import armspeed
+from . import discinstock
+from . import sunesport
+from . import xxl
+from . import discexpress
+from . import discconnection
+from . import discsport
+from . import discmania
+from . import rocketdiscs
+from . import latitude64
+from . import discrepublic
+from . import discimport
+from . import armspeed
+
 
 class DiscScrapers():
     def __init__(self, search):

@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-from bag.bags import Bags
-from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
 from discord_utils.embed_validation import validate_embed
+from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
+from .bags import Bags
 
 class Bag(commands.Cog):
     def __init__(self, bot):

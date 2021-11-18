@@ -41,5 +41,5 @@ class TestScraper():
         print(f'Total time Scraping: {round(sum(self.scraper_times), 2)}s')        
 
 test = TestScraper(search)
-#test.run_test()
-test.run_loop_test(10)
+test.run_test()
+#test.run_loop_test(10)

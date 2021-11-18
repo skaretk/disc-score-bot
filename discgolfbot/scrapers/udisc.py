@@ -1,8 +1,8 @@
 import time
 from dateutil.parser import parse
-from scrapers.scraper import Scraper
 from score.scorecard import Scorecard
 from score.player import Player, PlayerName
+from .scraper import Scraper
 
 class Udisc(Scraper):
     def __init__(self):

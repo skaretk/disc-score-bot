@@ -1,6 +1,7 @@
-import os.path
 import json
+import os.path
 from collections import OrderedDict
+
 
 class Bags:
     def __init__(self, server, user):

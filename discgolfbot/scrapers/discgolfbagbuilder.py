@@ -1,6 +1,6 @@
 import time
-from scrapers.scraper import Scraper
 from discs.disc import DiscBag
+from .scraper import Scraper
 
 # DiscgolfBagBuilder does not contain disc manufacturer
 class DiscgolfBagBuilder(Scraper):

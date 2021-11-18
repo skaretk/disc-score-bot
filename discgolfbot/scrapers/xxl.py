@@ -1,7 +1,7 @@
-import time
 import re
-from scrapers.scraper import Scraper
+import time
 from discs.disc import DiscShop
+from .scraper import Scraper
 
 class Xxl(Scraper):
     def __init__(self):

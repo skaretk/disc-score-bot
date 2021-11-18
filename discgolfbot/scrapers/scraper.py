@@ -1,7 +1,7 @@
 import os
 import time
 import urllib.parse
-from concurrent.futures import ThreadPoolExecutor
+#from concurrent.futures import ThreadPoolExecutor
 from selenium import webdriver
 from bs4 import BeautifulSoup
 

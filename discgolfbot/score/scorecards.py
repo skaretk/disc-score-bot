@@ -1,6 +1,6 @@
 import discord
 from discord_utils.embed_validation import validate_embed
-from score.statistics import Statistics
+from .statistics import Statistics
 
 class Scorecards:
     def __init__(self):

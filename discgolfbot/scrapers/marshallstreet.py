@@ -1,6 +1,6 @@
 import time
-from scrapers.scraper import Scraper
 from discs.disc import DiscFlight
+from .scraper import Scraper
 
 class MarshallStreet(Scraper):
     def __init__(self):

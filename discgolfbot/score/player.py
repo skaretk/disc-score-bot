@@ -1,6 +1,5 @@
-
-from score.statistics import Statistics
-from score.point_system import PointSystem
+from .statistics import Statistics
+from .point_system import PointSystem
 
 class PlayerName:
     def __init__(self, name, alias = ''):

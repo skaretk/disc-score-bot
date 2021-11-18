@@ -1,7 +1,7 @@
-import time
-from concurrent.futures import ThreadPoolExecutor
 import discord
 from discord.ext import commands
+import time
+from concurrent.futures import ThreadPoolExecutor
 from scrapers.discScrapers import DiscScrapers
 from scrapers.marshallstreet import DiscFlightScraper
 from discord_utils.embed_validation import validate_embed

@@ -8,10 +8,10 @@ from os import getenv
 
 # cogs
 from score.files.attachment import Attachment
-from score.scores import Scores
-from emoji.emojis import Emojis
-from discs.discs import Discs
-from bag.bag import Bag
+from score import Scores
+from emoji import Emojis
+from discs import Discs
+from bag import Bag
 
 # discord client
 def main():

@@ -1,7 +1,7 @@
 import time
 import re
-from scrapers.scraper import Scraper
 from discs.disc import DiscShop
+from .scraper import Scraper
 
 class Discrepublic(Scraper):
     def __init__(self):

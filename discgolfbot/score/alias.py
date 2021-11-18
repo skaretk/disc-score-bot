@@ -1,6 +1,6 @@
 import os.path
 import json
-from score.player import PlayerName
+from .player import PlayerName
 
 class Alias:
     def __init__(self, server):
