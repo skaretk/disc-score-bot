@@ -25,7 +25,7 @@ class DiscgolfBagBuilder(Scraper):
         driver.add_cookie({"name": "measurement_unit", "value": "meters"})
         driver.refresh()
 
-        element = driver.find_element_by_class_name('flight_paths')
+        element = driver.find_element_by_class_name('y_axis')
         element.screenshot(self.image_file)
         driver.close()
         
