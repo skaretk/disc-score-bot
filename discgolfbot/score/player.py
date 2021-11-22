@@ -2,7 +2,7 @@ from .statistics import Statistics
 from .point_system import PointSystem
 
 class PlayerName:
-    def __init__(self, name, alias = ''):
+    def __init__(self, name, alias = []):
         self.name = name
         self.alias = alias
 
@@ -15,10 +15,23 @@ class PlayerName:
     def __eq__(self, other):
         if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
             return True
-        elif self.alias.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
-            return True
-        else:
-            return False
+        elif len(self.alias) != 0:
+            if self.has_alias(other.name):
+                return True
+        return False
+
+    def has_alias(self, name):
+        search_name = name.lower().replace(" ", "")
+        if type(self.alias) is list:
+            if search_name in [alias.lower().replace(" ", "") for alias in self.alias]:
+                print(f'{str(name)} has {len(self.alias)} aliases stored')
+                return True
+        else: # Not a list
+            if (search_name == self.alias.lower().replace(" ", "")):
+                print(f'{str(name)} has an alias stored')
+                return True
+        
+        return False
 
 class Player:
     def __init__(self, player_name, total, score):

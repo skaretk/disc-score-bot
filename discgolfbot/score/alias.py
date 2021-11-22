@@ -22,7 +22,7 @@ class Alias:
         for player in self.alias_list:
             if player.name == player_name:
                 return player.alias
-            elif player.alias == player_name:
+            elif player_name in player.alias:
                 return player.name
         return None 
 

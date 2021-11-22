@@ -3,6 +3,14 @@
         {
             "name": "uDisc nickname",
             "alias": "uDisc league or tournament name"
+        },
+        {
+            "name": "uDisc name",
+            "alias": [
+                "alias1",
+                "alias2",
+                "etc"
+            ]
         }
     ]
 }
