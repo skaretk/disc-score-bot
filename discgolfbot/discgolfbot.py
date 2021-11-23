@@ -15,7 +15,6 @@ from bag import Bag
 
 # discord client
 def main():
-    print("main()")
     load_dotenv(find_dotenv('token.env'))
     token = getenv("TOKEN")
 
@@ -39,5 +38,4 @@ def main():
     bot.run(token)
 
 if __name__ == '__main__':
-    print ("from __main__")
     main()
