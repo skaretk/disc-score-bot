@@ -13,7 +13,7 @@ class Scorecards:
         no = 0
         last_score = ''
         no_same_scores = 0
-        for player in self.players:  
+        for player in self.players:
             if last_score == player.score:
                 no_same_scores += 1
             else:
@@ -26,18 +26,18 @@ class Scorecards:
             
         return msg
     
-    def add_scorecard(self, scorecard, alias):        
-        for player in scorecard.players:
-            player_alias = alias.get_player_alias(player.player_name.name)
-            if player_alias != None:
-                idx = scorecard.players.index(player)
-                scorecard.players[idx].player_name.alias = player_alias
+    def add_scorecard(self, scorecard, alias):
         self.scorecards.append(scorecard)
-        self.add_players(scorecard)        
+        self.add_players(scorecard)
     
     def add_player(self, new_player):
         self.players.append(new_player)
         self.sort_players()
+    
+    def add_player_alias(self, player, alias):
+        player_with_alias = alias.get_player_with_alias(player.player_name.name)
+        if player_with_alias is not None:
+            player.player_name = player_with_alias
     
     def add_players(self, scorecard):
         for player in scorecard.players:
@@ -71,7 +71,7 @@ class Scorecards:
                 no += no_same_pts + 1
                 no_same_pts = 0
             
-            msg += f'\n{no}: {player.get_league_info(len(self.scorecards))}'
+            msg += f'\n{no}: {player.get_league_info()}'
 
             last_pts = player.league_pts
             
@@ -108,8 +108,8 @@ class Scorecards:
                 return None
 
     def get_embed_league(self, thumbnail=''):
-        embed=discord.Embed(title="EDK League", url="", description="", color=0x004899)
-        embed.set_footer(text=f'Total{self.get_league_str()}')
+        embed=discord.Embed(title="EDK League", url="", description=f'Total{self.get_league_str()}', color=0x004899)
+        #embed.set_footer(text=f'Total{self.get_league_str()}')
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))
         
@@ -153,7 +153,6 @@ class Scorecards:
         embed.add_field(name="Bogey", value=f'{self.statistics.bogey}', inline=False )
         embed.add_field(name="Double Bogey", value=f'{self.statistics.double_bogey}', inline=False )
         embed.add_field(name="Triple Bogey+", value=f'{self.statistics.triple_bogey_plus}', inline=False )
-        
 
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))

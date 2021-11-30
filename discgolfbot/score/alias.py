@@ -18,12 +18,14 @@ class Alias:
             for aliases in data['aliases']:
                 self.alias_list.append(PlayerName(aliases.get('name'), aliases.get('alias')))
     
-    def get_player_alias(self, player_name):
+    def get_player_with_alias(self, player_name):
         for player in self.alias_list:
             if player.name == player_name:
-                return player.alias
-            elif player_name in player.alias:
-                return player.name
+                return player
+            else:
+                for alias in player.alias:
+                    if alias == player_name:
+                        return player
         return None 
 
     def set_player_alias(self, player, new_alias):

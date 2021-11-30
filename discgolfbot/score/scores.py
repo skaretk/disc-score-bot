@@ -5,34 +5,64 @@ import os
 import time
 from scrapers.udisc import LeagueScraper
 import utilities
+from .files.members import Members
 from .files.scorecardreader import ScorecardReader
 from .files.scorecardwriter import ScorecardWriter
 from .alias import Alias
+from .point_system import calculate_player_score
 from .scorecards import Scorecards
 
-def get_scorecards(path, alias):
+def get_scorecards(path, alias, member_list = None):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
             scorecard_reader = ScorecardReader(path, file)
             scorecard = scorecard_reader.parse()
 
+            # Add aliases
+            for player in scorecard.players:
+                scorecards.add_player_alias(player, alias)
+
+            # Check and remove players
+            if member_list is not None:
+                scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
+                scorecard.sort_players()
+                scorecard.add_player_position()
+
             scorecards.add_scorecard(scorecard, alias)
+    
+    if member_list is not None:
+        for player in scorecards.players:
+            calculate_player_score(player, len(scorecards.scorecards))
 
     return scorecards
 
-def get_scorecards_course(path, alias, course):
+def get_scorecards_course(path, alias, course, member_list = None):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
             scorecard_reader = ScorecardReader(path, file)
             scorecard = scorecard_reader.parse_course(course)
             if scorecard is not None:
+                # Add aliases
+                for player in scorecard.players:
+                    scorecards.add_player_alias(player, alias)
+
+                # Check and remove players
+                if member_list is not None:
+                    scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
+                    scorecard.sort_players()
+                    scorecard.add_player_position()
+
                 scorecards.add_scorecard(scorecard, alias)
+    
+    if member_list is not None:
+        for player in scorecards.players:
+            calculate_player_score(player, len(scorecards.scorecards))
 
     return scorecards
 
-def get_scorecards_date(path, alias, date, date_to = ''):
+def get_scorecards_date(path, alias, date, date_to = '', member_list = None):
     scorecards = Scorecards()
     for file in os.listdir(path):
         if file.endswith(".csv"):
@@ -40,7 +70,21 @@ def get_scorecards_date(path, alias, date, date_to = ''):
             scorecard = scorecard_reader.parse_dates(date, date_to)            
 
             if scorecard is not None:
+                # Add aliases
+                for player in scorecard.players:
+                    scorecards.add_player_alias(player, alias)
+
+                # Check and remove players
+                if member_list is not None:
+                    scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
+                    scorecard.sort_players()
+                    scorecard.add_player_position()
+
                 scorecards.add_scorecard(scorecard, alias)
+
+    if member_list is not None:
+        for player in scorecards.players:
+            calculate_player_score(player, len(scorecards.scorecards))
 
     return scorecards
 
@@ -72,12 +116,18 @@ class Scores(commands.Cog):
             alias = Alias(ctx.guild.name)
             alias.parse()
 
-            scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
+            if ("ukesgolf" in ctx.channel.name):
+                members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
+                members.parse()
+                scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias, members.member_list)
+            else:
+                scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
 
             if (scorecards.scorecards):
                 if ("ukesgolf" in ctx.channel.name):
-                    embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
                     scorecards.sort_players_points()
+                    embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
+                    
                 else:
                     embed = scorecards.get_embed(ctx.author.avatar_url)
                 
@@ -163,13 +213,18 @@ class Scores(commands.Cog):
             
         alias = Alias(ctx.guild.name)
         alias.parse()
-    
-        scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)
+
+        if ("ukesgolf" in ctx.channel.name):
+            members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
+            members.parse()
+            scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg, members.member_list)
+        else:
+            scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)
 
         if (scorecards.scorecards):
             if ("ukesgolf" in ctx.channel.name):
-                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
                 scorecards.sort_players_points()
+                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
             else:
                 embed = scorecards.get_embed(ctx.author.avatar_url)
 
@@ -225,7 +280,13 @@ class Scores(commands.Cog):
             return
 
         if len(args) == 1:
-            scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date)
+            if ("ukesgolf" in ctx.channel.name):
+                members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
+                members.parse()
+                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, '', members.member_list)
+            else:
+                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date)
+            
         if (len(args) > 1):
             date_to = ''
             try:
@@ -233,14 +294,18 @@ class Scores(commands.Cog):
             except ValueError:
                 await ctx.send("Invalid format in date 2 - should be 01.12.2021")
                 return
-
-            scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to)
-
+            
+            if ("ukesgolf" in ctx.channel.name):
+                members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
+                members.parse()
+                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to, members.member_list)
+            else:
+                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to)
         
         if (scorecards.scorecards):
             if ("ukesgolf" in ctx.channel.name):
-                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
                 scorecards.sort_players_points()
+                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)                
             else:
                 embed = scorecards.get_embed(ctx.author.avatar_url)
 
