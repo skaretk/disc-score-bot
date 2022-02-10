@@ -20,25 +20,26 @@ class DiscScraper(Discsport):
         start_time = time.time()
         soup = self.get_page()        
 
-        products = soup.find('ul', class_="products")
+        products = soup.find('div', class_="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 justify-content-center g-2 g-md-3 my-4 ng-scope")
         if (products is not None):
-            for product in products.findAll("li"):
-                label = product.find("div", class_="upperLeftLabel")
+            for product in products.findAll("div", class_="position-relative mx-auto text-center p-0 m-0"):
+                label = product.find("div", class_="row align-items-start position-absolute m-0") # slutsåld row align-items-start position-absolute m-0
                 if label is not None:
-                    if label.getText().replace("\n", "") != "NEW":
+                    labelText = label.getText().replace("\n", "")
+                    if "Slutsåld" in labelText or "Restock" in labelText:
                         continue # Not in stock / Restock Delayed
 
                 disc = DiscShop()
-                a = product.find("h3", class_="shop_item").find('a', href=True)
+                a = product.find("h2", class_="h5 mt-2 mb-0").find('a', href=True)
                 disc.name = a.getText().replace("\n", " ").replace("\t", " ")
                 disc.url = a["href"]
-                manufacturer = re.search(r"]<br/>(.*?)\|", a["title"]).group(1).replace("\xa0", "")
-                if (manufacturer is not None):
-                    disc.manufacturer = manufacturer
+                #manufacturer = re.search(r"]<br/>(.*?)\|", a["title"]).group(1).replace("\xa0", "")
+                #if (manufacturer is not None):
+                #    disc.manufacturer = manufacturer
                 img = product.find("img", class_="lozad")
                 if (img is not None):
                     disc.img = img["data-src"]
-                disc.price = product.find("div", class_="text-center").find("p").getText()
+                disc.price = product.find("p", class_="h5 mt-1").getText()
                 disc.store = self.name
                 self.discs.append(disc)
         self.scraper_time = time.time() - start_time
