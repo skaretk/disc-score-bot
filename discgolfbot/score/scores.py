@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from discord.ext import commands
+from nextcord.ext import commands
 from datetime import datetime
 import os
 import time
@@ -126,10 +126,10 @@ class Scores(commands.Cog):
             if (scorecards.scorecards):
                 if ("ukesgolf" in ctx.channel.name):
                     scorecards.sort_players_points()
-                    embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
+                    embed = scorecards.get_embed_league(ctx.bot.user.avatar.url)
                     
                 else:
-                    embed = scorecards.get_embed(ctx.author.avatar_url)
+                    embed = scorecards.get_embed(ctx.author.avatar.url)
                 
                 if (embed != None):
                     await ctx.send(embed=embed)
@@ -175,7 +175,7 @@ class Scores(commands.Cog):
         scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
 
         if (scorecards.scorecards):
-            embed = scorecards.get_embed_stats(ctx.author.avatar_url)
+            embed = scorecards.get_embed_stats(ctx.author.avatar.url)
             await ctx.send(embed=embed)
         else:
             await ctx.send("No courses found")
@@ -224,9 +224,9 @@ class Scores(commands.Cog):
         if (scorecards.scorecards):
             if ("ukesgolf" in ctx.channel.name):
                 scorecards.sort_players_points()
-                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)
+                embed = scorecards.get_embed_league(ctx.bot.user.avatar.url)
             else:
-                embed = scorecards.get_embed(ctx.author.avatar_url)
+                embed = scorecards.get_embed(ctx.author.avatar.url)
 
             if (embed != None):
                 await ctx.send(embed=embed)
@@ -305,9 +305,9 @@ class Scores(commands.Cog):
         if (scorecards.scorecards):
             if ("ukesgolf" in ctx.channel.name):
                 scorecards.sort_players_points()
-                embed = scorecards.get_embed_league(ctx.bot.user.avatar_url)                
+                embed = scorecards.get_embed_league(ctx.bot.user.avatar.url)                
             else:
-                embed = scorecards.get_embed(ctx.author.avatar_url)
+                embed = scorecards.get_embed(ctx.author.avatar.url)
 
             if (embed != None):
                 await ctx.send(embed=embed)
@@ -336,7 +336,7 @@ class Scores(commands.Cog):
         scorecard_writer.write(header, data)
 
 
-        embed = udisc_league.score_card.get_embed(ctx.author.avatar_url)
+        embed = udisc_league.score_card.get_embed(ctx.author.avatar.url)
         if (embed != None):
             await ctx.send(embed=embed)
         else:

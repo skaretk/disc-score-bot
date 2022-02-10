@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 from discord_utils.embed_validation import validate_embed
 from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
 from .bags import Bags
@@ -9,7 +9,7 @@ class Bag(commands.Cog):
         self.bot = bot    
     
     @commands.command(brief='bag [@user - optional]', description='%bag - Get your bag\n%bag @user - Get users bag')
-    async def bag(self, ctx, user: discord.Member=None ):
+    async def bag(self, ctx, user: nextcord.Member=None ):
         if (user == None):
             user = ctx.author
         bags = Bags(ctx.guild.name, user.display_name)
@@ -32,8 +32,8 @@ class Bag(commands.Cog):
             await ctx.send(f'Added your bag {user.mention}')
     
     async def print_discs(self, ctx, bag_scraper):
-        embed = discord.Embed(title=bag_scraper.bag_name, description=bag_scraper.bag_description, url=bag_scraper.scrape_url, color=0x004899)
-        file = discord.File(bag_scraper.image_file, filename="flight.png")
+        embed = nextcord.Embed(title=bag_scraper.bag_name, description=bag_scraper.bag_description, url=bag_scraper.scrape_url, color=0x004899)
+        file = nextcord.File(bag_scraper.image_file, filename="flight.png")
         embed.set_image(url="attachment://flight.png")
 
         if (len(bag_scraper.distance_drivers)):            

@@ -1,5 +1,5 @@
 import os
-from discord.ext import commands
+from nextcord.ext import commands
 from score.files.scorecardreader import ScorecardReader
 
 class Attachment(commands.Cog):
@@ -22,7 +22,7 @@ class Attachment(commands.Cog):
                     scorecard_reader = ScorecardReader(path, attachment.filename)
                     scorecard = scorecard_reader.parse()
 
-                    embed = scorecard.get_embed(message.author.avatar_url)
+                    embed = scorecard.get_embed(message.author.avatar.url)
                     if (embed != None):
                         await message.channel.send(embed=embed)
                     else:

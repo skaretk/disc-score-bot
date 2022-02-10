@@ -1,5 +1,5 @@
 import datetime
-import discord
+import nextcord
 from discord_utils.embed_validation import validate_embed
 
 class Scorecard:
@@ -131,7 +131,7 @@ class Scorecard:
                 return None
 
     def get_embed_min(self, thumbnail=''):
-        embed=discord.Embed(title=self.coursename, url=self.course_url, description=f'{self.date_time}', color=0x004899)
+        embed=nextcord.Embed(title=self.coursename, url=self.course_url, description=f'{self.date_time}', color=0x004899)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
         if thumbnail != '':
             embed.set_thumbnail(url=(thumbnail))
@@ -139,7 +139,7 @@ class Scorecard:
         return embed
     
     def get_embed_max(self, thumbnail=''):
-        embed=discord.Embed(title=self.coursename, url=self.course_url, description=f'{self.date_time} Par:{self.par}', color=0x004899)
+        embed=nextcord.Embed(title=self.coursename, url=self.course_url, description=f'{self.date_time} Par:{self.par}', color=0x004899)
         embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
         
         header_holes = self.get_embed_column_start('Hole', True)

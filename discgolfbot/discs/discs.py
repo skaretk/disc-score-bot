@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 import time
 from concurrent.futures import ThreadPoolExecutor
 from scrapers.discScrapers import DiscScrapers
@@ -30,7 +30,7 @@ class Discs(commands.Cog):
             embed_title = f'Found {len(self.discs)} Disc!'            
         else:
             embed_title = f'Found {len(self.discs)} Discs!'
-        embed = discord.Embed(title=embed_title, color=0x004899)
+        embed = nextcord.Embed(title=embed_title, color=0x004899)
 
         img_set = False
         for disc in self.discs:            
@@ -41,7 +41,7 @@ class Discs(commands.Cog):
                     img_set = True
         
         if (img_set == False):
-            embed.set_thumbnail(url=(ctx.author.avatar_url))
+            embed.set_thumbnail(url=(ctx.author.avatar.url))
         
         # Validate and send Embed
         if (validate_embed(embed) == True):
@@ -58,7 +58,7 @@ class Discs(commands.Cog):
 
         search = sep.join(args)
         search_list = search.split(", ")        
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))        
 
         start_time = time.time()
         
@@ -72,7 +72,7 @@ class Discs(commands.Cog):
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
         
-        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
     @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
@@ -83,7 +83,7 @@ class Discs(commands.Cog):
 
         search = sep.join(args)
         search_list = search.split(", ")    
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
 
@@ -98,7 +98,7 @@ class Discs(commands.Cog):
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
         
-        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
     @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
@@ -109,7 +109,7 @@ class Discs(commands.Cog):
             return
 
         search = sep.join(args)
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="for discs online"))        
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))        
         
         scraper_list = [DiscFlightScraper(search)]
         self.scrape(scraper_list)
@@ -117,9 +117,9 @@ class Discs(commands.Cog):
         if (len(self.discs) == 1):
             disc = self.discs[0]
             if (disc.manufacturer == "Other"):
-                embed = discord.Embed(title=f'{disc.name}', color=0x004899)
+                embed = nextcord.Embed(title=f'{disc.name}', color=0x004899)
             else:
-                embed = discord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)
+                embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)
             embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
             embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
@@ -133,5 +133,5 @@ class Discs(commands.Cog):
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         
-        await self.bot.change_presence(activity=discord.Game(name="Disc golf"))
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
     

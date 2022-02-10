@@ -1,6 +1,6 @@
-import discord
-from discord.ext import commands
-from discord.message import Attachment
+import nextcord
+from nextcord.ext import commands
+from nextcord.message import Attachment
 
 # Fetch python bot token
 from dotenv import load_dotenv, find_dotenv
@@ -22,8 +22,8 @@ def main():
 
     @bot.event
     async def on_ready():
-        print(f'We have logged in as {bot.user} - {discord.__version__}')
-        await bot.change_presence(activity=discord.Game(name="Disc golf"))
+        print(f'We have logged in as {bot.user} - {nextcord.__version__}')
+        await bot.change_presence(activity=nextcord.Game(name="Disc golf"))
 
     @bot.event
     async def on_message(message):    
