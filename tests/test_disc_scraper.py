@@ -82,3 +82,8 @@ def test_xxl_disc_scraper():
     scraper = scrapers.xxl.DiscScraper(search)
     scraper.scrape()
     assert len(scraper.discs) != 0
+
+def test_pdga_disc_scraper():
+    scraper = scrapers.pdga.DiscScraper()
+    scraper.scrape()
+    assert len(scraper.discs) != 0

@@ -134,4 +134,3 @@ class Discs(commands.Cog):
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
         
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-    

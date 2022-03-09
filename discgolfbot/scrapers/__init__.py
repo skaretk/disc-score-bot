@@ -11,3 +11,4 @@ from . import latitude64
 from . import discrepublic
 from . import discimport
 from . import armspeed
+from . import pdga

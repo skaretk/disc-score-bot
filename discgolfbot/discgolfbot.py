@@ -10,7 +10,7 @@ from os import getenv
 from score.files.attachment import Attachment
 from score import Scores
 from emoji import Emojis
-from discs import Discs
+from discs import Discs, PdgaApprovedDiscs
 from bag import Bag
 
 # discord client
@@ -34,6 +34,7 @@ def main():
     bot.add_cog(Emojis(bot))
     bot.add_cog(Discs(bot))
     bot.add_cog(Bag(bot))
+    bot.add_cog(PdgaApprovedDiscs(bot))
 
     bot.run(token)
 
