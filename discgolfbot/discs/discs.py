@@ -25,11 +25,9 @@ class Discs(commands.Cog):
     async def print_discs(self, ctx, search_item):
         if(len(self.discs) == 0):
             await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
-            return        
-        elif(len(self.discs)) == 1:
-            embed_title = f'Found {len(self.discs)} Disc!'            
+            return
         else:
-            embed_title = f'Found {len(self.discs)} Discs!'
+            embed_title = f'Found {len(self.discs)} {"Disc!" if len(self.discs) == 1 else "Discs!"}'
         embed = nextcord.Embed(title=embed_title, color=0x004899)
 
         img_set = False
