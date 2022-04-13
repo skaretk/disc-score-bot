@@ -6,12 +6,24 @@ from scrapers.discScrapers import DiscScrapers
 from scrapers.marshallstreet import DiscFlightScraper
 from discord_utils.embed_validation import validate_embed
 
+class Store():
+    def __init__(self, store):
+        self.store = store
+        self.discs = []
+    
+    def __eq__(self, storeName):
+        if (storeName == self.store):
+            return True
+        else:
+            return False
+
 class Discs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.discs = []
+        self.stores = []
 
-    def scrape(self, scraper_list):    
+    def scrape(self, scraper_list):
         start_time = time.time()
         with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
             for disc_scraper in scraper_list:
@@ -21,6 +33,21 @@ class Discs(commands.Cog):
 
         for disc_scraper in scraper_list:
             self.discs.extend(disc_scraper.discs)
+    
+    def split_discs_in_stores(self):
+        self.stores = []
+
+        for disc in self.discs:
+            # Same store, append
+            if(disc.store in self.stores):
+                index = self.stores.index(disc.store)
+                self.stores[index].discs.append(disc)
+            # New store or last disc
+            else:
+                shop_list = Store(disc.store)
+                shop_list.discs.append(disc)
+                self.stores.append(shop_list)
+
 
     async def print_discs(self, ctx, search_item):
         if(len(self.discs) == 0):
@@ -30,13 +57,35 @@ class Discs(commands.Cog):
             embed_title = f'Found {len(self.discs)} {"Disc!" if len(self.discs) == 1 else "Discs!"}'
         embed = nextcord.Embed(title=embed_title, color=0x004899)
 
+        self.split_discs_in_stores()
+
         img_set = False
-        for disc in self.discs:            
-            embed.add_field(name=disc.name, value=f'{disc.manufacturer}\nPrice: {disc.price}\n[{disc.store}]({disc.url})')
+        # Split discs into stores so we can include more discs
+        for disc in self.discs:
+            # Set image
             if (disc.img and img_set == False):
                 if (disc.img.lower().endswith(('.png', '.jpg', '.jpeg'))):
                     embed.set_thumbnail(url=(disc.img))
                     img_set = True
+        
+        for store in self.stores:
+            store_string_value = ""
+            for disc in store.discs:
+                # First result
+                if store_string_value == "":
+                    if not disc.manufacturer:
+                        store_string_value = f'[{disc.name}]({disc.url})\nPrice: {disc.price}'
+                    else:
+                        store_string_value = f'[{disc.name}]({disc.url})\n{disc.manufacturer}\nPrice: {disc.price}'
+                # append
+                else:
+                    if not disc.manufacturer:
+                        store_string_value += f'\n\n[{disc.name}]({disc.url})\nPrice: {disc.price}'
+                    else:
+                        store_string_value += f'\n\n[{disc.name}]({disc.url})\n{disc.manufacturer}\nPrice: {disc.price}'
+                # Print if last disc
+                if (disc == store.discs[-1]):
+                    embed.add_field(name=store.store, value=store_string_value)
         
         if (img_set == False):
             embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -45,7 +94,7 @@ class Discs(commands.Cog):
         if (validate_embed(embed) == True):
             await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
         else:
-            await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)')
+            await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
             await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
     @commands.command(aliases=['d'], brief='%disc [disc1, disc2, etc]', description='Search for disc in norwegian and VOEC approved sites')
