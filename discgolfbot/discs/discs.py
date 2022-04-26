@@ -99,10 +99,34 @@ class Discs(commands.Cog):
             await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
             await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
-    @commands.command(aliases=['d'], brief='%disc [disc1, disc2, etc]', description='Search for disc in norwegian and VOEC approved sites')
+    @commands.command(aliases=['Disc', 'disk', 'Disk', 'd'], brief='%disc disc1, disc2, etc', description='Search for disc in norwegian sites')
     async def disc(self, ctx, *args, sep=" "):        
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc')
+            return
+
+        search = sep.join(args)
+        search_list = search.split(", ")        
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))        
+
+        start_time = time.time()
+        
+        for search_item in search_list:
+            self.discs = []
+            scrapers = DiscScrapers(search_item)
+            scraper_list = []
+            scraper_list.extend(scrapers.norwegian)
+
+            self.scrape(scraper_list)
+            await self.print_discs(ctx, search_item)
+        
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+    
+    @commands.command(aliases=['Disc_voec', 'disk_voec', 'Disk_voec'], brief='%disc_voec disc1, disc2, etc', description='Search for disc in norwegian and VOEC approved sites')
+    async def disc_voec(self, ctx, *args, sep=" "):        
+        if len(args) == 0:
+            await ctx.send('No disc specified, see %help disc_voec')
             return
 
         search = sep.join(args)
@@ -124,7 +148,7 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
-    @commands.command(name='disc_all', aliases=['d_a'], brief='List discs from all scrapers', description='Lists all discs in store for all sites added')
+    @commands.command(aliases=['disk_all', 'd_a'], brief='%disc_all disc1, disc2, etc', description='Lists all discs in store for all sites added')
     async def disc_all(self, ctx, *args, sep=" "):
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc_all')
@@ -150,7 +174,7 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
-    @commands.command(name='disc_flight', aliases=['d_f'], brief='Disc flightpath', description='Gets the flightpath of the specified disc')
+    @commands.command(aliases=['Disc_flight', 'disk_flight', 'Disk_flight'], brief='%disc_flight disc', description='Get the flightpath of the given disc')
     async def disc_flight(self, ctx, *args, sep=" "):
         self.discs = []
         if len(args) == 0:
