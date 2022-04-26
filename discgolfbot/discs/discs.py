@@ -39,7 +39,7 @@ class Discs(commands.Cog):
 
         for disc in self.discs:
             # Same store, append
-            if(disc.store in self.stores):
+            if disc.store in self.stores:
                 index = self.stores.index(disc.store)
                 self.stores[index].discs.append(disc)
             # New store or last disc
@@ -47,51 +47,53 @@ class Discs(commands.Cog):
                 shop_list = Store(disc.store)
                 shop_list.discs.append(disc)
                 self.stores.append(shop_list)
-
+    
+    def get_disc_image(self, embed:nextcord.Embed):
+        for disc in self.discs:
+            # Set image
+            if disc.img:
+                if disc.img.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    embed.set_thumbnail(url=(disc.img))
+                    return True
+        return False
+    
+    def format_discs_description(self):
+        description_text = ''
+        for store in self.stores:
+            store_string_value = ""
+            for disc in store.discs:
+                # First disc
+                if disc == store.discs[0]:
+                    if description_text:
+                        store_string_value += f'\n'
+                    store_string_value += f'**{store.store}**\n[{disc.name}]({disc.url}) {disc.price}'
+                # append
+                else:
+                    store_string_value += f'\n[{disc.name}]({disc.url}) {disc.price}'
+                # Print if last disc
+                if disc == store.discs[-1]:
+                    description_text += store_string_value
+        
+        return description_text
 
     async def print_discs(self, ctx, search_item):
-        if(len(self.discs) == 0):
+        if len(self.discs) == 0:
             await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
             return
         else:
             embed_title = f'Found {len(self.discs)} {"Disc!" if len(self.discs) == 1 else "Discs!"}'
         embed = nextcord.Embed(title=embed_title, color=0x004899)
 
+        # Split discs into store lists
         self.split_discs_in_stores()
-
-        img_set = False
-        # Split discs into stores so we can include more discs
-        for disc in self.discs:
-            # Set image
-            if (disc.img and img_set == False):
-                if (disc.img.lower().endswith(('.png', '.jpg', '.jpeg'))):
-                    embed.set_thumbnail(url=(disc.img))
-                    img_set = True
-        
-        for store in self.stores:
-            store_string_value = ""
-            for disc in store.discs:
-                # First result
-                if store_string_value == "":
-                    if not disc.manufacturer:
-                        store_string_value = f'[{disc.name}]({disc.url})\nPrice: {disc.price}'
-                    else:
-                        store_string_value = f'[{disc.name}]({disc.url})\n{disc.manufacturer}\nPrice: {disc.price}'
-                # append
-                else:
-                    if not disc.manufacturer:
-                        store_string_value += f'\n\n[{disc.name}]({disc.url})\nPrice: {disc.price}'
-                    else:
-                        store_string_value += f'\n\n[{disc.name}]({disc.url})\n{disc.manufacturer}\nPrice: {disc.price}'
-                # Print if last disc
-                if (disc == store.discs[-1]):
-                    embed.add_field(name=store.store, value=store_string_value)
-        
-        if (img_set == False):
+        # Format output
+        embed.description = self.format_discs_description()
+        # Add disc image
+        if self.get_disc_image(embed) == False:
             embed.set_thumbnail(url=(ctx.author.avatar.url))
         
         # Validate and send Embed
-        if (validate_embed(embed) == True):
+        if validate_embed(embed) == True:
             await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
         else:
             await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
