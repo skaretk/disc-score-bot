@@ -3,7 +3,7 @@ from .disc import PdgaApprovedDisc
 
 class PdgaSql():
     def __init__(self):
-        self.dbName = 'pdga_approved_discs.db'
+        self.dbName =  'cfg/pdga_approved_discs.db'
 
     def create_table(self):
         con = sqlite3.connect(self.dbName)
