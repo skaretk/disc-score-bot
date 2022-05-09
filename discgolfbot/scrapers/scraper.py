@@ -39,12 +39,18 @@ class Scraper():
         opt.add_argument("--disable-xss-auditor")
         #opt.add_argument("--disable-web-security")
         #opt.add_argument("--allow-running-insecure-content")
-        #opt.add_argument("--no-sandbox")
+        opt.add_argument("--no-sandbox") # apparently as Docker deamon always runs as a root user, Chrome crushes.
+        opt.add_argument("--disable-dev-shm-usage") # Explicitly disabling the usage of /dev/shm/ . The /dev/shm partition is too small in certain VM environments, causing Chrome to fail or crash.
         opt.add_argument("--disable-setuid-sandbox")
         opt.add_argument("--disable-webgl")
-        opt.add_argument("--disable-popup-blocking")
+        opt.add_argument("--disable-popup-blocking)")
         opt.page_load_strategy = 'eager'
-        browser = webdriver.Chrome(executable_path=f'{os.getcwd()}/chromedriver.exe', options=opt) 
+        
+        chrome_prefs = {}
+        opt.experimental_options["prefs"] = chrome_prefs
+        chrome_prefs["profile.default_content_settings"] = {"images": 2}
+
+        browser = webdriver.Chrome(options=opt) 
         browser.implicitly_wait(10)
         browser.set_page_load_timeout(30)
         return browser

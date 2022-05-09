@@ -8,7 +8,7 @@ class Attachment(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        path = str(f'{message.guild.name}\{message.channel}')
+        path = str(f'{os.getcwd()}/cfg/{message.guild.name}/{message.channel}')
     
         # any attachments in the message?
         if message.attachments:
@@ -16,8 +16,8 @@ class Attachment(commands.Cog):
                 if 'text/csv' in attachment.content_type:
                     if not os.path.exists(path):
                         os.makedirs(path)
-                    await attachment.save(fp=f"{path}\{attachment.filename}") # saves the file in a server/channel folder
-                    print(f'csv attached and stored in {path}\{attachment.filename}!')
+                    await attachment.save(fp=f"{path}/{attachment.filename}") # saves the file in a server/channel folder
+                    print(f'csv attached and stored in {path}/{attachment.filename}!')
                 
                     scorecard_reader = ScorecardReader(path, attachment.filename)
                     scorecard = scorecard_reader.parse()

@@ -14,14 +14,14 @@ class ExcelFile:
 
 class Members:
     def __init__(self, path, file):
-        self.path = path
+        self.path = f'{os.getcwd()}/cfg/{path}'
         self.file = file
         self.is_member = 'Betalt'
         self.member_list = []
         self.excel_file = ExcelFile()
     
     def parse(self):
-        wb = openpyxl.load_workbook(filename=f'{os.getcwd()}/{self.path}/{self.file}', read_only=True)
+        wb = openpyxl.load_workbook(filename=f'{self.path}/{self.file}', read_only=True)
         sheet = wb.active
         print(sheet.title)
 

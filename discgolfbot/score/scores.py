@@ -103,7 +103,7 @@ class Scores(commands.Cog):
     # Checks
     def has_scorecards():
         def predicate(ctx):    
-            if utilities.is_path_empty(f'{os.getcwd()}\{ctx.guild.name}\{ctx.channel}'):
+            if utilities.is_path_empty(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'):
                 return False
             else:            
                 return True
@@ -113,15 +113,19 @@ class Scores(commands.Cog):
     @has_scorecards()
     async def scores(self, ctx):    
         if ctx.invoked_subcommand is None:
+            print("Fetch Alias")
             alias = Alias(ctx.guild.name)
             alias.parse()
+            print("Alias OK")
 
             if ("ukesgolf" in ctx.channel.name):
+                print("ukesgolf")
                 members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
                 members.parse()
-                scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias, members.member_list)
+                scorecards = get_scorecards(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', alias, members.member_list)
             else:
-                scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
+                print("NOT ukesgolf")
+                scorecards = get_scorecards(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', alias)
 
             if (scorecards.scorecards):
                 if ("ukesgolf" in ctx.channel.name):
@@ -135,7 +139,7 @@ class Scores(commands.Cog):
                     await ctx.send(embed=embed)
                 else:
                     print("Embed not OK")
-                    scorecards.save_scorecards_text(f'{ctx.guild.name}\{ctx.channel}\scores.txt')
+                    scorecards.save_scorecards_text(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}/scores.txt')
                     await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                     await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')                        
             else:
@@ -148,7 +152,7 @@ class Scores(commands.Cog):
     
     @scores.command(brief='Print stored scorecards', description='Lists all scorecard files stored in this discord channel')
     async def files(self, ctx):
-        path = str(f'{os.getcwd()}\{ctx.guild.name}\{ctx.channel}')
+        path = str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}')
         if utilities.is_path_empty(path):
             await ctx.send('No files stored for this channel')
             return
@@ -158,7 +162,7 @@ class Scores(commands.Cog):
         for file in os.listdir(path):
             if file.endswith(".csv"):
                 file_count += 1
-                print(os.path.join(f'{path}\{file}'))
+                print(os.path.join(f'{path}/{file}'))
                 msg_to_send += f'\n{file}'
     
         if file_count:     
@@ -172,7 +176,7 @@ class Scores(commands.Cog):
         alias = Alias(ctx.guild.name)
         alias.parse()
 
-        scorecards = get_scorecards(f'{ctx.guild.name}\{ctx.channel}', alias)
+        scorecards = get_scorecards(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', alias)
 
         if (scorecards.scorecards):
             embed = scorecards.get_embed_stats(ctx.author.avatar.url)
@@ -189,9 +193,9 @@ class Scores(commands.Cog):
     @course.command(pass_context=True, name='list', brief='Print courses', description='Print stored courses in this channel')
     async def course_list(self, ctx):    
         course_list = []
-        for file in os.listdir(f'{ctx.guild.name}\{ctx.channel}'):
+        for file in os.listdir(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'):
             if file.endswith(".csv"):
-                scorecard_reader = ScorecardReader(f'{ctx.guild.name}\{ctx.channel}', file)
+                scorecard_reader = ScorecardReader(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file)
                 scorecard = scorecard_reader.parse()
 
                 course_name = scorecard.coursename
@@ -215,11 +219,11 @@ class Scores(commands.Cog):
         alias.parse()
 
         if ("ukesgolf" in ctx.channel.name):
-            members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
+            members = Members(f'{os.getcwd()}/cfg/{ctx.guild.name}', 'Medlemmer.xlsx')
             members.parse()
-            scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg, members.member_list)
+            scorecards = get_scorecards_course(str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'), alias, arg, members.member_list)
         else:
-            scorecards = get_scorecards_course(str(f'{ctx.guild.name}\{ctx.channel}'), alias, arg)
+            scorecards = get_scorecards_course(str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'), alias, arg)
 
         if (scorecards.scorecards):
             if ("ukesgolf" in ctx.channel.name):
@@ -232,7 +236,7 @@ class Scores(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 print("Embed not OK")
-                scorecards.save_scorecards_text(f'{ctx.guild.name}\{ctx.channel}\scores.txt')
+                scorecards.save_scorecards_text(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}/scores.txt')
                 await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:
@@ -247,9 +251,9 @@ class Scores(commands.Cog):
     @dates.command(pass_context=True, name='list', brief='Print stored dates', description='print all dates for scorecards stored in this channel')
     async def date_list(self, ctx):    
         date_list = []
-        for file in os.listdir(f'{ctx.guild.name}\{ctx.channel}'):
+        for file in os.listdir(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'):
             if file.endswith(".csv"):
-                scorecard_reader = ScorecardReader(f'{ctx.guild.name}\{ctx.channel}', file)
+                scorecard_reader = ScorecardReader(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file)
                 scorecard = scorecard_reader.parse()
 
                 date = scorecard.date_time.date()
@@ -283,9 +287,9 @@ class Scores(commands.Cog):
             if ("ukesgolf" in ctx.channel.name):
                 members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
                 members.parse()
-                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, '', members.member_list)
+                scorecards = get_scorecards_date(str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'), alias, date, '', members.member_list)
             else:
-                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date)
+                scorecards = get_scorecards_date(str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'), alias, date)
             
         if (len(args) > 1):
             date_to = ''
@@ -298,9 +302,9 @@ class Scores(commands.Cog):
             if ("ukesgolf" in ctx.channel.name):
                 members = Members(f'{ctx.guild.name}', 'Medlemmer.xlsx')
                 members.parse()
-                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to, members.member_list)
+                scorecards = get_scorecards_date(str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'), alias, date, date_to, members.member_list)
             else:
-                scorecards = get_scorecards_date(str(f'{ctx.guild.name}\{ctx.channel}'), alias, date, date_to)
+                scorecards = get_scorecards_date(str(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'), alias, date, date_to)
         
         if (scorecards.scorecards):
             if ("ukesgolf" in ctx.channel.name):
@@ -313,7 +317,7 @@ class Scores(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 print("Embed not OK")
-                scorecards.save_scorecards_text(f'{ctx.guild.name}\{ctx.channel}\scores.txt')
+                scorecards.save_scorecards_text(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}/scores.txt')
                 await ctx.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await ctx.send(f'WOW {ctx.author.mention}, thats a lot of scores!)')
         else:
@@ -331,7 +335,7 @@ class Scores(commands.Cog):
 
         date = udisc_league.score_card.date_time.strftime('%Y-%m-%d%H%M')
         file_name = f'{date}-{udisc_league.score_card.coursename}-{udisc_league.score_card.layoutname}-Udisc.csv'
-        scorecard_writer = ScorecardWriter(str(f'{ctx.guild.name}\{ctx.channel}'), file_name)
+        scorecard_writer = ScorecardWriter(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file_name)
         header, data = udisc_league.score_card.get_csv()
         scorecard_writer.write(header, data)
 

@@ -31,7 +31,7 @@ class ScorecardReader:
         self.file = file
     
     def parse(self):
-        with open(f'{self.path}\{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
@@ -51,7 +51,7 @@ class ScorecardReader:
         return scorecard
     
     def parse_course(self, course):
-        with open(f'{self.path}\{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
@@ -65,7 +65,7 @@ class ScorecardReader:
         return scorecard
 
     def parse_dates(self, date, date_to = ''):
-        with open(f'{self.path}\{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:                  

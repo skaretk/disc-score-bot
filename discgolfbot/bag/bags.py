@@ -5,16 +5,17 @@ from collections import OrderedDict
 
 class Bags:
     def __init__(self, server, user):
+        self.cfg = f'{os.getcwd()}/cfg'
         self.server = server
         self.user = user
         self.file = "bags.json"
 
     def get_player_bag(self):
-        if os.path.isfile(f'{os.getcwd()}\{self.server}\{self.file}') == False:
+        if os.path.isfile(f'{self.cfg}/{self.server}/{self.file}') == False:
             print(f'No Bags stored for {self.server}')
             return None
 
-        with open(f'{self.server}\{self.file}', encoding='UTF-8', newline='') as json_file:
+        with open(f'{self.cfg}/{self.server}/{self.file}', encoding='UTF-8', newline='') as json_file:
             bags = json.load(json_file, object_pairs_hook=OrderedDict)
             for bag in bags['bags']:
                 if (bag.get('user').lower() == self.user.lower()):
@@ -22,7 +23,7 @@ class Bags:
         return None
 
     def add_player_bag(self, bag_link):
-        with open(f'{self.server}\{self.file}', 'r+', encoding='UTF-8', newline='', ) as json_file:
+        with open(f'{self.cfg}/{self.server}/{self.file}', 'r+', encoding='UTF-8', newline='', ) as json_file:
             bags = json.load(json_file)
             modified = False
             for bag in bags['bags']:

@@ -9,11 +9,11 @@ class Alias:
         self.alias_list = []        
 
     def parse(self):
-        if os.path.isfile(f'{os.getcwd()}\{self.server}\{self.file}') == False:
+        if os.path.isfile(f'{os.getcwd()}/cfg/{self.server}/{self.file}') == False:
             print(f'No Aliases stored for {self.server}')
             return
 
-        with open(f'{self.server}\{self.file}', encoding='UTF-8', newline='') as json_file:
+        with open(f'{os.getcwd()}/cfg/{self.server}/{self.file}', encoding='UTF-8', newline='') as json_file:
             data = json.load(json_file)
             for aliases in data['aliases']:
                 self.alias_list.append(PlayerName(aliases.get('name'), aliases.get('alias')))
