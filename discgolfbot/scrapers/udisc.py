@@ -26,7 +26,7 @@ class LeagueScraper(Udisc):
             return        
 
         # Course Name
-        course_name = header.find("a", class_="MuiTypography-root MuiLink-root MuiLink-underlineHover jss102 MuiTypography-colorPrimary")
+        course_name = header.find("a", class_="MuiTypography-root MuiLink-root MuiLink-underlineHover jss101 MuiTypography-colorPrimary")
         if course_name is None:
             return
         self.score_card.coursename = course_name.getText().rstrip()
@@ -36,9 +36,9 @@ class LeagueScraper(Udisc):
             self.score_card.course_url = f'{self.url}{course_url}'
 
         # Layout Name
-        self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss124 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
+        self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss123 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
 
-        date = header.find("p", class_="MuiTypography-root jss101 MuiTypography-body1")
+        date = header.find("p", class_="MuiTypography-root jss100 MuiTypography-body1")
         if date is None:
             return
         # Date, varies between two formats ("September 12th 2021, or "Sept 12")
@@ -47,19 +47,19 @@ class LeagueScraper(Udisc):
         
         tour_id = soup.find("div", id="tour-leaderboard")
         # Add par
-        par = tour_id.find("p", class_="jss147 jss183 undefined").getText()
+        par = tour_id.find("p", class_="jss146 jss182 undefined").getText()
         self.score_card.par = int(par)
         # Add par for holes
-        hole_par_list = tour_id.find_all("p", class_="jss147 jss183")
+        hole_par_list = tour_id.find_all("p", class_="jss146 jss182")
         for i in range(len(hole_par_list)):
             self.score_card.add_hole(i+1, int(hole_par_list[i].getText()))
 
         # Add players and scores
-        for player in tour_id.find_all("tr", class_="jss149 false collapsed"):
+        for player in tour_id.find_all("tr", class_="jss148 false collapsed"):
             player_name = PlayerName("")
             score = ""
             scores = []
-            player_row = player.find_all("td", class_="jss151 jss184")
+            player_row = player.find_all("td", class_="jss150 jss183")
             for row_no in range(len(player_row)):
                 if(row_no == 0):
                     player_name.name = player_row[row_no].getText()
