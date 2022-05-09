@@ -2,9 +2,13 @@
 *.csv
 *.env
 *.log
+/cfg
+flight.png
 
 # Python
 __pycache__
+.pytest_cache
+.vscode
 
 # Misc
 chromedriver.exe
