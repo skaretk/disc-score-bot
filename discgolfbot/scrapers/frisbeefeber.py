@@ -34,7 +34,7 @@ class DiscScraper(FrisbeeFeber):
             div_manufacturer = product.find("div", class_="manufacturer-box")
             alt_manufacturer = div_manufacturer.find("img", alt=True)
             disc.manufacturer = alt_manufacturer['alt']
-            disc.price = product.find("div", class_="price col-md-12").getText()
+            disc.price = product.find("div", class_="price col-md-12").getText().replace('\n','').replace('\t', '').strip()
             disc.store = self.name
             url = product.find('a', href=True)
             disc.url = url['href']
