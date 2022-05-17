@@ -8,6 +8,7 @@ from . import discrepublic
 from . import discsport
 from . import frisbeefeber
 from . import gurudiscgolf
+from . import krokholdgs
 from . import latitude64
 from . import rocketdiscs
 from . import sunesport
@@ -18,6 +19,7 @@ class DiscScrapers():
         self.norwegian =     [discinstock.DiscScraper(search),
                               frisbeefeber.DiscScraper(search),
                               gurudiscgolf.DiscScraper(search),
+                              krokholdgs.DiscScraper(search),
                               sunesport.DiscScraper(search),
                               xxl.DiscScraper(search)]
         self.voec =          [discsport.DiscScraper(search),

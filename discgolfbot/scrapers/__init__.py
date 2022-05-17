@@ -8,6 +8,7 @@ from . import discrepublic
 from . import discsport
 from . import frisbeefeber
 from . import gurudiscgolf
+from . import krokholdgs
 from . import latitude64
 from . import pdga
 from . import rocketdiscs
