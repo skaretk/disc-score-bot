@@ -11,6 +11,12 @@ def test_armspeed_disc_scraper():
     scraper.scrape()
     assert len(scraper.discs) != 0
 
+def test_dgshop_disc_scraper():
+    search = "firebird"
+    scraper = scrapers.dgshop.DiscScraper(search)
+    scraper.scrape()
+    assert len(scraper.discs) != 0
+
 def test_discconnection_disc_scraper():
     search = "firebird"
     scraper = scrapers.discconnection.DiscScraper(search)

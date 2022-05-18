@@ -1,4 +1,5 @@
 from . import armspeed
+from . import dgshop
 from . import discconnection
 from . import discexpress
 from . import discimport

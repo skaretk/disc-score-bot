@@ -1,4 +1,5 @@
 from . import armspeed
+from . import dgshop
 from . import discconnection
 from . import discexpress
 from . import discimport
@@ -16,7 +17,8 @@ from . import xxl
 
 class DiscScrapers():
     def __init__(self, search):
-        self.norwegian =     [discinstock.DiscScraper(search),
+        self.norwegian =     [dgshop.DiscScraper(search),
+                              discinstock.DiscScraper(search),
                               frisbeefeber.DiscScraper(search),
                               gurudiscgolf.DiscScraper(search),
                               krokholdgs.DiscScraper(search),
