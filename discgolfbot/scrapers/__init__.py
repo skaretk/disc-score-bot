@@ -1,3 +1,4 @@
+from . import aceshop
 from . import armspeed
 from . import dgshop
 from . import discconnection
