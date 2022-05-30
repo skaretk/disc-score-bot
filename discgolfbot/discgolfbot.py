@@ -12,6 +12,7 @@ from score import Scores
 from emoji import Emojis
 from discs import Discs, PdgaApprovedDiscs
 from bag import Bag
+from discgolfmetrix import Metrix
 
 # discord client
 def main():
@@ -35,6 +36,7 @@ def main():
     bot.add_cog(Discs(bot))
     bot.add_cog(Bag(bot))
     bot.add_cog(PdgaApprovedDiscs(bot))
+    bot.add_cog(Metrix(bot))
 
     bot.run(token)
 
