@@ -13,7 +13,7 @@ class DiscScraper(Discsport):
     def __init__(self, search):
         super().__init__()
         self.search = search
-        self.scrape_url = f'https://discsport.se/shopping/?search_adv=&name={search}&selBrand=0&selCat=1&selType=0&selStatus=0&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
+        self.scrape_url = f'https://discsport.se/shopping/?search_adv=&name={search}&selBrand=0&selCat=1&selType=0&selStatus=1&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
         self.discs = []
     
     def scrape(self):
@@ -23,12 +23,6 @@ class DiscScraper(Discsport):
         products = soup.find('div', class_="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 justify-content-center g-2 g-md-3 my-4 ng-scope")
         if (products is not None):
             for product in products.findAll("div", class_="position-relative mx-auto text-center p-0 m-0"):
-                label = product.find("div", class_="row align-items-start position-absolute m-0") # slutsåld row align-items-start position-absolute m-0
-                if label is not None:
-                    labelText = label.getText().replace("\n", "")
-                    if "Slutsåld" in labelText or "Restock" in labelText:
-                        continue # Not in stock / Restock Delayed
-
                 disc = DiscShop()
                 a = product.find("h2", class_="h5 mt-2 mb-0").find('a', href=True)
                 disc.name = a.getText().replace("\n", " ").replace("\t", " ")
