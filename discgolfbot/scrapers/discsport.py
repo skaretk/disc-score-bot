@@ -18,7 +18,7 @@ class DiscScraper(Discsport):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()        
+        soup = self.get_page()
 
         products = soup.find('div', class_="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 justify-content-center g-2 g-md-3 my-4 ng-scope")
         if (products is not None):

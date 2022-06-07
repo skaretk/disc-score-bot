@@ -17,7 +17,7 @@ class DiscScraper(GuruDiscgolf):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()
+        soup = self.urllib_get_beatifulsoup()
 
         for product in soup.select('li[class*="ast-col-sm-12 ast-article-post astra-woo-hover-zoom"]'):
             product_data = product.find("span", class_="gtm4wp_productdata")

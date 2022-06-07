@@ -18,7 +18,7 @@ class DiscScraper(Discconnection):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()        
+        soup = self.urllib_get_beatifulsoup()
             
         names = []
         manufacturers = []

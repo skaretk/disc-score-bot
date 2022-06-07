@@ -17,7 +17,7 @@ class DiscScraper(Latitude64):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page(1)        
+        soup = self.get_page(1)
 
         for prodHeader in soup.findAll("div", class_="box product"):
             title =  prodHeader.find("a", class_="title")

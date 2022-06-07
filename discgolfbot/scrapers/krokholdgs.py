@@ -17,7 +17,7 @@ class DiscScraper(Krokholdgs):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()   
+        soup = self.urllib_get_beatifulsoup()
 
         for product in soup.findAll("div", class_="product"):
             product_meta = product.find("div", class_="product-meta")

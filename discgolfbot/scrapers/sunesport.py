@@ -19,7 +19,7 @@ class DiscScraper(SuneSport):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()        
+        soup = self.urllib_get_beatifulsoup()
 
         for product in soup.findAll("div", class_="product-thumb"):
             if (product.find("span", class_="stock-status").getText() == "Utsolgt"):

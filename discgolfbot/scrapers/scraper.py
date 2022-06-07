@@ -4,6 +4,7 @@ import urllib.parse
 #from concurrent.futures import ThreadPoolExecutor
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from urllib.request import Request, urlopen
 
 # Base class
 class Scraper():
@@ -84,6 +85,21 @@ class Scraper():
     def get_page_from_driver(self, driver):
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup
+    
+    def urllib_get_beatifulsoup(self, sleep_time = 0):
+        sock = urlopen(self.scrape_url)
+        if sleep_time:
+            time.sleep(sleep_time)
+        htmlSource = sock.read()
+        return BeautifulSoup(htmlSource)
+    
+    def urllib_header_get_beatifulsoup(self, sleep_time = 0):
+        req = Request(self.scrape_url, headers={'User-Agent': 'Mozilla/5.0'})
+        sock = urlopen(req)
+        if sleep_time:
+            time.sleep(sleep_time)
+        htmlSource = sock.read()
+        return BeautifulSoup(htmlSource)
 
     async def scrape(self):
         pass

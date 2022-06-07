@@ -19,10 +19,10 @@ class DiscScraper(FrisbeeFeber):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()        
+        soup = self.urllib_get_beatifulsoup()
 
         for product in soup.select('li[class*="product-box-id-"]'):
-            # Is product in stock ?
+            # In stock ?
             not_in_stock = product.find("div", class_="product not-in-stock-product")
             if (not_in_stock is not None):
                 continue

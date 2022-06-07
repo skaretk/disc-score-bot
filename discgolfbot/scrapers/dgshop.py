@@ -19,10 +19,9 @@ class DiscScraper(DgShop):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()   
+        soup = self.get_page()
 
         for product in soup.findAll("div", class_="product-item-info"):
-
             product_item_name = product.find("strong", class_="product name product-item-name")
             item_url = product_item_name.find("a", class_="product-item-link")
             name = item_url.getText().strip().replace("\n", "")
@@ -34,7 +33,6 @@ class DiscScraper(DgShop):
             url = product_photo["href"]
             product_item_photo = product_photo.find("img", class_="product-image-photo")
             img = product_item_photo["src"]
-            
             
             disc = DiscShop()
             disc.name = name
