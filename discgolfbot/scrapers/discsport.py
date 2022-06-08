@@ -25,7 +25,7 @@ class DiscScraper(Discsport):
             for product in products.findAll("div", class_="position-relative mx-auto text-center p-0 m-0"):
                 disc = DiscShop()
                 a = product.find("h2", class_="h5 mt-2 mb-0").find('a', href=True)
-                disc.name = a.getText().replace("\n", " ").replace("\t", " ")
+                disc.name = a.getText().replace("\n", " ").replace("\t", " ").strip()
                 disc.url = a["href"]
                 #manufacturer = re.search(r"]<br/>(.*?)\|", a["title"]).group(1).replace("\xa0", "")
                 #if (manufacturer is not None):
@@ -33,7 +33,7 @@ class DiscScraper(Discsport):
                 img = product.find("img", class_="lozad")
                 if (img is not None):
                     disc.img = img["data-src"]
-                disc.price = product.find("p", class_="h5 mt-1").getText()
+                disc.price = product.find("p", class_="h5 mt-1").getText().replace(':', ',')
                 disc.store = self.name
                 self.discs.append(disc)
         self.scraper_time = time.time() - start_time
