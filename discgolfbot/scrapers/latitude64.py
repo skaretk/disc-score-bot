@@ -6,7 +6,7 @@ class Latitude64(Scraper):
     def __init__(self):
         super().__init__()
         self.name = 'store.latitude64.se'
-        self.url = 'https://store.latitude64.se/'
+        self.url = 'https://store.latitude64.se'
 
 class DiscScraper(Latitude64):
     def __init__(self, search):
@@ -24,10 +24,10 @@ class DiscScraper(Latitude64):
             if title is None:
                 continue
             disc = DiscShop()
-            disc.name = title.getText()
-            disc.url = f'{self.url}{title["href"]}'.replace('//', '/')
-            disc.manufacturer = prodHeader.find('div', class_='product-vendor').getText()
-            disc.price = prodHeader.find("div", class_="price-box").getText()
+            disc.name = title.getText().replace('\n', '')
+            disc.url = f'{self.url}{title["href"]}'
+            disc.manufacturer = prodHeader.find('div', class_='product-vendor').getText().replace('\n', '')
+            disc.price = prodHeader.find("div", class_="price-box").getText().replace('\n', '')
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time

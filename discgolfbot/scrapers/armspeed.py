@@ -40,4 +40,4 @@ class DiscScraper(ArmSpeed):
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'DiscImport scraper: {self.scraper_time}')
+        print(f'Armspeed scraper: {self.scraper_time}')
