@@ -91,10 +91,13 @@ class Scraper():
         if sleep_time:
             time.sleep(sleep_time)
         htmlSource = sock.read()
-        return BeautifulSoup(htmlSource)
+        return BeautifulSoup(htmlSource, "html.parser")
     
-    def urllib_header_get_beatifulsoup(self, sleep_time = 0):
-        req = Request(self.scrape_url, headers={'User-Agent': 'Mozilla/5.0'})
+    def urllib_header_get_beatifulsoup(self, headers={}, sleep_time = 0):
+        default_headers = {'User-Agent': 'Mozilla/5.0'}
+        req_headers = dict(default_headers)
+        req_headers.update(headers)
+        req = Request(self.scrape_url, headers=req_headers)
         sock = urlopen(req)
         if sleep_time:
             time.sleep(sleep_time)

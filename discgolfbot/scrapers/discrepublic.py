@@ -18,12 +18,7 @@ class DiscScraper(Discrepublic):
     
     def scrape(self):
         start_time = time.time()
-        driver = self.get_driver(1)
-        # add cookie in order to get price in NOK
-        driver.add_cookie({"name": "cart_currency", "value": "NOK"})
-        driver.refresh()
-        soup = self.get_page_from_driver(driver)
-        driver.close()
+        soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK'})
 
         # Check if the disc is sold out
         for product in soup.findAll("div", class_="product-item-wrapper col-sm-2"):
