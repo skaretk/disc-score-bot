@@ -19,10 +19,12 @@ class DiscScraper(DgShop):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()
+        soup = self.urllib_get_beatifulsoup()
 
         for product in soup.findAll("div", class_="product-item-info"):
             product_item_name = product.find("strong", class_="product name product-item-name")
+            if product_item_name is None:
+                continue
             item_url = product_item_name.find("a", class_="product-item-link")
             name = item_url.getText().strip().replace("\n", "")
             if self.search.lower() not in name.lower():

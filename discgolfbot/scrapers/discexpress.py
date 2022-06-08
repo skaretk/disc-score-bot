@@ -19,12 +19,7 @@ class DiscScraper(DiscExpress):
     
     def scrape(self):
         start_time = time.time()
-        driver = self.get_driver()
-        # add cookie in order to get price in NOK
-        driver.add_cookie({"name": "cart_currency", "value": "NOK"})
-        driver.refresh()
-        soup = self.get_page_from_driver(driver)
-        driver.close()
+        soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK'})
 
         for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
             name = grid_item.find("p").getText()
