@@ -98,7 +98,7 @@ class Scraper():
         req = Request(self.scrape_url, headers=req_headers)
         with urlopen(req) as sock:
             htmlSource = sock.read()
-        return BeautifulSoup(htmlSource)
+        return BeautifulSoup(htmlSource, "html.parser")
 
     async def scrape(self):
         pass
