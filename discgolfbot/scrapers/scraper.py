@@ -86,22 +86,18 @@ class Scraper():
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup
     
-    def urllib_get_beatifulsoup(self, sleep_time = 0):
-        sock = urlopen(self.scrape_url)
-        if sleep_time:
-            time.sleep(sleep_time)
-        htmlSource = sock.read()
+    def urllib_get_beatifulsoup(self):
+        with urlopen(self.scrape_url) as sock:
+            htmlSource = sock.read()
         return BeautifulSoup(htmlSource, "html.parser")
     
-    def urllib_header_get_beatifulsoup(self, headers={}, sleep_time = 0):
+    def urllib_header_get_beatifulsoup(self, headers={}):
         default_headers = {'User-Agent': 'Mozilla/5.0'}
         req_headers = dict(default_headers)
         req_headers.update(headers)
         req = Request(self.scrape_url, headers=req_headers)
-        sock = urlopen(req)
-        if sleep_time:
-            time.sleep(sleep_time)
-        htmlSource = sock.read()
+        with urlopen(req) as sock:
+            htmlSource = sock.read()
         return BeautifulSoup(htmlSource)
 
     async def scrape(self):
