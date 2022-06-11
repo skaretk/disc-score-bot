@@ -45,8 +45,8 @@ class DiscScraper(RocketDiscs):
             url = product.find("a", class_="pull-left", href=True)
             disc.url = f'{self.url}{url["href"]}'
 
-            sock = urlopen(disc.url)
-            htmlSource = sock.read()
+            with urlopen(disc.url) as sock:
+                htmlSource = sock.read()
             soup_product = BeautifulSoup(htmlSource, "html.parser")
 
             # Todo: Might fail here?
