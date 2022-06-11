@@ -40,8 +40,7 @@ class DiscScraper(RocketDiscs):
             disc = DiscShop()
             disc.name = name
             meta = product.find("p", class_="meta").getText()
-            disc.manufacturer = meta.split("|")[0].replace("\n", "").replace(" ", "")
-            #plastic = meta.split("|")[1].lstrip(" ").rstrip(" ")
+            disc.manufacturer = meta.split("|")[0].strip()
             url = product.find("a", class_="pull-left", href=True)
             disc.url = f'{self.url}{url["href"]}'
 
@@ -55,6 +54,9 @@ class DiscScraper(RocketDiscs):
             if img is not None:
                 disc.img = f'{self.url}{img["src"]}'
             disc.store = self.name
+            plastics_div = soup_product.find('div', class_='plastics')
+            if plastics_div:
+                disc.name += ' [' + ', '.join([plastic.getText().strip() for plastic in plastics_div.find_all('li')]) + ']'
             self.discs.append(disc)
             break
 
