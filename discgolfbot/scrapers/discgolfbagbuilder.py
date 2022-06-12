@@ -20,7 +20,7 @@ class DiscgolfBagBuilder(Scraper):
     
     def scrape_discs(self):
         start_time = time.time()
-        soup, driver = self.get_page_and_driver()
+        soup, driver = self.selenium_get_beatifulsoup_and_chromedriver()
         # add cookie in order to get meters instead of feet
         driver.add_cookie({"name": "measurement_unit", "value": "meters"})
         driver.refresh()

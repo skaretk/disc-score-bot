@@ -30,7 +30,7 @@ class Scraper():
     def scraper_time(self, time):
         self._scraper_time = time
     
-    def get_chrome(self):
+    def selenium_get_chromedriver(self):
         opt = webdriver.ChromeOptions()
         opt.add_argument("--headless")
         #opt.add_argument("--start-maximized")
@@ -51,13 +51,13 @@ class Scraper():
         opt.experimental_options["prefs"] = chrome_prefs
         chrome_prefs["profile.default_content_settings"] = {"images": 2}
 
-        browser = webdriver.Chrome(options=opt) 
-        browser.implicitly_wait(10)
-        browser.set_page_load_timeout(30)
-        return browser
+        driver = webdriver.Chrome(options=opt) 
+        driver.implicitly_wait(10)
+        driver.set_page_load_timeout(30)
+        return driver
     
-    def get_page(self, sleep_time = 0):
-        with self.get_chrome() as driver:
+    def selenium_get_beatifulsoup(self, sleep_time = 0):
+        with self.selenium_get_chromedriver() as driver:
             driver.get(self.scrape_url)
             if sleep_time:
                 time.sleep(sleep_time)
@@ -65,26 +65,13 @@ class Scraper():
             return soup
     
     # Driver needs to be closed afterwards
-    def get_driver(self, sleep_time = 0):
-        driver = self.get_chrome()
-        driver.get(self.scrape_url)
-        if sleep_time:
-            time.sleep(sleep_time)
-        return driver
-    
-    # Driver needs to be closed afterwards
-    def get_page_and_driver(self, sleep_time = 0):
-        driver = self.get_chrome()
+    def selenium_get_beatifulsoup_and_chromedriver(self, sleep_time = 0):
+        driver = self.selenium_get_chromedriver()
         driver.get(self.scrape_url)
         if sleep_time:
             time.sleep(sleep_time)
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup, driver
-    
-    # Driver needs to be closed afterwards
-    def get_page_from_driver(self, driver):
-        soup = BeautifulSoup(driver.page_source, "html.parser")
-        return soup
     
     def urllib_get_beatifulsoup(self):
         with urlopen(self.scrape_url) as sock:

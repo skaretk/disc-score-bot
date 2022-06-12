@@ -18,7 +18,7 @@ class DiscScraper(Xxl):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page(1)        
+        soup = self.selenium_get_beatifulsoup(1)
 
         contain_discs = False
 

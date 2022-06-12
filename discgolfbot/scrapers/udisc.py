@@ -19,7 +19,7 @@ class LeagueScraper(Udisc):
     def scrape(self):
         start_time = time.time()
 
-        soup = self.get_page(4)
+        soup = self.selenium_get_beatifulsoup(4)
 
         header = soup.find("div", class_="jss39 jss41")
         if header is None:

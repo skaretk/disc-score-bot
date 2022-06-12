@@ -15,7 +15,7 @@ class DiscScraper(DiscInStock):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page(1)
+        soup = self.selenium_get_beatifulsoup(1)
 
         for a in soup.findAll("div", class_="col"):
             disc = DiscShop()
