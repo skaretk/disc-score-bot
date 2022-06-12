@@ -18,17 +18,18 @@ class DiscScraper(Latitude64):
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
-        productsDiv = soup.find('div', class_='products-grid product-search row product-collection')
-        for prodHeader in productsDiv.findAll("div", class_="inner product-item"):
-            title = prodHeader.find("a", class_="product-title")
-            if title is None:
-                continue
-            disc = DiscShop()
-            disc.name = title.getText().replace('\n', '')
-            disc.url = f'{self.url}{title["href"]}'
-            disc.manufacturer = prodHeader.find('div', class_='product-vendor').getText().replace('\n', '')
-            disc.price = prodHeader.find("div", class_="price-box").getText().replace('\n', '')
-            disc.store = self.name
-            self.discs.append(disc)
+        products_div = soup.find('div', class_='products-grid product-search row product-collection')
+        if products_div is not None:
+            for product_item_div in products_div.findAll("div", class_="inner product-item"):
+                product_title_a = product_item_div.find("a", class_="product-title")
+                if product_title_a is None:
+                    continue
+                disc = DiscShop()
+                disc.name = product_title_a.getText().replace('\n', '')
+                disc.url = f'{self.url}{product_title_a["href"]}'
+                disc.manufacturer = product_item_div.find('div', class_='product-vendor').getText().replace('\n', '')
+                disc.price = product_item_div.find("div", class_="price-box").getText().replace('\n', '')
+                disc.store = self.name
+                self.discs.append(disc)
         self.scraper_time = time.time() - start_time
         print(f'Latitude64 scraper: {self.scraper_time}')
