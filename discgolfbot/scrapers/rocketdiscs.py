@@ -54,9 +54,16 @@ class DiscScraper(RocketDiscs):
             if img is not None:
                 disc.img = f'{self.url}{img["src"]}'
             disc.store = self.name
+            plastics = []
             plastics_div = soup_product.find('div', class_='plastics')
             if plastics_div:
-                disc.name += ' [' + ', '.join([plastic.getText().strip() for plastic in plastics_div.find_all('li')]) + ']'
+                plastics_list = plastics_div.find_all('li')
+                if plastics_list:
+                    plastics = [plastic.getText().strip() for plastic in plastics_list]
+                else: # single plastic
+                    plastics = [plastics_div.find('a').getText().strip()]
+            if plastics:
+                disc.name += ' [' + ', '.join(plastics) + ']'
             self.discs.append(disc)
             break
 
