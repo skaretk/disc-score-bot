@@ -2,12 +2,14 @@
 
 Disc Golf Bot with multiple features;
 > uDisc Scorecard Support
+
+Uploaded .csv files can be viewed and listed out in a discord channel
 > Search for discs
-> Store bag
 
-Scorebot for uDisc:
+Discs in norwegian stores, and some international stores
+> Bag support
 
-Will store .csv files uploaded and responds to commands in order to view these in the discord channel!
+Support to add and list out curent bag from discgolfbagbuilder.com
 
 Get started:
 
