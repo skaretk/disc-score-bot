@@ -1,8 +1,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
-
-import context
 from context import scrapers
 
 def test_discgolfbagbuilder_bag_scraper():
