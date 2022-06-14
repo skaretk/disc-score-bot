@@ -79,7 +79,7 @@ class Scraper():
         return BeautifulSoup(htmlSource, "html.parser")
     
     def urllib_header_get_beatifulsoup(self, headers={}):
-        default_headers = {'User-Agent': 'Mozilla/5.0'}
+        default_headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'}
         req_headers = dict(default_headers)
         req_headers.update(headers)
         req = Request(self.scrape_url, headers=req_headers)

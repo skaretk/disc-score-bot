@@ -18,7 +18,7 @@ class DiscScraper(Discrepublic):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK'})
+        soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK; localization=NO'})
 
         # Check if the disc is sold out
         for product in soup.findAll("div", class_="product-item-wrapper col-sm-2"):
