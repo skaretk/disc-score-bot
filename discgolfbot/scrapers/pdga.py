@@ -16,7 +16,7 @@ class DiscScraper(Pdga):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()
+        soup = self.selenium_get_beatifulsoup()
 
         manufacturers = soup.findAll("td", class_="views-field views-field-field-equipment-manuf-ref")
         disc_models = soup.findAll("td", class_="views-field views-field-title")

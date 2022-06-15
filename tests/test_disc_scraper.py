@@ -1,8 +1,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
-
-import context
 from context import scrapers
 
 def test_aceshop_disc_scraper():
@@ -44,6 +42,12 @@ def test_discimport_disc_scraper():
 def test_discinstock_disc_scraper():
     search = "firebird"
     scraper = scrapers.discinstock.DiscScraper(search)
+    scraper.scrape()
+    assert len(scraper.discs) != 0
+
+def test_discinstock_disc_scraper_api():
+    search = "firebird"
+    scraper = scrapers.discinstock.DiscScraperApi(search)
     scraper.scrape()
     assert len(scraper.discs) != 0
 

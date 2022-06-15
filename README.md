@@ -1,34 +1,15 @@
-# disc-score-bot
+# disc-golf-bot
 
-Scorebot for uDisc
+Disc Golf Bot with multiple features;
+> uDisc Scorecard Support
 
-Will store .csv files uploaded and responds to commands in order to view these in the discord channel!
+Uploaded .csv files can be viewed and listed out in a discord channel
+> Search for discs
 
-Currently supported commands:
+Discs in norwegian stores, and some international stores
+> Bag support
 
-
-
-%scores
-> Lists all scorecards and total scores
-
-%scores list course
-> List all courses stored
-
-%scores list date
-> Lists all dates for scorecards
-
-%scores get course coursename
-> Get all scorescards for the coursename
-
-%scores get date 01.12.1990
-> Search for all scorecards with given date
-
-%scores get date 01.12.1990 01.01.1991
-> Search for all scorecards between dates
-
-%files
-> Lists files stored in the channel
-
+Support to add and list out curent bag from discgolfbagbuilder.com
 
 Get started:
 

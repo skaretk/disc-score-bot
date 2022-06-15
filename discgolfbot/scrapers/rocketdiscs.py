@@ -3,6 +3,8 @@ import time
 import re
 from discs.disc import DiscShop
 from .scraper import Scraper
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
 
 class RocketDiscs(Scraper):
     def __init__(self):
@@ -24,11 +26,8 @@ class DiscScraper(RocketDiscs):
         
     def scrape(self):
         start_time = time.time()
-
-        soup_search, driver = self.get_page_and_driver()        
-
-        if (self.any_products(soup_search)) == False:
-            driver.close()
+        soup_search = self.urllib_get_beatifulsoup()
+        if self.any_products(soup_search) == False:
             self.scraper_time = time.time() - start_time
             print(f'RocketDiscs scraper: {self.scraper_time}')
             return
@@ -41,24 +40,28 @@ class DiscScraper(RocketDiscs):
             disc = DiscShop()
             disc.name = name
             meta = product.find("p", class_="meta").getText()
-            disc.manufacturer = meta.split("|")[0].replace("\n", "").replace(" ", "")
-            #plastic = meta.split("|")[1].lstrip(" ").rstrip(" ")
+            disc.manufacturer = meta.split("|")[0].strip()
             url = product.find("a", class_="pull-left", href=True)
             disc.url = f'{self.url}{url["href"]}'
 
-            driver_button = driver.find_element_by_class_name("pull-left")
-            driver.execute_script("arguments[0].click();", driver_button)
-            driver.refresh()
-            soup_product = BeautifulSoup(driver.page_source, "html.parser")
+            with urlopen(disc.url) as sock:
+                htmlSource = sock.read()
+            soup_product = BeautifulSoup(htmlSource, "html.parser")
+
             # Todo: Might fail here?
             disc.price = soup_product.find("td", id="ContentPlaceHolder1_lblOurPrice").text
             img = soup_product.find("img", id="ContentPlaceHolder1_discImage")
-            if (img is not None):
+            if img is not None:
                 disc.img = f'{self.url}{img["src"]}'
             disc.store = self.name
+            plastics = []
+            plastics_div = soup_product.find('div', class_='plastics')
+            if plastics_div:
+                plastics = [plastic.getText().strip() for plastic in plastics_div.find_all('a')]
+            if plastics:
+                disc.name += ' [' + ', '.join(plastics) + ']'
             self.discs.append(disc)
             break
-            
-        driver.close()
+
         self.scraper_time = time.time() - start_time
         print(f'RocketDiscs scraper: {self.scraper_time}')

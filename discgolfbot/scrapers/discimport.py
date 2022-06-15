@@ -19,7 +19,7 @@ class DiscScraper(DiscImport):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()
+        soup = self.urllib_get_beatifulsoup()
 
         for product_list in soup.findAll("div", class_="product-teaser-inner"):
             # Check if product is in stock

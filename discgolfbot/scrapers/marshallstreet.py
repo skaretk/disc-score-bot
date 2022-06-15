@@ -18,7 +18,7 @@ class DiscFlightScraper(MarshallStreet):
 
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page(1)        
+        soup = self.selenium_get_beatifulsoup(1)
         for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
             if (disc_item.getText().lower() == self.search.lower()):
                 disc = DiscFlight()

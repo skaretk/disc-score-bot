@@ -21,11 +21,10 @@ class DiscScraper(ArmSpeed):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()
+        soup = self.urllib_header_get_beatifulsoup()
 
         for product in soup.findAll("div", class_="col-md-4 col-6 product"):
             # Check if product is in stock
-
             text = product.find('a', class_="color-text-base")
             product_text = re.split(r'(^[^\d]+)', text.getText())[1:][0].rstrip(" ")
             if re.search(self.search, product_text, re.IGNORECASE) is None: # Check false results
@@ -41,4 +40,4 @@ class DiscScraper(ArmSpeed):
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'DiscImport scraper: {self.scraper_time}')
+        print(f'Armspeed scraper: {self.scraper_time}')

@@ -17,10 +17,9 @@ class DiscScraper(AceShop):
     
     def scrape(self):
         start_time = time.time()
-        soup = self.get_page()   
+        soup = self.urllib_get_beatifulsoup()
 
         for product in soup.findAll("div", class_="product"):
-
             product_box = product.find("div", class_="product_box_title_row")
             product_box_a = product_box.find("a", class_="title")
             name = product_box_a.getText()
