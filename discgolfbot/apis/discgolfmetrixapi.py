@@ -4,7 +4,6 @@ import html
 import json
 import requests
 
-
 def metrix_logo():
     return 'https://discgolfmetrix.com/img/metrix_logo_for_facebook.png'
 
@@ -47,8 +46,7 @@ class DiscgolfMetrixApi():
             params["code"] = code
         response = requests.get(self.api_url, params = params)
         if response and response.status_code == 200:
-            unescaped_text = html.unescape(response.text)
-            return json.loads(unescaped_text)
+            return json.loads(html.unescape(response.text))
         else:
             return None    
 
@@ -67,8 +65,7 @@ class DiscgolfMetrixApi():
         params["id"] = result_id
         response = requests.get(self.api_url, params=params)
         if response and response.status_code == 200 and response.json().get("Errors") is None:
-            unescaped_text = html.unescape(response.text)
-            return json.loads(unescaped_text)
+            return json.loads(html.unescape(response.text))
         else:
             return None
 
