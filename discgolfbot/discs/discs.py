@@ -10,7 +10,7 @@ class Store():
     def __init__(self, store):
         self.store = store
         self.discs = []
-    
+
     def __eq__(self, storeName):
         if (storeName == self.store):
             return True
@@ -28,12 +28,12 @@ class Discs(commands.Cog):
         with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
             for disc_scraper in scraper_list:
                 future = executor.submit(disc_scraper.scrape)
-        
+
         print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
         for disc_scraper in scraper_list:
             self.discs.extend(disc_scraper.discs)
-    
+
     def split_discs_in_stores(self):
         self.stores = []
 
@@ -47,7 +47,7 @@ class Discs(commands.Cog):
                 shop_list = Store(disc.store)
                 shop_list.discs.append(disc)
                 self.stores.append(shop_list)
-    
+
     def get_disc_image(self, embed:nextcord.Embed):
         for disc in self.discs:
             # Set image
@@ -56,7 +56,7 @@ class Discs(commands.Cog):
                     embed.set_thumbnail(url=(disc.img))
                     return True
         return False
-    
+
     def format_discs_description(self):
         description_text = ''
         for store in self.stores:
@@ -73,7 +73,7 @@ class Discs(commands.Cog):
                 # Print if last disc
                 if disc == store.discs[-1]:
                     description_text += store_string_value
-        
+
         return description_text
 
     async def print_discs(self, ctx, search_item):
@@ -91,7 +91,7 @@ class Discs(commands.Cog):
         # Add disc image
         if self.get_disc_image(embed) == False:
             embed.set_thumbnail(url=(ctx.author.avatar.url))
-        
+
         # Validate and send Embed
         if validate_embed(embed) == True:
             await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
@@ -100,17 +100,17 @@ class Discs(commands.Cog):
             await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
     @commands.command(aliases=['Disc', 'disk', 'Disk', 'd'], brief='%disc disc1, disc2, etc', description='Search for disc in norwegian sites')
-    async def disc(self, ctx, *args, sep=" "):        
+    async def disc(self, ctx, *args, sep=" "):
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc')
             return
 
         search = sep.join(args)
-        search_list = search.split(", ")        
-        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))        
+        search_list = search.split(", ")
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
-        
+
         for search_item in search_list:
             self.discs = []
             scrapers = DiscScrapers(search_item)
@@ -119,22 +119,22 @@ class Discs(commands.Cog):
 
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
-        
+
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
-    
+
     @commands.command(aliases=['Disc_voec', 'disk_voec', 'Disk_voec'], brief='%disc_voec disc1, disc2, etc', description='Search for disc in norwegian and VOEC approved sites')
-    async def disc_voec(self, ctx, *args, sep=" "):        
+    async def disc_voec(self, ctx, *args, sep=" "):
         if len(args) == 0:
             await ctx.send('No disc specified, see %help disc_voec')
             return
 
         search = sep.join(args)
-        search_list = search.split(", ")        
-        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))        
+        search_list = search.split(", ")
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
-        
+
         for search_item in search_list:
             self.discs = []
             scrapers = DiscScrapers(search_item)
@@ -144,7 +144,7 @@ class Discs(commands.Cog):
 
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
-        
+
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
@@ -155,7 +155,7 @@ class Discs(commands.Cog):
             return
 
         search = sep.join(args)
-        search_list = search.split(", ")    
+        search_list = search.split(", ")
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
@@ -170,7 +170,7 @@ class Discs(commands.Cog):
 
             self.scrape(scraper_list)
             await self.print_discs(ctx, search_item)
-        
+
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
 
@@ -182,8 +182,8 @@ class Discs(commands.Cog):
             return
 
         search = sep.join(args)
-        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))        
-        
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
+
         scraper_list = [DiscFlightScraper(search)]
         self.scrape(scraper_list)
 
@@ -196,7 +196,7 @@ class Discs(commands.Cog):
             embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
             embed.set_image(url=disc.flight_url)
             embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
-            
+
             # Validate and send Embed
             if (validate_embed(embed) == True):
                 await ctx.send(ctx.author.mention, embed=embed)
@@ -205,5 +205,5 @@ class Discs(commands.Cog):
                 await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
-        
+
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))

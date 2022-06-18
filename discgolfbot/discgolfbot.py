@@ -1,4 +1,5 @@
 import nextcord
+from nextcord import Interaction
 from nextcord.ext import commands
 from nextcord.message import Attachment
 
@@ -19,7 +20,12 @@ def main():
     load_dotenv(find_dotenv('token.env'))
     token = getenv("TOKEN")
 
-    bot = commands.Bot(command_prefix='%')
+    # intents
+    intents = nextcord.Intents.default()
+    intents.typing = False
+    intents.message_content = True
+
+    bot = commands.Bot(command_prefix='%', intents=intents)
 
     @bot.event
     async def on_ready():
@@ -27,7 +33,7 @@ def main():
         await bot.change_presence(activity=nextcord.Game(name="Disc golf"))
 
     @bot.event
-    async def on_message(message):    
+    async def on_message(message):
         await bot.process_commands(message)
 
     bot.add_cog(Attachment(bot))
