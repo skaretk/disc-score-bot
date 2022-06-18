@@ -12,7 +12,7 @@ class Metrix(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(pass_context=True, brief='Discgolf Metrix API functions', description='See subcommands')
+    @commands.group(aliases=['Metrix'], pass_context=True, brief='Discgolf Metrix API functions', description='See subcommands')
     async def metrix(self, ctx):
         if ctx.invoked_subcommand is None:
             pass
