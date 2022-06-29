@@ -34,3 +34,20 @@ class DiscScrapers():
                               discimport.DiscScraper(search),
                               armspeed.DiscScraper(search)]
         self.international = [discrepublic.DiscScraper(search)]
+
+    @property
+    def norwegian_scrapers(self):
+        return self.norwegian
+
+    @property
+    def voec_scrapers(self):
+        scraper_list = self.norwegian
+        scraper_list.extend(self.voec)
+        return scraper_list
+
+    @property
+    def all_scrapers(self):
+        scraper_list = self.norwegian
+        scraper_list.extend(self.voec)
+        scraper_list.extend(self.international)
+        return scraper_list
