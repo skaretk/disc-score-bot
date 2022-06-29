@@ -240,9 +240,9 @@ class Discs(commands.Cog):
             await interaction.followup.send(f'{interaction.user.mention} - **{search}**', embed=embed)
         else:
             if len(self.discs) == 0:
-                await interaction.followup.send(f'{interaction.user.mention} - **{search_item}**, No discs in stock')
+                await interaction.followup.send(f'{interaction.user.mention} - **{search}**, No discs in stock')
             else:
-                await interaction.followup.send(f'{interaction.user.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results https://giphy.com/embed/32mC2kXYWCsg0')
+                await interaction.followup.send(f'{interaction.user.mention}, WOW thats a lot of **{search}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results https://giphy.com/embed/32mC2kXYWCsg0')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
