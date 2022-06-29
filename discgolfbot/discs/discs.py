@@ -1,21 +1,14 @@
-import nextcord
-from nextcord.ext import commands
-import time
 from concurrent.futures import ThreadPoolExecutor
+from discord_utils.embed_validation import validate_embed
+import nextcord
+from nextcord import Interaction, SlashOption
+from nextcord.ext import commands
 from scrapers.discScrapers import DiscScrapers
 from scrapers.marshallstreet import DiscFlightScraper
-from discord_utils.embed_validation import validate_embed
+from .store import Store, split_discs_in_stores
 
-class Store():
-    def __init__(self, store):
-        self.store = store
-        self.discs = []
-
-    def __eq__(self, storeName):
-        if (storeName == self.store):
-            return True
-        else:
-            return False
+import time
+from typing import Optional
 
 class Discs(commands.Cog):
     def __init__(self, bot):
@@ -33,20 +26,6 @@ class Discs(commands.Cog):
 
         for disc_scraper in scraper_list:
             self.discs.extend(disc_scraper.discs)
-
-    def split_discs_in_stores(self):
-        self.stores = []
-
-        for disc in self.discs:
-            # Same store, append
-            if disc.store in self.stores:
-                index = self.stores.index(disc.store)
-                self.stores[index].discs.append(disc)
-            # New store or last disc
-            else:
-                shop_list = Store(disc.store)
-                shop_list.discs.append(disc)
-                self.stores.append(shop_list)
 
     def get_disc_image(self, embed:nextcord.Embed):
         for disc in self.discs:
@@ -76,28 +55,22 @@ class Discs(commands.Cog):
 
         return description_text
 
-    async def print_discs(self, ctx, search_item):
+    def get_embed(self):
         if len(self.discs) == 0:
-            await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
-            return
-        else:
-            embed_title = f'Found {len(self.discs)} {"Disc!" if len(self.discs) == 1 else "Discs!"}'
+            return None
+
+        embed_title = f'Found {len(self.discs)} {"Disc!" if len(self.discs) == 1 else "Discs!"}'
         embed = nextcord.Embed(title=embed_title, color=0x004899)
 
         # Split discs into store lists
-        self.split_discs_in_stores()
+        self.stores = split_discs_in_stores(self.discs)
         # Format output
         embed.description = self.format_discs_description()
-        # Add disc image
-        if self.get_disc_image(embed) == False:
-            embed.set_thumbnail(url=(ctx.author.avatar.url))
-
         # Validate and send Embed
         if validate_embed(embed) == True:
-            await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
+            return embed
         else:
-            await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
-            await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
+            return None
 
     @commands.command(aliases=['Disc', 'disk', 'Disk', 'd'], brief='%disc disc1, disc2, etc', description='Search for disc in norwegian sites')
     async def disc(self, ctx, *args, sep=" "):
@@ -113,12 +86,20 @@ class Discs(commands.Cog):
 
         for search_item in search_list:
             self.discs = []
-            scrapers = DiscScrapers(search_item)
-            scraper_list = []
-            scraper_list.extend(scrapers.norwegian)
+            disc_scrapers = DiscScrapers(search_item)
+            self.scrape(disc_scrapers.norwegian_scrapers)
 
-            self.scrape(scraper_list)
-            await self.print_discs(ctx, search_item)
+            embed = self.get_embed()
+            if embed is not None:
+                if self.get_disc_image(embed) == False:
+                    embed.set_thumbnail(url=(ctx.author.avatar.url))
+                await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
+            else:
+                if len(self.discs) == 0:
+                    await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
+                else:
+                    await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
+                    await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
@@ -137,13 +118,20 @@ class Discs(commands.Cog):
 
         for search_item in search_list:
             self.discs = []
-            scrapers = DiscScrapers(search_item)
-            scraper_list = []
-            scraper_list.extend(scrapers.norwegian)
-            scraper_list.extend(scrapers.voec)
+            disc_scrapers = DiscScrapers(search_item)
+            self.scrape(disc_scrapers.voec_scrapers)
 
-            self.scrape(scraper_list)
-            await self.print_discs(ctx, search_item)
+            embed = self.get_embed()
+            if embed is not None:
+                if self.get_disc_image(embed) == False:
+                    embed.set_thumbnail(url=(ctx.author.avatar.url))
+                await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
+            else:
+                if len(self.discs) == 0:
+                    await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
+                else:
+                    await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
+                    await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
@@ -162,14 +150,20 @@ class Discs(commands.Cog):
 
         for search_item in search_list:
             self.discs = []
-            scrapers = DiscScrapers(search_item)
-            scraper_list = []
-            scraper_list.extend(scrapers.norwegian)
-            scraper_list.extend(scrapers.voec)
-            scraper_list.extend(scrapers.international)
+            disc_scrapers = DiscScrapers(search_item)
+            self.scrape(disc_scrapers.all_scrapers)
 
-            self.scrape(scraper_list)
-            await self.print_discs(ctx, search_item)
+            embed = self.get_embed()
+            if embed is not None:
+                if self.get_disc_image(embed) == False:
+                    embed.set_thumbnail(url=(ctx.author.avatar.url))
+                await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
+            else:
+                if len(self.discs) == 0:
+                    await ctx.send(f'{ctx.author.mention} - **{search_item}**, No discs in stock')
+                else:
+                    await ctx.send(f'{ctx.author.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results')
+                    await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
@@ -207,3 +201,48 @@ class Discs(commands.Cog):
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+
+    # Slash commands
+    @nextcord.slash_command(name="disc", description="Discs commands", guild_ids=[])
+    async def disc_slash_command(self):
+        pass
+
+    @disc_slash_command.subcommand(name="search", description="Search for discs in stores!")
+    async def disc_search_slash_command(
+        self,
+        interaction: Interaction,
+        search: str = SlashOption(name="disc", description="Disc to search for", required=True),
+        where: Optional[int] = SlashOption(name="where", description="Where to search", choices={"Norway": 1, "VOEC": 2, "World": 3}, required=False)
+    ):
+        await interaction.response.defer()
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
+
+        start_time = time.time()
+
+        self.discs = []
+        disc_scrapers = DiscScrapers(search)
+        scraper_list = []
+        if where is not None:
+            if where == 1:
+                scraper_list = disc_scrapers.norwegian_scrapers
+            elif where == 2:
+                scraper_list = disc_scrapers.voec_scrapers
+            elif where == 3:
+                scraper_list = disc_scrapers.all_scrapers
+        else:
+            scraper_list = disc_scrapers.norwegian_scrapers
+
+        self.scrape(scraper_list)
+        embed = self.get_embed()
+        if embed is not None:
+            if self.get_disc_image(embed) == False:
+                embed.set_thumbnail(url=(interaction.user.display_avatar))
+            await interaction.followup.send(f'{interaction.user.mention} - **{search}**', embed=embed)
+        else:
+            if len(self.discs) == 0:
+                await interaction.followup.send(f'{interaction.user.mention} - **{search_item}**, No discs in stock')
+            else:
+                await interaction.followup.send(f'{interaction.user.mention}, WOW thats a lot of **{search_item}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results https://giphy.com/embed/32mC2kXYWCsg0')
+
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
