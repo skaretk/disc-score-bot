@@ -22,6 +22,9 @@ class DiscScraper(Fyndisc):
         products = soup.find('ul', class_="js-product-items")
         if (products is not None):
             for product in products.findAll("li", class_="product-item"):
+                product_button_buy = product.find("a", class_="btn--primary")
+                if product_button_buy is None:
+                    continue
                 product_name = product.find("h3", class_="product-item__heading").getText()
                 if self.search.lower() not in product_name.lower():
                     continue
