@@ -75,6 +75,12 @@ def test_frisbeefeber_disc_scraper():
     scraper.scrape()
     assert len(scraper.discs) != 0
 
+def test_fyndisc_disc_scraper():
+    search = "firebird"
+    scraper = scrapers.fyndisc.DiscScraper(search)
+    scraper.scrape()
+    assert len(scraper.discs) != 0
+
 def test_gurudiscgolf_scraper():
     search = "firebird"
     scraper = scrapers.gurudiscgolf.DiscScraper(search)

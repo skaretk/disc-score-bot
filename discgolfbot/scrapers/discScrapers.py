@@ -9,6 +9,7 @@ from . import discmania
 from . import discrepublic
 from . import discsport
 from . import frisbeefeber
+from . import fyndisc
 from . import krokholdgs
 from . import latitude64
 from . import rocketdiscs
@@ -26,6 +27,7 @@ class DiscScrapers():
         self.voec =          [discsport.DiscScraper(search),
                               rocketdiscs.DiscScraper(search),
                               discmania.DiscScraper(search),
+                              fyndisc.DiscScraper(search),
                               latitude64.DiscScraper(search),
                               discexpress.DiscScraper(search),
                               discconnection.DiscScraper(search),
