@@ -123,3 +123,19 @@ class Metrix(commands.Cog):
 
         cmd_time = time.time() - start_time
         print(f'competitions: {cmd_time}')
+
+    @metrix_slash_command.subcommand(name='search_course_id', description='Search for course on discgolfmetrix by ID')
+    async def course_id_slash_command(
+        self,
+        interaction: Interaction,
+        course_id: str = SlashOption(name="course", description="Course ID from discgolfmetrix", required=True)
+    ):
+        api = DiscgolfMetrixApi()
+        json = api.course(course_id, "HtDz6uLTsF76bFmCGToVsNe9khDf3sJA")
+        if json is not None:
+            course = MetrixCourse(json)
+            embed = course.get_embed()
+
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message(f'Could not find the course')
