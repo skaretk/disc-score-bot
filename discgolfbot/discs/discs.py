@@ -55,7 +55,7 @@ class Discs(commands.Cog):
 
         return description_text
 
-    def get_embed(self):
+    def get_embed_discs(self):
         if len(self.discs) == 0:
             return None
 
@@ -66,9 +66,28 @@ class Discs(commands.Cog):
         self.stores = split_discs_in_stores(self.discs)
         # Format output
         embed.description = self.format_discs_description()
-        # Validate and send Embed
+        # Validate and return embed
         if validate_embed(embed) == True:
             return embed
+        else:
+            return None
+
+    def get_embed_disc_flight(self, disc_flight_scraper):
+        if (len(self.discs) == 1):
+            disc = self.discs[0]
+            if (disc.manufacturer == "Other"):
+                embed = nextcord.Embed(title=f'{disc.name}', color=0x004899)
+            else:
+                embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)
+            embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
+            embed.set_image(url=disc.flight_url)
+            embed.set_footer(text="Marshall Street", icon_url=disc_flight_scraper.icon_url)
+
+            # Validate and return embed
+            if (validate_embed(embed) == True):
+                return embed
+            else:
+                return None
         else:
             return None
 
@@ -89,7 +108,7 @@ class Discs(commands.Cog):
             disc_scrapers = DiscScrapers(search_item)
             self.scrape(disc_scrapers.norwegian_scrapers)
 
-            embed = self.get_embed()
+            embed = self.get_embed_discs()
             if embed is not None:
                 if self.get_disc_image(embed) == False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -121,7 +140,7 @@ class Discs(commands.Cog):
             disc_scrapers = DiscScrapers(search_item)
             self.scrape(disc_scrapers.voec_scrapers)
 
-            embed = self.get_embed()
+            embed = self.get_embed_discs()
             if embed is not None:
                 if self.get_disc_image(embed) == False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -153,7 +172,7 @@ class Discs(commands.Cog):
             disc_scrapers = DiscScrapers(search_item)
             self.scrape(disc_scrapers.all_scrapers)
 
-            embed = self.get_embed()
+            embed = self.get_embed_discs()
             if embed is not None:
                 if self.get_disc_image(embed) == False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -178,29 +197,18 @@ class Discs(commands.Cog):
         search = sep.join(args)
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
+        start_time = time.time()
         scraper_list = [DiscFlightScraper(search)]
         self.scrape(scraper_list)
 
-        if (len(self.discs) == 1):
-            disc = self.discs[0]
-            if (disc.manufacturer == "Other"):
-                embed = nextcord.Embed(title=f'{disc.name}', color=0x004899)
-            else:
-                embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)
-            embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
-            embed.set_image(url=disc.flight_url)
-            embed.set_footer(text="Provided by Marshall Street", icon_url=scraper_list[0].icon_url)
-
-            # Validate and send Embed
-            if (validate_embed(embed) == True):
-                await ctx.send(ctx.author.mention, embed=embed)
-            else:
-                await ctx.send(f'{ctx.author.mention}, Could not show the disc flight for {search}!)')
-                await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
+        embed = self.get_embed_disc_flight(scraper_list[0])
+        if embed is not None:
+            await ctx.send(ctx.author.mention, embed=embed)
         else:
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
 
     # Slash commands
     @nextcord.slash_command(name="disc", description="Discs commands", guild_ids=[])
@@ -218,7 +226,6 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
-
         self.discs = []
         disc_scrapers = DiscScrapers(search)
         scraper_list = []
@@ -233,7 +240,7 @@ class Discs(commands.Cog):
             scraper_list = disc_scrapers.norwegian_scrapers
 
         self.scrape(scraper_list)
-        embed = self.get_embed()
+        embed = self.get_embed_discs()
         if embed is not None:
             if self.get_disc_image(embed) == False:
                 embed.set_thumbnail(url=(interaction.user.display_avatar))
@@ -246,3 +253,26 @@ class Discs(commands.Cog):
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+
+    @disc_slash_command.subcommand(name="flight", description="Search for disc flight-path")
+    async def disc_flight_slash_command(
+        self,
+        interaction: Interaction,
+        search: str = SlashOption(name="disc", description="Disc to search for", required=True)
+    ):
+        self.discs = []
+        await interaction.response.defer()
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
+
+        start_time = time.time()
+        scraper_list = [DiscFlightScraper(search)]
+        self.scrape(scraper_list)
+
+        embed = self.get_embed_disc_flight(scraper_list[0])
+        if embed is not None:
+            await interaction.followup.send(interaction.user.mention, embed=embed)
+        else:
+            await interaction.followup.send(f'Could not find flight path for {search} {interaction.user.mention}')
+
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
