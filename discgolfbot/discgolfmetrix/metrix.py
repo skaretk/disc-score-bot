@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+from nextcord import Interaction, SlashOption
 import nextcord
 from nextcord.ext import commands
 from apis.discgolfmetrixapi import DiscgolfMetrixApi
@@ -67,3 +68,22 @@ class Metrix(commands.Cog):
 
         cmd_time = time.time() - start_time
         print(f'my_competitions: {cmd_time}')
+
+    # Slash commands
+    @nextcord.slash_command(name="metrix", description="Discgolfmetrix commands", guild_ids=[])
+    async def metrix_slash_command(self):
+        pass
+
+    @metrix_slash_command.subcommand(name="add_player_code", description="Add your discgolfmetrix player code")
+    async def add_player_code_slash_command(
+        self,
+        interaction: Interaction,
+        player_code: str = SlashOption(name="code", description="Player code from discgolfmetrix", required=True)
+    ):
+        user = interaction.user
+        metrix_player = MetrixPlayer(interaction.guild, user.display_name)
+        modified = metrix_player.add_player_code(player_code)
+        if (modified == True):
+            await interaction.response.send_message(f'Modified your metrix player code {user.mention}')
+        else:
+            await interaction.response.send_message(f'Added your metrix player code {user.mention}')
