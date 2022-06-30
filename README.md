@@ -19,4 +19,4 @@ Based on guide posted here: https://realpython.com/how-to-make-a-discord-bot-pyt
 2. Install python from python.org
 3. Install nextcord (pip install -U nextcord)
 4. Install python-dotenv (pip install python-dotenv)
-5. Insert token from guide above into the 'token.env' file in the cfg folder.
+5. Copy 'cfg/token_ex.env' and call it 'cfg/token.env', then insert the token from guide above.
