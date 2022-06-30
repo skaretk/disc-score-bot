@@ -17,7 +17,7 @@ from discgolfmetrix import Metrix
 
 # discord client
 def main():
-    load_dotenv(find_dotenv('token.env'))
+    load_dotenv(find_dotenv('cfg/token.env'))
     token = getenv("TOKEN")
 
     # intents
