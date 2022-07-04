@@ -11,11 +11,14 @@ def test_discgolfmetrix_courses_list():
     assert response is not None
 
 def test_discgolfmetrix_courses_list_course_name():
-    course_name = "Muselunden"
+    course_name = "Bikkjestykket"
     api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
     assert api is not None
     response = api.courses_list("NO", course_name)
     assert response is not None
+    # Fetch and test that we have received the courses
+    courses = response.get("courses")
+    assert len(courses) != 0
 
 def test_discgolfmetrix_course_id():
     course_id = "8752"
