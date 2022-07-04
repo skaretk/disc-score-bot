@@ -83,10 +83,10 @@ class DiscgolfMetrixApi():
     # My competitions - https://discgolfmetrix.com/?u=rule&ID=60
     # Return list of my competitions
     # 1. code - take the code from your Settings Integration code
-    def my_competitions(self, player_code):
+    def my_competitions(self, code):
         params = dict()
         params["content"] = "my_competitions"
-        params["code"] = player_code
+        params["code"] = code
         response = requests.get(self.api_url, params=params)
         if response and response.status_code == 200:
             return response.json()

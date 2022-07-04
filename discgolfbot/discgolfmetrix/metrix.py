@@ -141,14 +141,19 @@ class Metrix(commands.Cog):
         course_id: str = SlashOption(name="course", description="Course ID from discgolfmetrix", required=True)
     ):
         api = DiscgolfMetrixApi()
-        json = api.course(course_id, "HtDz6uLTsF76bFmCGToVsNe9khDf3sJA")
-        if json is not None:
-            course = MetrixCourse(json, MetrixCourseType.ID)
-            embed = course.get_embed()
-
-            await interaction.response.send_message(embed=embed)
+        user = interaction.user
+        player = MetrixPlayer(interaction.guild, user.display_name)
+        code = player.get_player_code()
+        if code is not None:
+            json = api.course(course_id, code)
+            if json is not None:
+                course = MetrixCourse(json, MetrixCourseSource.ID)
+                embed = course.get_embed()
+                await interaction.response.send_message(embed=embed)
+            else:
+                await interaction.response.send_message(f'Could not find the course')
         else:
-            await interaction.response.send_message(f'Could not find the course')
+            await interaction.response.send_message(f'Could not find your player code {user.display_name}, please add it by using [metrix add_player_code]')
 
     @metrix_slash_command.subcommand(name='search_course_name', description='Search for course on discgolfmetrix by name')
     async def course_name_slash_command(
