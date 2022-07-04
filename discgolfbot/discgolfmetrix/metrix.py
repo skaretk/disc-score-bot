@@ -9,7 +9,7 @@ from typing import Optional
 from .metrixplayer import MetrixPlayer
 from .metrixcompetition import MetrixCompetition
 from .metrixcompetitions import MetrixCompetitions
-from .metrixcourse import MetrixCourse, MetrixCourseType
+from .metrixcourse import MetrixCourse, MetrixCourseSource
 from .metrixcourses import MetrixCourses
 
 class Metrix(commands.Cog):
@@ -36,7 +36,7 @@ class Metrix(commands.Cog):
         api = DiscgolfMetrixApi()
         json = api.course(course_id, "HtDz6uLTsF76bFmCGToVsNe9khDf3sJA")
         if json is not None:
-            course = MetrixCourse(json, MetrixCourseType.ID)
+            course = MetrixCourse(json, MetrixCourseSource.ID)
             embed = course.get_embed()
 
             await ctx.send(embed=embed)
@@ -167,7 +167,7 @@ class Metrix(commands.Cog):
             courses = json.get("courses")
             metrix_courses = MetrixCourses()
             for course in courses:
-                metrix_courses.add_course(MetrixCourse(course, MetrixCourseType.LIST))
+                metrix_courses.add_course(MetrixCourse(course, MetrixCourseSource.LIST))
 
             embed = metrix_courses.get_embed()
 
