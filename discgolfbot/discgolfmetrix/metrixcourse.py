@@ -76,7 +76,7 @@ class MetrixCourse:
     def get_embed(self):
         description_text = ""
         try:
-            description_text = f'Baskets: {self.get_basket_no()} Par: {self.get_par()} Length:{self.get_length()}m PAR Rating: {round(self.calculate_rating(), 2)}'
+            description_text = f'Baskets: {self.get_basket_no()} Par: {self.get_par()} Length: {self.get_length()}m PAR Rating: {round(self.calculate_rating())}'
         except:
             print("Could not fetch description for course")
         embed=nextcord.Embed(title=self.get_course_name(), url=f'{self.get_course_url()}', description=description_text, color=0x004899)
