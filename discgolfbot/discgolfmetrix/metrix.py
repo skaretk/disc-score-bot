@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import nextcord
 import time
 from apis.discgolfmetrixapi import DiscgolfMetrixApi
@@ -8,7 +9,8 @@ from typing import Optional
 from .metrixplayer import MetrixPlayer
 from .metrixcompetition import MetrixCompetition
 from .metrixcompetitions import MetrixCompetitions
-from .metrixcourse import MetrixCourse
+from .metrixcourse import MetrixCourse, MetrixCourseSource
+from .metrixcourses import MetrixCourses
 
 class Metrix(commands.Cog):
     def __init__(self, bot):
@@ -34,7 +36,7 @@ class Metrix(commands.Cog):
         api = DiscgolfMetrixApi()
         json = api.course(course_id, "HtDz6uLTsF76bFmCGToVsNe9khDf3sJA")
         if json is not None:
-            course = MetrixCourse(json)
+            course = MetrixCourse(json, MetrixCourseSource.ID)
             embed = course.get_embed()
 
             await ctx.send(embed=embed)
@@ -107,10 +109,19 @@ class Metrix(commands.Cog):
             api = DiscgolfMetrixApi()
             json = api.my_competitions(code)
             competitions = MetrixCompetitions()
+            competition_list = []
             for competition in json.get("my_competitions"):
-                comptetition_json = api.get_results(competition)
-                if comptetition_json is not None:
-                    metrix_competition = MetrixCompetition(comptetition_json)
+                competition_list.append(competition)
+            print(f'Found {len(competition_list)} competitions')
+
+            future_list = []
+            with ThreadPoolExecutor(max_workers=len(competition_list)) as executor:
+                for competition_item in enumerate(competition_list):
+                    future_list.append(executor.submit(api.get_results, competition_item))
+
+            for future in future_list:
+                if future.result() is not None:
+                    metrix_competition = MetrixCompetition(future.result())
                     if metrix_competition.is_valid():
                         if datetime.today().date() <= metrix_competition.datetime.date():
                             competitions.add_competition(metrix_competition)
@@ -121,8 +132,7 @@ class Metrix(commands.Cog):
         else:
             await interaction.followup.send(f'Could not find your player code {user.display_name}, please add it by using %metrix add_player code')
 
-        cmd_time = time.time() - start_time
-        print(f'competitions: {cmd_time}')
+        print(f'competitions: {round(time.time() - start_time, 2)}')
 
     @metrix_slash_command.subcommand(name='search_course_id', description='Search for course on discgolfmetrix by ID')
     async def course_id_slash_command(
@@ -131,10 +141,35 @@ class Metrix(commands.Cog):
         course_id: str = SlashOption(name="course", description="Course ID from discgolfmetrix", required=True)
     ):
         api = DiscgolfMetrixApi()
-        json = api.course(course_id, "HtDz6uLTsF76bFmCGToVsNe9khDf3sJA")
+        user = interaction.user
+        player = MetrixPlayer(interaction.guild, user.display_name)
+        code = player.get_player_code()
+        if code is not None:
+            json = api.course(course_id, code)
+            if json is not None:
+                course = MetrixCourse(json, MetrixCourseSource.ID)
+                embed = course.get_embed()
+                await interaction.response.send_message(embed=embed)
+            else:
+                await interaction.response.send_message(f'Could not find the course')
+        else:
+            await interaction.response.send_message(f'Could not find your player code {user.display_name}, please add it by using [metrix add_player_code]')
+
+    @metrix_slash_command.subcommand(name='search_course_name', description='Search for course on discgolfmetrix by name')
+    async def course_name_slash_command(
+        self,
+        interaction: Interaction,
+        course_name: str = SlashOption(name="course", description="Course name", required=True)
+    ):
+        api = DiscgolfMetrixApi()
+        json = api.courses_list("NO", course_name)
         if json is not None:
-            course = MetrixCourse(json)
-            embed = course.get_embed()
+            courses = json.get("courses")
+            metrix_courses = MetrixCourses()
+            for course in courses:
+                metrix_courses.add_course(MetrixCourse(course, MetrixCourseSource.LIST))
+
+            embed = metrix_courses.get_embed()
 
             await interaction.response.send_message(embed=embed)
         else:

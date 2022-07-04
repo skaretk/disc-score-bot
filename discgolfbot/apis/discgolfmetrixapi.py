@@ -25,19 +25,19 @@ class DiscgolfMetrixApi():
         params["content"] = "courses_list"
         params["country_code"] = country_code
         if course_name is not None:
-            params["name"] = course_name
+            params["name"] = f'{course_name}%'
         response = requests.get(self.api_url, params=params)
         if response and response.status_code == 200:
-            return response.json()
+            return json.loads(html.unescape(response.text))
         else:
             return None
-    
+
     # Course - https://discgolfmetrix.com/?u=rule&ID=50
     # Get a course information. Example: https://discgolfmetrix.com/api.php?content=course&id=14800&code=XXX
     #
     # Input parameters:
     # 1. id - course identification
-    # 2. code - personal integration code. You can found it in personal preferences at the end.   
+    # 2. code - personal integration code. You can found it in personal preferences at the end.
     def course(self, course_id, code = None):
         params = dict()
         params["content"] = "course"
@@ -48,7 +48,7 @@ class DiscgolfMetrixApi():
         if response and response.status_code == 200:
             return json.loads(html.unescape(response.text))
         else:
-            return None    
+            return None
 
     # You can calculate rating by the formula:
     # Rating = (RatingValue2 - RatingValue1)*(Result - RatingResult1)/(RatingResult2 - RatingResult1)+RatingValue1
@@ -57,7 +57,7 @@ class DiscgolfMetrixApi():
 
     # Results - https://discgolfmetrix.com/?u=rule&ID=38
     # Method: Get Results
-    # Get Results method can be used to query results for a given competition. 
+    # Get Results method can be used to query results for a given competition.
     # Competition in this context can be a single round, top level competition record with multiple rounds or even a series of competitions.
     def get_results(self, result_id):
         params = dict()
@@ -83,10 +83,10 @@ class DiscgolfMetrixApi():
     # My competitions - https://discgolfmetrix.com/?u=rule&ID=60
     # Return list of my competitions
     # 1. code - take the code from your Settings Integration code
-    def my_competitions(self, player_code):
+    def my_competitions(self, code):
         params = dict()
         params["content"] = "my_competitions"
-        params["code"] = player_code
+        params["code"] = code
         response = requests.get(self.api_url, params=params)
         if response and response.status_code == 200:
             return response.json()

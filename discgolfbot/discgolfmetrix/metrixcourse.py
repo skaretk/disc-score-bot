@@ -1,80 +1,84 @@
-import json
-from collections import OrderedDict
+#import json
+#from collections import OrderedDict
+from enum import Enum
 import nextcord
-from apis.discgolfmetrixapi import metrix_favicon, metrix_logo
+from apis.discgolfmetrixapi import metrix_favicon
+
+class MetrixCourseSource(Enum):
+    ID = 1
+    LIST = 2
 
 class MetrixCourse:
-    def __init__(self, json):
-        self.json = json
-        self.course_url = 'https://discgolfmetrix.com/course'
+    def __init__(self, json, type: MetrixCourseSource):
+        self.type = type
+        self.course_json = json.get("course") if type == type.ID else json
+        self.baskets_json = json.get("baskets") if type == type.ID else None
+        self.course_url = f'https://discgolfmetrix.com/course/{self.course_id}'
 
     def calculate_rating(self, result = None):
-        if self.json is not None:
-            course = self.json.get("course")
-            rating_value_1 = None
-            rating_result_1 = None
-            rating_value_2 = None
-            rating_result_2 = None
-            try:
-                rating_value_1 = float(course.get("RatingValue1"))
-                rating_result_1 = float(course.get("RatingResult1"))
-                rating_value_2 = float(course.get("RatingValue2"))
-                rating_result_2 = float(course.get("RatingResult2"))
-            except:
+        # rating values is only returned if searched by ID
+        if self.type == MetrixCourseSource.LIST:
+            return None
+        if self.course_json is not None:
+            rating_value_1 = self.course_json.get("RatingValue1")
+            rating_result_1 = self.course_json.get("RatingResult1")
+            rating_value_2 = self.course_json.get("RatingValue2")
+            rating_result_2 = self.course_json.get("RatingResult2")
+            if rating_value_1 and rating_result_1 and rating_value_2 and rating_result_2:
+                rating_value_1 = float(rating_value_1)
+                rating_result_1 = float(rating_result_1)
+                rating_value_2 = float(rating_value_2)
+                rating_result_2 = float(rating_result_2)
+            else:
                 return None
+
             if result is None:
-                result = self.get_par()
+                result = self.par
             if result is not None:
-                return (rating_value_2 - rating_value_1)*(result - rating_result_1)/(rating_result_2 - rating_result_1)+rating_value_1
+                return round( (rating_value_2 - rating_value_1) * (result - rating_result_1) / (rating_result_2 - rating_result_1) + rating_value_1 )
         return None
 
-    def get_par(self):
-        if self.json is not None:
-            baskets = self.json.get("baskets")
-            if baskets is not None:
-                par = 0
-                for hole in baskets:
-                    par += int(hole.get("Par"))
-                return par
+    @property
+    def par(self):
+        if self.baskets_json is not None:
+            par = 0
+            for hole in self.baskets_json:
+                par += int(hole.get("Par"))
+            return par
         return None
 
-    def get_length(self):
-        if self.json is not None:
-            baskets = self.json.get("baskets")
-            if baskets is not None:
-                length = 0
-                for hole in baskets:
-                    if hole.get("Length") != None:
-                        length += (int)(hole.get("Length"))
-                return length
+    @property
+    def total_length(self):
+        if self.baskets_json is not None:
+            length = 0
+            for hole in self.baskets_json:
+                if hole.get("Length") is not None:
+                    length += (int)(hole.get("Length"))
+            return length
         return None
 
-    def get_basket_no(self):
-        if self.json is not None:
-            baskets = self.json.get("baskets")
-            if baskets is not None:
-                return len(baskets)
+    @property
+    def no_of_baskets(self):
+        if self.baskets_json is not None:
+           return len(self.baskets_json)
         return None
 
-    def get_course_name(self):
-        if self.json is not None:
-            course = self.json.get("course")
-            return course.get("Fullname")
+    @property
+    def course_name(self):
+        if self.course_json is not None:
+            return self.course_json.get("Fullname")
         return None
 
-    def get_course_id(self):
-        if self.json is not None:
-            course = self.json.get("course")
-            return course.get("ID")
-        return None
+    @property
+    def course_id(self):
+        return self.course_json.get("ID")
 
     def get_embed(self):
         description_text = ""
         try:
-            description_text = f'Baskets: {self.get_basket_no()} Par: {self.get_par()} Length:{self.get_length()}m PAR Rating: {round(self.calculate_rating(), 2)}'
+            description_text = f'Baskets: {self.no_of_baskets or "Unknown"} Par: {self.par or "0"} Length: {self.total_length or "0"}m PAR Rating: {self.calculate_rating() or "0"}'
         except:
             print("Could not fetch description for course")
-        embed=nextcord.Embed(title=self.get_course_name(), url=f'{self.course_url}/{self.get_course_id()}', description=description_text, color=0x004899)
-        embed.set_footer(text="discgolfmetrix api", icon_url=metrix_favicon())
-        #embed.set_thumbnail(url=metrix_logo())
+        embed=nextcord.Embed(title=self.course_name, url=f'{self.course_url}', description=description_text, color=0x004899)
+        embed.set_footer(text="discgolfmetrix", icon_url=metrix_favicon())
         return embed
