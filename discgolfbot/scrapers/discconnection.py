@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Discconnection(Scraper):
@@ -15,11 +15,11 @@ class DiscScraper(Discconnection):
         self.scrape_url = f'https://discconnection.dk/default.asp?page=productlist.asp&Search_Hovedgruppe=&Search_Undergruppe=&Search_Producent=&Search_Type=&Search_Model=&Search_Plastic=&PriceFrom=&PriceTo=&Search_FREE={search}'
         self.discs = []
         self.valid_categories = ["Andre discs", "Brugte discs", "Collectors discs", "Golf discs"]
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
-            
+
         names = []
         manufacturers = []
         prices = []
@@ -44,20 +44,20 @@ class DiscScraper(Discconnection):
             for prodPriceWeight in product_list[idx].findAll("td", class_="prodPriceWeight"):
                 b = prodPriceWeight.find("b")
                 if b is not None:
-                    prices.append(b.getText())  
+                    prices.append(b.getText())
                 else:
                     # Discounted price? Contains: TILBUD: 300 - spar 50 DKK
                     discount = prodPriceWeight.find("div", class_="discount")
                     if discount is not None:
                         price = discount.getText().split()
                         prices.append(f'{price[1]} DKK')
-            
+
             for discImage in product_list[idx].findAll("img"):
                 images.append(discImage["src"])
 
 
         for i in range(len(names)):
-            disc = DiscShop()
+            disc = Disc()
             disc.name = names[i]
             disc.manufacturer = manufacturers[i]
             disc.price = prices[i]

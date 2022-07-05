@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class AceShop(Scraper):
@@ -14,7 +14,7 @@ class DiscScraper(AceShop):
         self.search = search
         self.scrape_url = f'https://aceshop.no/search_result?keywords={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -25,12 +25,12 @@ class DiscScraper(AceShop):
             name = product_box_a.getText()
             if self.search.lower() not in name.lower():
                 continue
-            url = product_box_a["href"]            
+            url = product_box_a["href"]
             price = product.find("div", class_="price").getText().strip()
             product_item_photo = product.find("img", class_="img-fluid")
-            img = product_item_photo["src"]            
-            
-            disc = DiscShop()
+            img = product_item_photo["src"]
+
+            disc = Disc()
             disc.name = name
             disc.url = url
             disc.price = price

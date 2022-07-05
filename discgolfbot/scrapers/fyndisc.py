@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Fyndisc(Scraper):
@@ -29,7 +29,7 @@ class DiscScraper(Fyndisc):
                 if self.search.lower() not in product_name.lower():
                     continue
 
-                disc = DiscShop()
+                disc = Disc()
                 disc.name = product_name
                 disc.price = product.find("span", class_="price").getText()
 

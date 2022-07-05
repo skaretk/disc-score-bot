@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 # Armspeed
@@ -18,7 +18,7 @@ class DiscScraper(ArmSpeed):
         self.scrape_url = f'https://armspeed.se/shop/search?s={search}'
         self.discs = []
         self.currency = "SEK"
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup()
@@ -33,7 +33,7 @@ class DiscScraper(ArmSpeed):
             url = text['href']
             price = product["data-s-price"]
 
-            disc = DiscShop()
+            disc = Disc()
             disc.name = product_text
             disc.price = f'{price} {self.currency}'
             disc.url = f'{self.url}{url}'

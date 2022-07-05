@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Discmania(Scraper):
@@ -15,7 +15,7 @@ class DiscScraper(Discmania):
         self.search = search
         self.scrape_url = f'https://europe.discmania.net/search?type=product%2Carticle%2Cpage&q={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -29,7 +29,7 @@ class DiscScraper(Discmania):
             if (money == None): # Not in stock
                 continue
 
-            disc = DiscShop()
+            disc = Disc()
             disc.name = name
             disc.manufacturer = product.find("h4", class_= "product__vendor h6").getText()
             a = product.find("a", class_="product-link", href=True)

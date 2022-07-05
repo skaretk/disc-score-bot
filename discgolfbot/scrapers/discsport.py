@@ -1,6 +1,5 @@
 import time
-import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Discsport(Scraper):
@@ -15,7 +14,7 @@ class DiscScraper(Discsport):
         self.search = search
         self.scrape_url = f'https://discsport.se/shopping/?search_adv=&name={search}&selBrand=0&selCat=1&selType=0&selStatus=1&selMold=0&selDiscType=0&selStability=0&selPlastic=0&selPlasticQuality=0&selColSel=0&selColPrim=0&selCol=0&selWeightInt=0&selWeight=0&sel_speed=0&sel_glide=0&sel_turn=-100&sel_fade=-100&Submit='
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -23,7 +22,7 @@ class DiscScraper(Discsport):
         products = soup.find('div', class_="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 justify-content-center g-2 g-md-3 my-4")
         if (products is not None):
             for product in products.findAll("div", class_="position-relative mx-auto text-center p-0 m-0"):
-                disc = DiscShop()
+                disc = Disc()
                 a = product.find("h2", class_="h5 mt-2 mb-0").find('a', href=True)
                 disc.name = a.getText().replace("\n", " ").replace("\t", " ").strip()
                 disc.url = a["href"]

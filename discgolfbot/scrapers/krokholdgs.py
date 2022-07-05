@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Krokholdgs(Scraper):
@@ -14,7 +14,7 @@ class DiscScraper(Krokholdgs):
         self.search = search
         self.scrape_url = f'https://www.krokholdgs.no/search_result?keywords={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -29,8 +29,8 @@ class DiscScraper(Krokholdgs):
             price = product.find("div", class_="price").getText().strip().replace("/n", "").replace("/t", "")
             img_item = product.find("img", class_="img-fluid")
             img = img_item["src"]
-            
-            disc = DiscShop()
+
+            disc = Disc()
             disc.name = product_name
             disc.url = url
             disc.price = price

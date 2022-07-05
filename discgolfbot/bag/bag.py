@@ -85,19 +85,19 @@ class Bag(commands.Cog):
 
         if (len(bag_scraper.distance_drivers)):
             drivers = ''
-            driver_flights = ''
+            drivers_flights = ''
             for driver in bag_scraper.distance_drivers:
                 drivers += f'[{driver}]({driver.url})\n'
-                driver_flights += f'{driver.flight()}\n'
+                drivers_flights += f'{driver.flight}\n'
             embed.add_field(name="Drivers", value=drivers, inline=True)
-            embed.add_field(name="Flight", value=driver_flights, inline=True)
+            embed.add_field(name="Flight", value=drivers_flights, inline=True)
             embed.add_field(name="\u200b", value="\u200b", inline=True)
         if (len(bag_scraper.fairway_drivers)):
             fairways = ''
             fairways_flights = ''
             for fairway in bag_scraper.fairway_drivers:
                 fairways += f'[{fairway}]({fairway.url})\n'
-                fairways_flights += f'{fairway.flight()}\n'
+                fairways_flights += f'{fairway.flight}\n'
             embed.add_field(name="Fairways", value=fairways, inline=True)
             embed.add_field(name="Flight", value=fairways_flights, inline=True)
             embed.add_field(name="\u200b", value="\u200b", inline=True)
@@ -106,7 +106,7 @@ class Bag(commands.Cog):
             midranges_flights = ''
             for midrange in bag_scraper.midranges:
                 midranges += f'[{midrange}]({midrange.url})\n'
-                midranges_flights += f'{midrange.flight()}\n'
+                midranges_flights += f'{midrange.flight}\n'
             embed.add_field(name="Midranges", value=midranges, inline=True)
             embed.add_field(name="Flight", value=midranges_flights, inline=True)
             embed.add_field(name="\u200b", value="\u200b", inline=True)
@@ -115,7 +115,7 @@ class Bag(commands.Cog):
             putters_flights = ''
             for putter in bag_scraper.putt_approach:
                 putters += f'[{putter}]({putter.url})\n'
-                putters_flights += f'{putter.flight()}\n'
+                putters_flights += f'{putter.flight}\n'
             embed.add_field(name="Putt and Approach", value=putters, inline=True)
             embed.add_field(name="Flight", value=putters_flights, inline=True)
             embed.add_field(name="\u200b", value="\u200b", inline=True)

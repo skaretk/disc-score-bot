@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
@@ -22,8 +22,8 @@ class DiscScraper(RocketDiscs):
     def any_products(self, soup):
         if soup.find("div", class_="list-group-item padding0") is None:
             return False
-        return True        
-        
+        return True
+
     def scrape(self):
         start_time = time.time()
         soup_search = self.urllib_get_beatifulsoup()
@@ -31,13 +31,13 @@ class DiscScraper(RocketDiscs):
             self.scraper_time = time.time() - start_time
             print(f'RocketDiscs scraper: {self.scraper_time}')
             return
-        
+
         for product in soup_search.findAll("div", class_="list-group-item padding0"):
             name = product.find("h4", class_="media-heading").getText()
             if re.search(self.search, name, re.IGNORECASE) is None:
                 continue
 
-            disc = DiscShop()
+            disc = Disc()
             disc.name = name
             meta = product.find("p", class_="meta").getText()
             disc.manufacturer = meta.split("|")[0].strip()

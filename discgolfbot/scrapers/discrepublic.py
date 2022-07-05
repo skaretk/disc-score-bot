@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Discrepublic(Scraper):
@@ -15,7 +15,7 @@ class DiscScraper(Discrepublic):
         self.search = search
         self.scrape_url = f'https://discrepublic.ca/search?type=product&collection=in-stock&q=*{search}*'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK; localization=NO'})
@@ -30,13 +30,13 @@ class DiscScraper(Discrepublic):
             plastic = product.find("span", class_="plastic")
             # Is the product a disc?
             if plastic is None:
-                continue                
+                continue
             if re.search(self.search, f'{mold} {plastic.getText()}', re.IGNORECASE) is None:
                 continue
 
-            disc = DiscShop()
+            disc = Disc()
             disc.name = f'{mold} {plastic.getText()}'
-            product_title = product.find("div", class_="product-title")                
+            product_title = product.find("div", class_="product-title")
             title = product_title.find('a', href=True)
             # manufacturer is fetched from an alt string
             img = product.find('img', class_="not-rotation img-responsive front")

@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class Latitude64(Scraper):
@@ -14,7 +14,7 @@ class DiscScraper(Latitude64):
         self.search = search
         self.scrape_url = f'https://store.latitude64.se/search?type=product&q={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -24,7 +24,7 @@ class DiscScraper(Latitude64):
                 product_title_a = product_item_div.find("a", class_="product-title")
                 if product_title_a is None:
                     continue
-                disc = DiscShop()
+                disc = Disc()
                 disc.name = product_title_a.getText().replace('\n', '')
                 disc.url = f'{self.url}{product_title_a["href"]}'
                 disc.manufacturer = product_item_div.find('div', class_='product-vendor').getText().replace('\n', '')

@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class GuruDiscgolf(Scraper):
@@ -14,7 +14,7 @@ class DiscScraper(GuruDiscgolf):
         self.search = search
         self.scrape_url = f'https://gurudiscgolf.no/?s={search}&post_type=product&_product_categories=golfdiscer'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -26,8 +26,8 @@ class DiscScraper(GuruDiscgolf):
                 continue
             url = product_data['data-gtm4wp_product_url']
             price = product_data['data-gtm4wp_product_price']
-            
-            disc = DiscShop()
+
+            disc = Disc()
             disc.name = product_name
             disc.url = url
             disc.price = f'{price},-'

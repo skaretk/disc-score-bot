@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscFlight
+from discs.disc import Disc
 from .scraper import Scraper
 
 class MarshallStreet(Scraper):
@@ -21,10 +21,10 @@ class DiscFlightScraper(MarshallStreet):
         soup = self.urllib_get_beatifulsoup()
         for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
             if (disc_item.getText().lower() == self.search.lower()):
-                disc = DiscFlight()
+                disc = Disc()
                 disc.name = disc_item.getText()
                 disc.manufacturer = disc_item['data-brand']
-                disc.flight_url = disc_item['data-pic']
+                disc.url = disc_item['data-pic']
                 disc.speed = disc_item['data-speed']
                 disc.glide = disc_item['data-glide']
                 disc.turn = disc_item['data-turn']
@@ -35,10 +35,10 @@ class DiscFlightScraper(MarshallStreet):
         for putter in soup.findAll("div", class_="putter-child pc-entry"):
             putter_name = putter['data-putter']
             if (putter_name.lower() == self.search.lower()):
-                disc = DiscFlight()
+                disc = Disc()
                 disc.name = putter_name
                 disc.manufacturer = putter['data-brand']
-                disc.flight_url = putter['data-image']
+                disc.url = putter['data-image']
                 disc.speed = putter['data-speed']
                 disc.glide = putter['data-glide']
                 disc.turn = putter['data-turn']

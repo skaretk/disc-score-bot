@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 # DiscImport
@@ -16,7 +16,7 @@ class DiscScraper(DiscImport):
         self.search = search
         self.scrape_url = f'https://discimport.dk/search?search={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -33,10 +33,10 @@ class DiscScraper(DiscImport):
             if re.search(self.search, title, re.IGNORECASE) is None: # Check false results
                 continue
 
-            currency = product_list.find("span", class_="product-teaser-currency").getText() 
+            currency = product_list.find("span", class_="product-teaser-currency").getText()
             price = product_list.find("span", class_="product-teaser-price").getText()
 
-            disc = DiscShop()
+            disc = Disc()
             disc.name = title
             disc.price = f'{price} {currency}'
             disc.manufacturer = product_list.find("div", class_="product-teaser-brand").getText()
