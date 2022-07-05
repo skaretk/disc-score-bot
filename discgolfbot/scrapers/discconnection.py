@@ -42,6 +42,8 @@ class DiscScraper(Discconnection):
 
             # Contains: Pris inkl. moms: 120,00 DKK
             for prodPriceWeight in product_list[idx].findAll("td", class_="prodPriceWeight"):
+                if prodPriceWeight.has_attr("align"):
+                    continue
                 b = prodPriceWeight.find("b")
                 if b is not None:
                     prices.append(b.getText())
