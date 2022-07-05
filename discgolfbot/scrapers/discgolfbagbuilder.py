@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscBag
+from discs.disc import Disc
 from .scraper import Scraper
 
 # DiscgolfBagBuilder does not contain disc manufacturer
@@ -7,7 +7,7 @@ class DiscgolfBagBuilder(Scraper):
     def __init__(self, url):
         super().__init__()
         self.name = 'discgolfbagbuilder.com'
-        self.url = 'https://www.discgolfbagbuilder.com'        
+        self.url = 'https://www.discgolfbagbuilder.com'
         self.scrape_url = url
         self.bag_name = "Bag"
         self.bag_description = ""
@@ -17,7 +17,7 @@ class DiscgolfBagBuilder(Scraper):
         self.fairway_drivers = []
         self.midranges = []
         self.putt_approach = []
-    
+
     def scrape_discs(self):
         start_time = time.time()
         soup, driver = self.selenium_get_beatifulsoup_and_chromedriver()
@@ -28,7 +28,7 @@ class DiscgolfBagBuilder(Scraper):
         element = driver.find_element_by_class_name('y_axis')
         element.screenshot(self.image_file)
         driver.close()
-        
+
         meta_properties = soup.findAll("meta", property=True)
         for property in meta_properties:
             if (property["property"] is not None):
@@ -45,23 +45,23 @@ class DiscgolfBagBuilder(Scraper):
             discs_list = []
             discs_div = discs[idx].findAll("div", class_="flex flex-row justify-between")
             for disc in discs_div:
-                disc_bag = DiscBag()
+                disc_bag = Disc()
                 disc_element = disc.find("a", class_="text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150")
                 disc_text = disc_element.getText()
                 disc_link = disc_element['href']
                 if (disc_link is not None):
                     disc_bag.url = f'{self.url}{disc_element["href"]}'
-                
+
                 if ("(" in disc_text):
                     text_array = disc_text.split('(')
                     disc_bag.name = text_array[0]
-                    if len(text_array) == 2:                        
+                    if len(text_array) == 2:
                         disc_bag.info = text_array[1].replace(")", "")
                     elif len(text_array) == 3:
                         disc_bag.info = f'{text_array[1]}{text_array[2]}'.replace(")", "")
                 else:
                     disc_bag.name = disc_text
-                
+
                 flight = disc.find("div", class_="text-right").getText().split("/")
                 disc_bag.speed = flight[0].rstrip().lstrip()
                 disc_bag.glide = flight[1].rstrip().lstrip()

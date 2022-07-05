@@ -37,23 +37,13 @@ class Discs(commands.Cog):
         return False
 
     def format_discs_description(self):
-        description_text = ''
+        text = ''
         for store in self.stores:
-            store_string_value = ""
+            text += f'**{store.store}**' if store == self.stores[0] else f'\n**{store.store}**'
             for disc in store.discs:
-                # First disc
-                if disc == store.discs[0]:
-                    if description_text:
-                        store_string_value += f'\n'
-                    store_string_value += f'**{store.store}**\n[{disc.name}]({disc.url}) {disc.price}'
-                # append
-                else:
-                    store_string_value += f'\n[{disc.name}]({disc.url}) {disc.price}'
-                # Print if last disc
-                if disc == store.discs[-1]:
-                    description_text += store_string_value
+                text += f'\n[{disc.name}]({disc.url}) {disc.price}'
 
-        return description_text
+        return text
 
     def get_embed_discs(self):
         if len(self.discs) == 0:
@@ -79,8 +69,8 @@ class Discs(commands.Cog):
                 embed = nextcord.Embed(title=f'{disc.name}', color=0x004899)
             else:
                 embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)
-            embed.add_field(name='Flight', value=f'{disc.speed} {disc.glide} {disc.turn} {disc.fade}', inline=True)
-            embed.set_image(url=disc.flight_url)
+            embed.add_field(name='Flight', value=f'{disc.flight}', inline=True)
+            embed.set_image(url=disc.url)
             embed.set_footer(text="Marshall Street", icon_url=disc_flight_scraper.icon_url)
 
             # Validate and return embed

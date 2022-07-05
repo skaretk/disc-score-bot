@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 # Discexpress does not contain disc manufacturer
@@ -16,7 +16,7 @@ class DiscScraper(DiscExpress):
         self.search = search
         self.scrape_url = f'https://www.discexpress.se/a/search?type=product&q={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK'})
@@ -26,7 +26,7 @@ class DiscScraper(DiscExpress):
             if re.search(self.search, name, re.IGNORECASE) is None: # Search engine gives false response
                 continue
 
-            disc = DiscShop()
+            disc = Disc()
             disc.name = name
             a = grid_item.find('a', href=True)
             disc.url = f'{self.url}{a["href"]}'
@@ -36,7 +36,7 @@ class DiscScraper(DiscExpress):
 
             for hidden_item in grid_item.findAll("span", class_="visually-hidden"):
                 if re.search("kr", hidden_item.getText(), re.IGNORECASE):
-                    disc.price = hidden_item.getText()                 
+                    disc.price = hidden_item.getText()
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time

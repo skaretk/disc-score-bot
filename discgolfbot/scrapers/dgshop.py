@@ -1,7 +1,5 @@
-
-
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 class DgShop(Scraper):
@@ -16,7 +14,7 @@ class DiscScraper(DgShop):
         self.search = search
         self.scrape_url = f'https://www.dgshop.no/catalogsearch/result/index/?cat=3&q={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -35,8 +33,8 @@ class DiscScraper(DgShop):
             url = product_photo["href"]
             product_item_photo = product_photo.find("img", class_="product-image-photo")
             img = product_item_photo["src"]
-            
-            disc = DiscShop()
+
+            disc = Disc()
             disc.name = name
             disc.url = url
             disc.price = price

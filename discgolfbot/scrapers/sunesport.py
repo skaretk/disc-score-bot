@@ -1,6 +1,6 @@
 import re
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 
 # Sune Sport does not contain disc manufacturer
@@ -16,7 +16,7 @@ class DiscScraper(SuneSport):
         self.search = search
         self.scrape_url = f'https://sunesport.no/product/search.html?search={search}&category_id=268&sub_category=true'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -25,7 +25,7 @@ class DiscScraper(SuneSport):
             if (product.find("span", class_="stock-status").getText() == "Utsolgt"):
                 continue
 
-            disc = DiscShop()
+            disc = Disc()
             caption = product.find("div", class_="caption")
             h4 = caption.find("h4")
             a = h4.find('a', href=True)

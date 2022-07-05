@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 # This site has been added into DiscInStock site
 
@@ -16,7 +16,7 @@ class DiscScraper(FrisbeeFeber):
         self.search = search
         self.scrape_url = f'https://www.frisbeefeber.no/search_result?keywords={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
@@ -26,7 +26,7 @@ class DiscScraper(FrisbeeFeber):
             not_in_stock = product.find("div", class_="product not-in-stock-product")
             if (not_in_stock is not None):
                 continue
-            disc = DiscShop()
+            disc = Disc()
             disc.name = product.find("a", class_="title col-md-12").getText()
             # Search engine gives false results, check if the disc name is correct
             if re.search(self.search, disc.name, re.IGNORECASE) is None:

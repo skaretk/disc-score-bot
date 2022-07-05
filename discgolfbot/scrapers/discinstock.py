@@ -1,5 +1,5 @@
 import time
-from discs.disc import DiscShop
+from discs.disc import Disc
 from .scraper import Scraper
 from apis.discinstockapi import DiscinstockApi
 
@@ -13,13 +13,13 @@ class DiscScraper(DiscInStock):
         self.search = search
         self.scrape_url = f'https://www.discinstock.no/?name={search}'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.selenium_get_beatifulsoup(1)
 
         for a in soup.findAll("div", class_="col"):
-            disc = DiscShop()
+            disc = Disc()
             disc.manufacturer = a.find("h6", class_="text-muted font-monospace h-100").getText()
             disc.name = a.find("span", class_="fs-5").getText()
             img = a.find("img", class_="px-1 pt-1")
@@ -38,14 +38,14 @@ class DiscScraperApi(DiscInStock):
         super().__init__()
         self.search = search
         self.discs = []
-    
+
     def scrape(self):
         discinstock_api = DiscinstockApi()
         start_time = time.time()
         discs_json = discinstock_api.discs()
         for disc_json in discs_json:
             if self.search.lower() in disc_json["name"].lower():
-                disc = DiscShop()
+                disc = Disc()
                 disc.name = disc_json["name"]
                 disc.img = disc_json["image"]
                 disc.url = disc_json["url"]
