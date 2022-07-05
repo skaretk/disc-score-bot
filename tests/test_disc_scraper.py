@@ -3,119 +3,102 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 from context import scrapers
 
-def test_aceshop_disc_scraper():
-    search = "firebird"
-    scraper = scrapers.aceshop.DiscScraper(search)
+def check_disc(disc):
+    if not disc.name:
+        return False
+    if not disc.price:
+        return False
+    if not disc.price:
+        return False
+    if not disc.store:
+        return False
+    if not disc.url:
+        return False
+    if not disc.img:
+        return False
+    return True
+
+def scrape_and_check(scraper):
     scraper.scrape()
     assert len(scraper.discs) != 0
+    for disc in scraper.discs:
+        assert check_disc(disc) == True
+
+def test_aceshop_disc_scraper():
+    search = "firebird"
+    scrape_and_check(scrapers.aceshop.DiscScraper(search))
 
 def test_armspeed_disc_scraper():
     search = "firebird"
-    scraper = scrapers.armspeed.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.armspeed.DiscScraper(search))
 
 def test_dgshop_disc_scraper():
     search = "firebird"
-    scraper = scrapers.dgshop.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.dgshop.DiscScraper(search))
 
 def test_discconnection_disc_scraper():
     search = "firebird"
-    scraper = scrapers.discconnection.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discconnection.DiscScraper(search))
 
 def test_discexpress_disc_scraper():
     search = "firebird"
-    scraper = scrapers.discexpress.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discexpress.DiscScraper(search))
 
 def test_discimport_disc_scraper():
     search = "firebird"
-    scraper = scrapers.discimport.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discimport.DiscScraper(search))
 
 def test_discinstock_disc_scraper():
     search = "firebird"
-    scraper = scrapers.discinstock.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discinstock.DiscScraper(search))
 
 def test_discinstock_disc_scraper_api():
     search = "firebird"
-    scraper = scrapers.discinstock.DiscScraperApi(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discinstock.DiscScraperApi(search))
 
 def test_discmania_disc_scraper():
     search = "tactic"
-    scraper = scrapers.discmania.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discmania.DiscScraper(search))
 
 def test_discrepublic_disc_scraper():
     search = "firebird"
-    scraper = scrapers.discrepublic.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discrepublic.DiscScraper(search))
 
 def test_discsport_disc_scraper():
     search = "firebird"
-    scraper = scrapers.discsport.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.discsport.DiscScraper(search))
 
 def test_frisbeefeber_disc_scraper():
     search = "link"
-    scraper = scrapers.frisbeefeber.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.frisbeefeber.DiscScraper(search))
 
 def test_fyndisc_disc_scraper():
     search = "firebird"
-    scraper = scrapers.fyndisc.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.fyndisc.DiscScraper(search))
 
 def test_gurudiscgolf_scraper():
     search = "firebird"
-    scraper = scrapers.gurudiscgolf.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.gurudiscgolf.DiscScraper(search))
 
 def test_krokholdgs_scraper():
     search = "firebird"
-    scraper = scrapers.krokholdgs.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.krokholdgs.DiscScraper(search))
 
 def test_latitude64_disc_scraper():
     search = "grace"
-    scraper = scrapers.latitude64.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.latitude64.DiscScraper(search))
 
 def test_rocketdiscs_disc_scraper():
     search = "firebird"
-    scraper = scrapers.rocketdiscs.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.rocketdiscs.DiscScraper(search))
 
 def test_sunesport_disc_scraper():
     search = "firebird"
-    scraper = scrapers.sunesport.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.sunesport.DiscScraper(search))
 
 def test_xxl_disc_scraper():
     search = "harp"
-    scraper = scrapers.xxl.DiscScraper(search)
-    scraper.scrape()
-    assert len(scraper.discs) != 0
+    scrape_and_check(scrapers.xxl.DiscScraper(search))
 
 def test_pdga_disc_scraper():
     scraper = scrapers.pdga.DiscScraper()
