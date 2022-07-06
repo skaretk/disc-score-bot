@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import time
-import re
 from discs.disc import Disc
 from .scraper import Scraper
 from bs4 import BeautifulSoup
@@ -34,7 +33,7 @@ class DiscScraper(RocketDiscs):
 
         for product in soup_search.findAll("div", class_="list-group-item padding0"):
             name = product.find("h4", class_="media-heading").getText()
-            if re.search(self.search, name, re.IGNORECASE) is None:
+            if self.search.lower() not in name.lower(): # Gives some false products
                 continue
 
             disc = Disc()

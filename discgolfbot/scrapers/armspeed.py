@@ -27,7 +27,7 @@ class DiscScraper(ArmSpeed):
             # Check if product is in stock
             text = product.find('a', class_="color-text-base")
             product_text = re.split(r'(^[^\d]+)', text.getText())[1:][0].rstrip(" ")
-            if re.search(self.search, product_text, re.IGNORECASE) is None: # Check false results
+            if self.search.lower() not in product_text.lower():
                 continue
 
             url = text['href']

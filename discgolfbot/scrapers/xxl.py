@@ -1,4 +1,3 @@
-import re
 import time
 from discs.disc import Disc
 from .scraper import Scraper
@@ -33,8 +32,7 @@ class DiscScraper(Xxl):
         for product in product_list.findAll("li"):
             product_info = product.find("div", class_="product-card__info-wrapper")
             name = product_info.find("p").getText().split(", ")[0]
-            # Must check since xxl.no returns false results
-            if re.search(self.search, name, re.IGNORECASE) is None:
+            if self.search.lower() not in name.lower(): # Gives some false products
                 continue
             disc = Disc()
             disc.name = product_info.find("p").getText().split(", ")[0]

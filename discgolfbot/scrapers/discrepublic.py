@@ -1,5 +1,4 @@
 import time
-import re
 from discs.disc import Disc
 from .scraper import Scraper
 
@@ -32,7 +31,7 @@ class DiscScraper(Discrepublic):
             if plastic is None:
                 continue
             product_name = f'{mold} {plastic.getText()}'
-            if re.search(self.search, product_name, re.IGNORECASE) is None:
+            if self.search.lower() not in product_name'.lower(): # Gives some false products
                 continue
 
             div_product_title = product.find("div", class_="product-title")
