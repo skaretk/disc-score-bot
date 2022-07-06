@@ -13,6 +13,7 @@ from . import fyndisc
 from . import krokholdgs
 from . import latitude64
 from . import rocketdiscs
+from . import starframe
 from . import sunesport
 from . import xxl
 
@@ -23,6 +24,7 @@ class DiscScrapers():
                               discinstock.DiscScraperApi(search),
                               frisbeefeber.DiscScraper(search),
                               krokholdgs.DiscScraper(search),
+                              starframe.DiscScraper(search),
                               sunesport.DiscScraper(search)]
         self.voec =          [discsport.DiscScraper(search),
                               rocketdiscs.DiscScraper(search),
