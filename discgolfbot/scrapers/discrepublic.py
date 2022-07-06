@@ -31,7 +31,7 @@ class DiscScraper(Discrepublic):
             if plastic is None:
                 continue
             product_name = f'{mold} {plastic.getText()}'
-            if self.search.lower() not in product_name'.lower(): # Gives some false products
+            if self.search.lower() not in product_name.lower(): # Gives some false products
                 continue
 
             div_product_title = product.find("div", class_="product-title")
