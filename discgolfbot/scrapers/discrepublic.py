@@ -31,26 +31,26 @@ class DiscScraper(Discrepublic):
             # Is the product a disc?
             if plastic is None:
                 continue
-            if re.search(self.search, f'{mold} {plastic.getText()}', re.IGNORECASE) is None:
+            product_name = f'{mold} {plastic.getText()}'
+            if re.search(self.search, product_name, re.IGNORECASE) is None:
                 continue
 
-            disc = Disc()
-            disc.name = f'{mold} {plastic.getText()}'
-            product_title = product.find("div", class_="product-title")
-            title = product_title.find('a', href=True)
-            # manufacturer is fetched from an alt string
+            div_product_title = product.find("div", class_="product-title")
+            a_title = div_product_title.find('a', href=True)
             img = product.find('img', class_="not-rotation img-responsive front")
-            disc.manufacturer = img["alt"].split(" ")[0]
-            disc.url = f'{self.url}{title["href"]}'
+            span_normal_price = product.find("span", class_="price_sale price_normal")
 
+            disc = Disc()
+            disc.name = product_name
+            disc.manufacturer = img["alt"].split(" ")[0]
+            disc.url = f'{self.url}{a_title["href"]}'
             # If the disc is on sale, there is two prices. Check and use correct
-            normal_price = product.find("span", class_="price_sale price_normal")
-            if normal_price is None:
+            if span_normal_price is None:
                 disc.price = product.find("span", class_="price_sale").getText().replace("\n", "")
             else:
-                disc.price = normal_price.getText().replace("\n", "")
+                disc.price = span_normal_price.getText().replace("\n", "")
+            disc.img = f'https:{img["src"].split("?v=", 1)[0]}'
             disc.store = self.name
-
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
         print(f'Discrepublic scraper: {self.scraper_time}')
