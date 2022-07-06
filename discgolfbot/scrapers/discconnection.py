@@ -64,8 +64,7 @@ class DiscScraper(Discconnection):
             disc.manufacturer = manufacturers[i]
             disc.price = prices[i]
             disc.store = self.name
-            if ("empty" not in images[i]): # empty.jpg is not a picture of the disc
-                disc.img = images[i]
+            disc.img = images[i]
             disc.url = self.scrape_url
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time

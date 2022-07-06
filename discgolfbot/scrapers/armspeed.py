@@ -32,11 +32,14 @@ class DiscScraper(ArmSpeed):
 
             url = text['href']
             price = product["data-s-price"]
+            img_item = product.find("img")
+            img_url = img_item["srcset"].partition("?")[0]
 
             disc = Disc()
             disc.name = product_text
             disc.price = f'{price} {self.currency}'
             disc.url = f'{self.url}{url}'
+            disc.img = img_url
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time

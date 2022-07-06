@@ -28,14 +28,15 @@ class DiscScraper(Discmania):
             if (money == None): # Not in stock
                 continue
 
+            a_product_link = product.find("a", class_="product-link", href=True)
+            img_product = product.find("img", class_="product__img")
+
             disc = Disc()
             disc.name = name
             disc.manufacturer = product.find("h4", class_= "product__vendor h6").getText()
-            a = product.find("a", class_="product-link", href=True)
-            disc.url = f'{self.url}{a["href"]}'
-            img = product.find("img", class_="product__img lazyautosizes lazyloaded")
-            if (img is not None):
-                disc.img = f'https:{img["data-srcset"].split()[8].split("?v=", 1)[0]}' #fetch 540 width image
+            disc.url = f'{self.url}{a_product_link["href"]}'
+            if (img_product is not None):
+                disc.img = f'https:{img_product["data-src"].replace("{width}", "540").split("?v=", 1)[0]}' # fetch 540x width image
             disc.price = money.getText()
             disc.store = self.name
             self.discs.append(disc)

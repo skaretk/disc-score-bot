@@ -35,11 +35,15 @@ class DiscScraper(DiscImport):
             currency = product_list.find("span", class_="product-teaser-currency").getText()
             price = product_list.find("span", class_="product-teaser-price").getText()
 
+            img_src = product_list.find("img", class_="product-image")['data-layzr-retina']
+            img_url = f'{self.url}{img_src}'.replace(".webp", ".jpg")
+
             disc = Disc()
             disc.name = title
             disc.price = f'{price} {currency}'
             disc.manufacturer = product_list.find("div", class_="product-teaser-brand").getText()
             disc.url = a['href']
+            disc.img = img_url
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
