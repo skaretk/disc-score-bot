@@ -1,5 +1,4 @@
 import time
-import re
 from discs.disc import Disc
 from .scraper import Scraper
 
@@ -23,7 +22,7 @@ class DiscScraper(Discmania):
         for product in soup.findAll("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
             name = product.find("h3", class_= "product__title h4").getText()
 
-            if re.search(self.search, name, re.IGNORECASE) is None: # Gives some false products
+            if self.search.lower() not in name.lower(): # Gives some false products
                 continue
             money = product.find("span", class_="money")
             if (money == None): # Not in stock

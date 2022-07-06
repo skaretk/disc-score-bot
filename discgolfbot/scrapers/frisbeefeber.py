@@ -1,5 +1,4 @@
 import time
-import re
 from discs.disc import Disc
 from .scraper import Scraper
 # This site has been added into DiscInStock site
@@ -28,8 +27,7 @@ class DiscScraper(FrisbeeFeber):
                 continue
             disc = Disc()
             disc.name = product.find("a", class_="title col-md-12").getText()
-            # Search engine gives false results, check if the disc name is correct
-            if re.search(self.search, disc.name, re.IGNORECASE) is None:
+            if self.search.lower() not in disc.name.lower(): # Gives some false products
                 continue
             div_manufacturer = product.find("div", class_="manufacturer-box")
             alt_manufacturer = div_manufacturer.find("img", alt=True)

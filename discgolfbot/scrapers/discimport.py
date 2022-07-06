@@ -1,5 +1,4 @@
 import time
-import re
 from discs.disc import Disc
 from .scraper import Scraper
 
@@ -30,7 +29,7 @@ class DiscScraper(DiscImport):
             a = product_list.find('a', href=True)
 
             title = product_list.find("div", class_="product-teaser-title").getText()
-            if re.search(self.search, title, re.IGNORECASE) is None: # Check false results
+            if self.search.lower() not in title.lower(): # Check false results
                 continue
 
             currency = product_list.find("span", class_="product-teaser-currency").getText()

@@ -1,5 +1,4 @@
 import time
-import re
 from discs.disc import Disc
 from .scraper import Scraper
 
@@ -23,7 +22,8 @@ class DiscScraper(DiscExpress):
 
         for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
             name = grid_item.find("p").getText()
-            if re.search(self.search, name, re.IGNORECASE) is None: # Search engine gives false response
+
+            if self.search.lower() not in name.lower(): # Search engine gives false response
                 continue
 
             disc = Disc()
@@ -35,7 +35,7 @@ class DiscScraper(DiscExpress):
                 disc.img = f'https:{img["data-srcset"].split()[8].split("?v=", 1)[0]}' #fetch 540 width image
 
             for hidden_item in grid_item.findAll("span", class_="visually-hidden"):
-                if re.search("kr", hidden_item.getText(), re.IGNORECASE):
+                if "kr" in hidden_item.getText().lower():
                     disc.price = hidden_item.getText()
             disc.store = self.name
             self.discs.append(disc)
