@@ -24,7 +24,6 @@ class DiscScrapers():
                               discinstock.DiscScraperApi(search),
                               frisbeefeber.DiscScraper(search),
                               krokholdgs.DiscScraper(search),
-                              starframe.DiscScraper(search),
                               sunesport.DiscScraper(search)]
         self.voec =          [discsport.DiscScraper(search),
                               rocketdiscs.DiscScraper(search),
