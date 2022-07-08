@@ -19,8 +19,7 @@ from . import xxl
 
 class DiscScrapers():
     def __init__(self, search):
-        self.norwegian =     [aceshop.DiscScraper(search),
-                              dgshop.DiscScraper(search),
+        self.norwegian =     [dgshop.DiscScraper(search),
                               discinstock.DiscScraperApi(search),
                               frisbeefeber.DiscScraper(search),
                               krokholdgs.DiscScraper(search),
