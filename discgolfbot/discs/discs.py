@@ -3,7 +3,7 @@ from discord_utils.embed_validation import validate_embed
 import nextcord
 from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
-from scrapers.discScrapers import DiscScrapers
+from scrapers.discScrapers import DiscScrapers, DiscNewsScrapers
 from scrapers.marshallstreet import DiscFlightScraper
 from .store import Store, split_discs_in_stores
 
@@ -49,11 +49,13 @@ class Discs(commands.Cog):
         if len(self.discs) == 0:
             return None
 
-        embed_title = f'Found {len(self.discs)} {"Disc!" if len(self.discs) == 1 else "Discs!"}'
+        no_discs = 0
+        for store in self.stores:
+            no_discs += len(store.discs)
+
+        embed_title = f'Found {no_discs} {"Disc!" if no_discs == 1 else "Discs!"}'
         embed = nextcord.Embed(title=embed_title, color=0x004899)
 
-        # Split discs into store lists
-        self.stores = split_discs_in_stores(self.discs)
         # Format output
         embed.description = self.format_discs_description()
         # Validate and return embed
@@ -230,6 +232,7 @@ class Discs(commands.Cog):
             scraper_list = disc_scrapers.norwegian_scrapers
 
         self.scrape(scraper_list)
+        self.stores = split_discs_in_stores(self.discs)
         embed = self.get_embed_discs()
         if embed is not None:
             if self.get_disc_image(embed) == False:
@@ -266,3 +269,42 @@ class Discs(commands.Cog):
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
+
+    @disc_slash_command.subcommand(name="news", description="Search for last updated discs in stores!")
+    async def disc_news_slash_command(
+        self,
+        interaction: Interaction,
+        where: Optional[int] = SlashOption(name="where", description="Where to search", choices={"Norway": 1, "VOEC": 2, "World": 3}, required=False)
+    ):
+        await interaction.response.defer()
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for new discs online"))
+
+        start_time = time.time()
+        self.discs = []
+        disc_scrapers = DiscNewsScrapers()
+        scraper_list = []
+        if where is not None:
+            if where == 1:
+                scraper_list = disc_scrapers.norwegian_scrapers
+            elif where == 2:
+                scraper_list = disc_scrapers.voec_scrapers
+            elif where == 3:
+                scraper_list = disc_scrapers.all_scrapers
+        else:
+            scraper_list = disc_scrapers.norwegian_scrapers
+
+        self.scrape(scraper_list)
+        self.stores = split_discs_in_stores(self.discs, 5)
+        embed = self.get_embed_discs()
+        if embed is not None:
+            if self.get_disc_image(embed) == False:
+                embed.set_thumbnail(url=(interaction.user.display_avatar))
+            await interaction.followup.send(f'{interaction.user.mention} - **NEWS**', embed=embed)
+        else:
+            if len(self.discs) == 0:
+                await interaction.followup.send(f'{interaction.user.mention} - **NEWS**, Failed to get lastest discs')
+            else:
+                await interaction.followup.send(f'{interaction.user.mention}, WOW thats a lot of **NEW** discs! ({len(self.discs)}!)\n https://giphy.com/embed/32mC2kXYWCsg0')
+
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
