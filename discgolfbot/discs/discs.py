@@ -274,6 +274,7 @@ class Discs(commands.Cog):
     async def disc_news_slash_command(
         self,
         interaction: Interaction,
+        days: Optional[int] = SlashOption(name="days", description="How long since the discs were added", required=False),
         where: Optional[int] = SlashOption(name="where", description="Where to search", choices={"Norway": 1, "VOEC": 2, "World": 3}, required=False)
     ):
         await interaction.response.defer()
@@ -281,7 +282,10 @@ class Discs(commands.Cog):
 
         start_time = time.time()
         self.discs = []
-        disc_scrapers = DiscNewsScrapers()
+        if days is not  None:
+            disc_scrapers = DiscNewsScrapers(days)
+        else:
+            disc_scrapers = DiscNewsScrapers(7)
         scraper_list = []
         if where is not None:
             if where == 1:

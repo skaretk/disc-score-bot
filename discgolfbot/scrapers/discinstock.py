@@ -58,8 +58,9 @@ class DiscScraperApi(DiscInStock):
         print(f'DiscInStockApi scraper: {self.scraper_time}')
 
 class DiscNewsScraperApi(DiscInStock):
-    def __init__(self):
+    def __init__(self, no_days):
         super().__init__()
+        self.no_days = no_days
         self.discs = []
 
     def sort_discs(self):
@@ -73,7 +74,7 @@ class DiscNewsScraperApi(DiscInStock):
             # Only insert discs from last week
             date_updated = datetime.fromisoformat(disc_json["last_updated"]).replace(tzinfo=None)
             time_delta = datetime.now() - date_updated
-            if time_delta.days > 7:
+            if time_delta.days > self.no_days:
                 continue
 
             disc = Disc()

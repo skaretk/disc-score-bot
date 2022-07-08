@@ -53,8 +53,8 @@ class DiscScrapers():
         return scraper_list
 
 class DiscNewsScrapers():
-    def __init__(self):
-        self.norwegian =     [discinstock.DiscNewsScraperApi()]
+    def __init__(self, no_days):
+        self.norwegian =     [discinstock.DiscNewsScraperApi(no_days)]
 
     @property
     def norwegian_scrapers(self):
