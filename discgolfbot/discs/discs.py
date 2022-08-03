@@ -96,9 +96,10 @@ class Discs(commands.Cog):
         start_time = time.time()
 
         for search_item in search_list:
-            self.discs = []
+            self.discs.clear()
             disc_scrapers = DiscScrapers(search_item)
             self.scrape(disc_scrapers.norwegian_scrapers)
+            self.stores = split_discs_in_stores(self.discs)
 
             embed = self.get_embed_discs()
             if embed is not None:
@@ -128,9 +129,10 @@ class Discs(commands.Cog):
         start_time = time.time()
 
         for search_item in search_list:
-            self.discs = []
+            self.discs.clear()
             disc_scrapers = DiscScrapers(search_item)
             self.scrape(disc_scrapers.voec_scrapers)
+            self.stores = split_discs_in_stores(self.discs)
 
             embed = self.get_embed_discs()
             if embed is not None:
@@ -160,9 +162,10 @@ class Discs(commands.Cog):
         start_time = time.time()
 
         for search_item in search_list:
-            self.discs = []
+            self.discs.clear()
             disc_scrapers = DiscScrapers(search_item)
             self.scrape(disc_scrapers.all_scrapers)
+            self.stores = split_discs_in_stores(self.discs)
 
             embed = self.get_embed_discs()
             if embed is not None:
@@ -181,7 +184,7 @@ class Discs(commands.Cog):
 
     @commands.command(aliases=['Disc_flight', 'disk_flight', 'Disk_flight'], brief='%disc_flight disc', description='Get the flightpath of the given disc')
     async def disc_flight(self, ctx, *args, sep=" "):
-        self.discs = []
+        self.discs.clear()
         if len(args) == 0:
             await ctx.send(f'No disc specified {ctx.message.author.mention}, see %help disc_flight')
             return
@@ -218,7 +221,7 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
-        self.discs = []
+        self.discs.clear()
         disc_scrapers = DiscScrapers(search)
         scraper_list = []
         if where is not None:
@@ -253,7 +256,7 @@ class Discs(commands.Cog):
         interaction: Interaction,
         search: str = SlashOption(name="disc", description="Disc to search for", required=True)
     ):
-        self.discs = []
+        self.discs.clear()
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
@@ -281,7 +284,7 @@ class Discs(commands.Cog):
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for new discs online"))
 
         start_time = time.time()
-        self.discs = []
+        self.discs.clear()
         if days is not  None:
             disc_scrapers = DiscNewsScrapers(days)
         else:
