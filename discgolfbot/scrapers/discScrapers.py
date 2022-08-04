@@ -51,3 +51,11 @@ class DiscScrapers():
         scraper_list.extend(self.voec)
         scraper_list.extend(self.international)
         return scraper_list
+
+class DiscNewsScrapers():
+    def __init__(self, no_days):
+        self.norwegian =     [discinstock.DiscNewsScraperApi(no_days)]
+
+    @property
+    def norwegian_scrapers(self):
+        return self.norwegian

@@ -1,3 +1,4 @@
+from datetime import datetime
 import time
 from discs.disc import Disc
 from .scraper import Scraper
@@ -55,3 +56,37 @@ class DiscScraperApi(DiscInStock):
                 self.discs.append(disc)
         self.scraper_time = time.time() - start_time
         print(f'DiscInStockApi scraper: {self.scraper_time}')
+
+class DiscNewsScraperApi(DiscInStock):
+    def __init__(self, no_days):
+        super().__init__()
+        self.no_days = no_days
+        self.discs = []
+
+    def sort_discs(self):
+        self.discs.sort(key=lambda disc: disc.update, reverse=True)
+
+    def scrape(self):
+        discinstock_api = DiscinstockApi()
+        start_time = time.time()
+        discs_json = discinstock_api.discs()
+        for disc_json in discs_json:
+            # Only insert discs from last week
+            date_updated = datetime.fromisoformat(disc_json["last_updated"]).replace(tzinfo=None)
+            time_delta = datetime.now() - date_updated
+            if time_delta.days > self.no_days:
+                continue
+
+            disc = Disc()
+            disc.name = disc_json["name"]
+            disc.img = disc_json["image"]
+            disc.url = disc_json["url"]
+            disc.manufacturer = disc_json["brand"]
+            disc.price = f'{disc_json["price"]},-'
+            disc.store = disc_json["retailer"]
+            disc.update = date_updated
+            self.discs.append(disc)
+        self.sort_discs()
+
+        self.scraper_time = time.time() - start_time
+        print(f'DiscScraperNewsApi scraper: {self.scraper_time}')

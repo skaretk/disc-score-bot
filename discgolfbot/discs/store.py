@@ -9,7 +9,7 @@ class Store():
         else:
             return False
 
-def split_discs_in_stores(discs):
+def split_discs_in_stores(discs, max_no_discs = None):
     stores = []
 
     for disc in discs:
@@ -22,4 +22,9 @@ def split_discs_in_stores(discs):
             store = Store(disc.store)
             store.discs.append(disc)
             stores.append(store)
+
+    if max_no_discs is not None:
+        for store in stores:
+            if len(store.discs) > max_no_discs:
+                store.discs = store.discs[:max_no_discs]
     return stores
