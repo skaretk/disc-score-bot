@@ -1,6 +1,10 @@
 import time
 from discs.disc import Disc
 from .scraper import Scraper
+import re
+import requests
+import json
+
 
 class Latitude64(Scraper):
     def __init__(self):
@@ -8,31 +12,70 @@ class Latitude64(Scraper):
         self.name = 'store.latitude64.se'
         self.url = 'https://store.latitude64.se'
 
+
 class DiscScraper(Latitude64):
     def __init__(self, search):
         super().__init__()
         self.search = search
-        self.scrape_url = f'https://store.latitude64.se/search?type=product&q={search}'
+        self.scrape_url = f'https://store.latitude64.se/pages/search-results-page?q={search}&page=1&rb_stock_status=In%20Stock'
         self.discs = []
 
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
-        div_products = soup.find('div', class_='products-grid product-search row product-collection')
-        if div_products is not None:
-            for div_product_item in div_products.findAll("div", class_="inner product-item"):
-                a_product_title = div_product_item.find("a", class_="product-title")
-                if a_product_title is None:
-                    continue
-                picture = div_product_item.find("source")
+        script_search_api = soup.find('script', src=re.compile(
+            '//searchserverapi\.com/widgets/shopify/init\.js\?a=.*'))
+        api_key = script_search_api['src'].split('=')[1]
 
-                disc = Disc()
-                disc.name = a_product_title.getText().replace('\n', '')
-                disc.url = f'{self.url}{a_product_title["href"]}'
-                disc.manufacturer = div_product_item.find('div', class_='product-vendor').getText().replace('\n', '')
-                disc.price = div_product_item.find("div", class_="price-box").getText().replace('\n', '').replace(",00 kr", ",-")
-                disc.img = f'https:{picture["data-srcset"].split("?v=", 1)[0]}'
-                disc.store = self.name
-                self.discs.append(disc)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+            'Referer': 'https://store.latitude64.se/',
+        }
+
+        params = {
+            'api_key': api_key,
+            'q': self.search,
+            'sortBy': 'created',
+            'sortOrder': 'desc',
+            'restrictBy[stock_status]': 'In Stock',
+            'startIndex': '0',
+            'maxResults': '15',
+            'items': 'true',
+            'pages': 'true',
+            'categories': 'true',
+            'suggestions': 'true',
+            'queryCorrection': 'true',
+            'suggestionsMaxResults': '3',
+            'pageStartIndex': '0',
+            'pagesMaxResults': '20',
+            'categoryStartIndex': '0',
+            'categoriesMaxResults': '20',
+            'facets': 'true',
+            'facetsShowUnavailableOptions': 'false',
+            'recentlyViewedProducts': '',
+            'ResultsTitleStrings': '2',
+            'ResultsDescriptionStrings': '2',
+            'page': '1',
+            'union[price][min]': 'price_NOK',
+            'shopify_currency': 'NOK',
+            'prepareVariantOptions': 'true',
+            'output': 'jsonp',
+            'callback': f'jQuery36008546270804256082_{int(start_time)}',
+            '_': f'{int(start_time)}',
+        }
+        response = requests.get(
+            'https://searchserverapi.com/getresults', params=params, headers=headers)
+        data = json.loads(
+            response.text[response.text.find('{'):response.text.rfind('}')+1])
+        for item in data['items']:
+            disc = Disc()
+            disc.name = item['title']
+            disc.url = f'{self.url}{item["link"]}'
+            disc.manufacturer = item['vendor']
+            disc.price = '{:.2f} kr'.format(float(item['price']))
+            disc.img = item['image_link']
+            disc.store = self.name
+            self.discs.append(disc)
+
         self.scraper_time = time.time() - start_time
         print(f'Latitude64 scraper: {self.scraper_time}')
