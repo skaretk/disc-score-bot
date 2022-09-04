@@ -24,7 +24,7 @@ class DiscScraper(Latitude64):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
         script_search_api = soup.find('script', src=re.compile(
-            '//searchserverapi\.com/widgets/shopify/init\.js\?a=.*'))
+            r'//searchserverapi\.com/widgets/shopify/init\.js\?a=.*'))
         api_key = script_search_api['src'].split('=')[1]
 
         headers = {
