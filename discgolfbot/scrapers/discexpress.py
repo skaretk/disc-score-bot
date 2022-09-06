@@ -20,24 +20,21 @@ class DiscScraper(DiscExpress):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK'})
 
-        for grid_item in soup.findAll("div", class_="grid-item search-result large--one-fifth medium--one-third small--one-half"):
-            name = grid_item.find("p").getText()
+        for product_item in soup.findAll("div", class_="product-item product-item--vertical 1/3--tablet 1/4--lap-and-up"):
+            a = product_item.find('a', class_='product-item__title')
+            name = a.getText()
 
             if self.search.lower() not in name.lower(): # Search engine gives false response
                 continue
-
             disc = Disc()
             disc.name = name
-            a = grid_item.find('a', href=True)
             disc.url = f'{self.url}{a["href"]}'
-            img = grid_item.find("img", class_="no-js")
+            img = product_item.find('img', src=True) # find the non-JS image tag
             if (img is not None):
-                img_url = f'https:{img["data-src"].replace("{width}", "540").split("?v=", 1)[0]}' # fetch 540x width image
+                img_url = f'https:{img["src"]}'
                 disc.img = img_url
-
-            for hidden_item in grid_item.findAll("span", class_="visually-hidden"):
-                if "kr" in hidden_item.getText().lower():
-                    disc.price = hidden_item.getText()
+            
+            disc.price = ''.join(product_item.find('span', class_='price').findAll(text=True, recursive=False)).strip()
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
