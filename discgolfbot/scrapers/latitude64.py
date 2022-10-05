@@ -70,6 +70,8 @@ class DiscScraper(Latitude64):
         for item in data['items']:
             disc = Disc()
             disc.name = item['title']
+            if self.search.lower() not in disc.name.lower(): # check false results
+                continue
             disc.url = f'{self.url}{item["link"]}'
             disc.manufacturer = item['vendor']
             disc.price = '{:.2f} kr'.format(float(item['price']))
