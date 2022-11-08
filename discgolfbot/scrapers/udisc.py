@@ -15,18 +15,18 @@ class LeagueScraper(Udisc):
         super().__init__()
         self.scrape_url = url
         self.score_card = Scorecard("", "", "2021-01-01 12:00", 0)
-        
+
     def scrape(self):
         start_time = time.time()
 
         soup = self.selenium_get_beatifulsoup(4)
 
-        header = soup.find("div", class_="jss39 jss41")
+        header = soup.find("div", class_="jss55 jss57")
         if header is None:
-            return        
+            return
 
         # Course Name
-        course_name = header.find("a", class_="MuiTypography-root MuiLink-root MuiLink-underlineHover jss101 MuiTypography-colorPrimary")
+        course_name = header.find("a", class_="MuiTypography-root MuiLink-root MuiLink-underlineHover jss75 MuiTypography-colorPrimary")
         if course_name is None:
             return
         self.score_card.coursename = course_name.getText().rstrip()
@@ -36,30 +36,30 @@ class LeagueScraper(Udisc):
             self.score_card.course_url = f'{self.url}{course_url}'
 
         # Layout Name
-        self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss123 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
+        self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss96 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
 
-        date = header.find("p", class_="MuiTypography-root jss100 MuiTypography-body1")
+        date = header.find("p", class_="MuiTypography-root jss74 MuiTypography-body1")
         if date is None:
             return
         # Date, varies between two formats ("September 12th 2021, or "Sept 12")
         date_text = date.getText().split("·")[1]
         self.score_card.date_time = parse(date_text)
-        
+
         tour_id = soup.find("div", id="tour-leaderboard")
         # Add par
-        par = tour_id.find("p", class_="jss146 jss182 undefined").getText()
+        par = tour_id.find("p", class_="jss122 jss158 undefined").getText()
         self.score_card.par = int(par)
         # Add par for holes
-        hole_par_list = tour_id.find_all("p", class_="jss146 jss182")
+        hole_par_list = tour_id.find_all("p", class_="jss122 jss158")
         for i in range(len(hole_par_list)):
             self.score_card.add_hole(i+1, int(hole_par_list[i].getText()))
 
         # Add players and scores
-        for player in tour_id.find_all("tr", class_="jss148 false collapsed"):
+        for player in tour_id.find_all("tr", class_="jss124 false collapsed"):
             player_name = PlayerName("")
             score = ""
             scores = []
-            player_row = player.find_all("td", class_="jss150 jss183")
+            player_row = player.find_all("td", class_="jss126 jss159")
             for row_no in range(len(player_row)):
                 if(row_no == 0):
                     player_name.name = player_row[row_no].getText()
@@ -76,6 +76,6 @@ class LeagueScraper(Udisc):
             for hole_score in scores:
                 scorecard_player.add_hole(hole_score)
             self.score_card.add_player(scorecard_player)
-        
+
         self.scraper_time = time.time() - start_time
         print(f'UdiscLeague scraper: {self.scraper_time}')
