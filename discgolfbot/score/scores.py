@@ -6,22 +6,23 @@ import time
 from scrapers.udisc import LeagueScraper
 import utilities
 from .files.members import Members
-from .files.scorecardreader import ScorecardReader
+from .files.udisccsvreader import UdiscCsvReader, UdiscCsvTypes
+from .files.udiscscorecardreader import UdiscScoreCardReader
 from .files.scorecardwriter import ScorecardWriter
 from .alias import Alias
 from .point_system import calculate_player_score
-from .scorecards import Scorecards
+from .competition import Competition
 
 def get_scorecards(path, alias, member_list = None):
-    scorecards = Scorecards()
+    competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            scorecard_reader = ScorecardReader(path, file)
-            scorecard = scorecard_reader.parse()
+            reader = UdiscCsvReader(path, file)
+            scorecard = reader.parse()
 
             # Add aliases
             for player in scorecard.players:
-                scorecards.add_player_alias(player, alias)
+                competition.add_player_alias(player, alias)
 
             # Check and remove players
             if member_list is not None:
@@ -29,50 +30,54 @@ def get_scorecards(path, alias, member_list = None):
                 scorecard.sort_players()
                 scorecard.add_player_position()
 
-            scorecards.add_scorecard(scorecard, alias)
+            competition.add_scorecard(scorecard)
 
     if member_list is not None:
-        for player in scorecards.players:
-            calculate_player_score(player, len(scorecards.scorecards))
+        for player in competition.players:
+            calculate_player_score(player, len(competition.scorecards))
 
-    return scorecards
+    return competition
 
 def get_scorecards_course(path, alias, course, member_list = None):
-    scorecards = Scorecards()
+    competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            scorecard_reader = ScorecardReader(path, file)
-            scorecard = scorecard_reader.parse_course(course)
+            reader = UdiscCsvReader(path, file)
+            scorecard = reader.parse()
+
             if scorecard is not None:
-                # Add aliases
-                for player in scorecard.players:
-                    scorecards.add_player_alias(player, alias)
+                if scorecard.course.name == course:
+                    # Add aliases
+                    for player in scorecard.players:
+                        competition.add_player_alias(player, alias)
 
-                # Check and remove players
-                if member_list is not None:
-                    scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
-                    scorecard.sort_players()
-                    scorecard.add_player_position()
+                    # Check and remove players
+                    if member_list is not None:
+                        scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
+                        scorecard.sort_players()
+                        scorecard.add_player_position()
 
-                scorecards.add_scorecard(scorecard, alias)
+                    competition.add_scorecard(scorecard)
 
     if member_list is not None:
-        for player in scorecards.players:
-            calculate_player_score(player, len(scorecards.scorecards))
+        for player in competition.players:
+            calculate_player_score(player, len(competition.scorecards))
 
-    return scorecards
+    return competition
 
 def get_scorecards_date(path, alias, date, date_to = '', member_list = None):
-    scorecards = Scorecards()
+    competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
-            scorecard_reader = ScorecardReader(path, file)
-            scorecard = scorecard_reader.parse_dates(date, date_to)
+            reader = UdiscCsvReader(path, file)
+            if reader.type == UdiscCsvTypes.SCORECARD:
+                scorecard_reader = UdiscScoreCardReader(path, file)
+                scorecard = scorecard_reader.parse_dates(date, date_to)
 
             if scorecard is not None:
                 # Add aliases
                 for player in scorecard.players:
-                    scorecards.add_player_alias(player, alias)
+                    competition.add_player_alias(player, alias)
 
                 # Check and remove players
                 if member_list is not None:
@@ -80,13 +85,13 @@ def get_scorecards_date(path, alias, date, date_to = '', member_list = None):
                     scorecard.sort_players()
                     scorecard.add_player_position()
 
-                scorecards.add_scorecard(scorecard, alias)
+                competition.add_scorecard(scorecard)
 
     if member_list is not None:
-        for player in scorecards.players:
-            calculate_player_score(player, len(scorecards.scorecards))
+        for player in competition.players:
+            calculate_player_score(player, len(competition.scorecards))
 
-    return scorecards
+    return competition
 
 class Scores(commands.Cog):
     def __init__(self, bot):
@@ -195,12 +200,12 @@ class Scores(commands.Cog):
         course_list = []
         for file in os.listdir(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'):
             if file.endswith(".csv"):
-                scorecard_reader = ScorecardReader(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file)
-                scorecard = scorecard_reader.parse()
+                reader = UdiscCsvReader(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file)
+                scorecard = reader.parse()
 
-                course_name = scorecard.coursename
-                if course_name not in course_list:
-                    course_list.append(course_name)
+                # Need to check for course.name == "" ?
+                if scorecard.course.name not in course_list:
+                    course_list.append(scorecard.course.name)
 
         msg = ''
         for course in course_list:
@@ -253,8 +258,8 @@ class Scores(commands.Cog):
         date_list = []
         for file in os.listdir(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}'):
             if file.endswith(".csv"):
-                scorecard_reader = ScorecardReader(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file)
-                scorecard = scorecard_reader.parse()
+                reader = UdiscCsvReader(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file)
+                scorecard = reader.parse()
 
                 date = scorecard.date_time.date()
                 if date not in date_list:
@@ -265,7 +270,6 @@ class Scores(commands.Cog):
             msg += f'\n{date}'
 
         await ctx.send(msg)
-        pass
 
     @dates.command(pass_context=True, name='search', brief='[1.1.2021 31.12.2021]', description='Search for scorecards within date(s) \search 1.1.1990\nsearch 1.1.1990 1.12.1990')
     async def dates_search(self, ctx, *args):
@@ -278,7 +282,7 @@ class Scores(commands.Cog):
 
         date = ''
         try:
-            date = datetime.strptime(args[0],'%d.%m.%Y')
+            date = datetime.strptime(args[0], '%d.%m.%Y')
         except ValueError:
             await ctx.send("Invalid format in date 1 - should be 01.12.2021")
             return
@@ -294,7 +298,7 @@ class Scores(commands.Cog):
         if (len(args) > 1):
             date_to = ''
             try:
-                date_to = datetime.strptime(args[1],'%d.%m.%Y')
+                date_to = datetime.strptime(args[1], '%d.%m.%Y')
             except ValueError:
                 await ctx.send("Invalid format in date 2 - should be 01.12.2021")
                 return
@@ -333,14 +337,14 @@ class Scores(commands.Cog):
         scraper_list = [udisc_league]
         self.scrape(scraper_list)
 
-        date = udisc_league.score_card.date_time.strftime('%Y-%m-%d%H%M')
-        file_name = f'{date}-{udisc_league.score_card.coursename}-{udisc_league.score_card.layoutname}-Udisc.csv'
+        date = udisc_league.scorecard.date_time.strftime('%Y-%m-%d%H%M')
+        file_name = f'{date}-{udisc_league.scorecard.course.name}-{udisc_league.scorecard.course.layout}-Udisc.csv'
         scorecard_writer = ScorecardWriter(f'{os.getcwd()}/cfg/{ctx.guild.name}/{ctx.channel}', file_name)
-        header, data = udisc_league.score_card.get_csv()
+        header, data = udisc_league.scorecard.get_csv()
         scorecard_writer.write(header, data)
 
 
-        embed = udisc_league.score_card.get_embed(ctx.author.avatar.url)
+        embed = udisc_league.scorecard.get_embed(ctx.author.avatar.url)
         if (embed != None):
             await ctx.send(embed=embed)
         else:

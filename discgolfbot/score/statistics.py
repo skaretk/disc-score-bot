@@ -9,7 +9,7 @@ class Statistics:
         self.bogey = bogey
         self.double_bogey = double_bogey
         self.triple_bogey_plus = triple_bogey_plus
-    
+
     def __add__(self, other):
         total_ace = self.ace + other.ace
         total_kondor = self.kondor + other.kondor
@@ -23,12 +23,32 @@ class Statistics:
 
         return Statistics(total_ace, total_kondor, total_albatross, total_eagle, total_birdie, total_par, total_bogey, total_double_bogey, total_triple_bogey_plus)
 
+    def add_score(self, score, par):
+        if score == 1:
+            self.ace += 1
+        elif score == par - 4:
+            self.kondor += 1
+        elif score == par - 3:
+            self.albatross += 1
+        elif score == par - 2:
+            self.eagle += 1
+        elif score == par - 1:
+            self.birdie += 1
+        elif score == par:
+            self.par += 1
+        elif score == par + 1:
+            self.bogey += 1
+        elif score == par + 2:
+            self.double_bogey += 1
+        elif score >= par + 3:
+            self.triple_bogey_plus += 1
+
     def get_ace_percent(self, holes):
         return ( (self.ace / holes) * 100).round(2)
-    
+
     def get_kondor_percent(self, holes):
         return ( (self.kondor / holes) * 100).round(2)
-    
+
     def get_albatross_percent(self, holes):
         return ( (self.albatross / holes) * 100).round(2)
 

@@ -7,7 +7,7 @@ class PlayerName:
 
     def __str__(self):
         return self.name
-    
+
     def __len__(self):
         return len(self.name)
 
@@ -30,7 +30,7 @@ class PlayerName:
         else: # Not a list
             if (search_name == self.alias.lower().replace(" ", "")):
                 return True
-        
+
         return False
 
 class Player:
@@ -39,6 +39,7 @@ class Player:
         self.total = int(total)
         self.score = int(score)
         self.holes = []
+        self.division = ""
         self.score_cards = 1
         self.score_cards_position = []
         self.league_pts = 0
@@ -47,13 +48,13 @@ class Player:
 
     def __str__(self):
         return f'{self.player_name} {self.score}'
-    
+
     def __eq__(self, other):
         if self.player_name == other.player_name:
             return True
         else:
             return False
-    
+
     def __add__(self, other):
         player = Player(PlayerName(self.player_name.name, self.player_name.alias), self.total + other.total, self.score + other.score)
         player.score_cards = self.score_cards + 1
@@ -63,7 +64,7 @@ class Player:
 
     def add_hole(self, score):
         self.holes.append(score)
-    
+
     def get_scores(self, from_hole = '', to_hole = ''):
             scores = ''
             if from_hole and to_hole:
@@ -79,10 +80,10 @@ class Player:
 
     def get_average_result(self):
         return sum(self.score_cards_position) / len(self.score_cards_position)
-    
+
     def get_first_name(self):
         return self.player_name.name.split(' ', 1)[0]
-    
+
     def calculate_attendence(self, no_scorecards):
          percentage = (self.score_cards / no_scorecards)*100
          self.league_attendence = percentage.__round__(2)
