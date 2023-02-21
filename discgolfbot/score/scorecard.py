@@ -1,7 +1,8 @@
 import datetime
+from enum import Enum
+import dateutil.parser as dparser
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from enum import Enum
 from .course import Course
 from .player import Player
 
@@ -30,7 +31,10 @@ class Scorecard:
 
     @date_time.setter
     def date_time(self, date_time):
-        self._date_time = datetime.datetime.strptime(date_time,'%Y-%m-%d %H:%M')
+        try:
+            self._date_time = dparser.parse(date_time, fuzzy=True)
+        except dparser.ParserError:
+            self._date_time = None
 
     @property
     def par(self):
@@ -45,8 +49,8 @@ class Scorecard:
         return self._card_type
 
     @card_type.setter
-    def card_type(self, type):
-        self._card_type = type
+    def card_type(self, card_type):
+        self._card_type = card_type
 
     def __str__(self):
         msg = f'{self.course.name} Dato: {self.date_time} Par: {self.par}'
@@ -73,14 +77,28 @@ class Scorecard:
             data.append(player_csv)
         return header, data
 
-    def add_hole(self, no, par):
-        self.holes[no] = par
+    def get_league_csv(self):
+        header = ["division", "position", "name", "relative_score", "total_score", "payout"]
+        data = []
+        # date = self.date_time.strftime('%Y-%m-%d')
+        for hole in self.holes:
+            header.append(f'hole_{hole}')
+
+        for player in self.players:
+            player_csv = [player.division, player.score_cards_position, player.player_name, player.score, player.total, player.payout]
+            for score in player.holes:
+                player_csv.append(score)
+            data.append(player_csv)
+        return header, data
+
+    def add_hole(self, number, par):
+        self.holes[number] = par
 
     def get_players(self, division=""):
         players = ''
         for player in self.players:
             if player.division == division:
-                curr_player_str = f'{player.score_cards_position[0]} {player}'
+                curr_player_str = f'{player.score_cards_position[0]} {self.get_embed_column_start(str(player.player_name))} {player.score}'
                 if player == self.players[0]:
                     players += curr_player_str
                 else:
@@ -100,18 +118,18 @@ class Scorecard:
     def add_player_position(self):
         for division in self.divisions:
             last_score = ""
-            no = 0
+            position = 0
             no_same_scores = 0
             for player in self.players:
                 if player.division == division:
                     if last_score == player.score:
                         no_same_scores += 1
                     else:
-                        no += no_same_scores + 1
+                        position += no_same_scores + 1
                         no_same_scores = 0
 
                     player.score_cards_position.clear()
-                    player.score_cards_position.append(no)
+                    player.score_cards_position.append(position)
                     last_score = player.score
 
     def get_total_throws(self):
@@ -132,53 +150,52 @@ class Scorecard:
                     max_length = len(player.player_name)
         return max_length
 
-    def get_embed_column_start(self, str, only_first_name = False):
-        offset = self.get_max_length_player_name(only_first_name) - len(str)
-        str += ' ' * offset + ' '
-        return str
+    def get_embed_column_start(self, string, only_first_name = False):
+        offset = self.get_max_length_player_name(only_first_name) - len(string)
+        string += ' ' * offset + ' '
+        return string
 
     def get_embed_pars_row(self, from_hole = '', to_hole = ''):
-            pars = ''
-            for hole in self.holes:
-                if (hole < from_hole):
-                    continue
-                elif (hole > to_hole):
-                    break
-                if (hole <= 9):
-                    pars += f'{self.holes[hole]} '
-                else:
-                    pars += f'{self.holes[hole]}  '
-            return pars
+        pars = ''
+        for hole_number, hole in self.holes.items():
+            if hole_number < from_hole:
+                continue
+            elif hole_number > to_hole:
+                break
+            if hole_number <= 9:
+                pars += f'{hole} '
+            else:
+                pars += f'{hole}  '
+        return pars
 
     def get_embed_holes_row(self, from_hole = '', to_hole = ''):
-            holes = ''
-            if from_hole and to_hole:
-                current_hole = from_hole
-                for hole in range(from_hole, to_hole+1):
-                    holes += f'{hole} '
-                    current_hole += 1
+        holes = ''
+        if from_hole and to_hole:
+            current_hole = from_hole
+            for hole in range(from_hole, to_hole+1):
+                holes += f'{hole} '
+                current_hole += 1
 
-            return holes
+        return holes
 
     def get_embed(self, thumbnail=''):
         embed = self.get_embed_min(thumbnail)
-        if (validate_embed(embed) == True):
+        if validate_embed(embed) is True:
             return embed
-        else:
-            return None
+        return None
 
     def get_embed_min(self, thumbnail=''):
         embed=nextcord.Embed(title=self.course.name, url=self.course.url, description=f'{self.date_time}', color=0x004899)
         for division in self.divisions:
             embed.add_field(name=f'{division}', value=f'```{self.get_players(division)}```', inline=False)
         if thumbnail != '':
-            embed.set_thumbnail(url=(thumbnail))
+            embed.set_thumbnail(url=thumbnail)
 
         return embed
 
     def get_embed_max(self, thumbnail=''):
         embed=nextcord.Embed(title=self.course.name, url=self.course.url, description=f'{self.date_time} Par:{self.par}', color=0x004899)
-        embed.add_field(name="Scores", value=f'{self.get_players()}', inline=False)
+        embed.add_field(name="", value=f'''{self.get_players()}''', inline=False)
 
         header_holes = self.get_embed_column_start('Hole', True)
         header_par = self.get_embed_column_start('Par', True)
@@ -206,7 +223,7 @@ class Scorecard:
                 scores_1 += f'{player_str}{player.get_scores(1,9)}\n'
                 scores_2 += f'{player_str}{player.get_scores(10, no_of_holes)}\n'
 
-            embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
+            embed.add_field(name='Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
             embed.add_field(name=f'Holes 10-{no_of_holes}', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
 
         elif no_of_holes <= 27:
@@ -226,11 +243,11 @@ class Scorecard:
                 scores_2 += f'{player_str}{player.get_scores(10, 18)}\n'
                 scores_3 += f'{player_str}{player.get_scores(19, no_of_holes)}\n'
 
-            embed.add_field(name=f'Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
-            embed.add_field(name=f'Holes 10-18', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
+            embed.add_field(name='Holes 1-9', value=f'```{header_holes}{holes_1}\n{header_par}{pars_1}\n{scores_1}```', inline=False)
+            embed.add_field(name='Holes 10-18', value=f'```{header_holes}{holes_2}\n{header_par}{pars_2}\n{scores_2}```', inline=False)
             embed.add_field(name=f'Holes 19-{no_of_holes}', value=f'```{header_holes}{holes_3}\n{header_par}{pars_3}\n{scores_3}```', inline=False)
 
         if thumbnail != '':
-            embed.set_thumbnail(url=(thumbnail))
+            embed.set_thumbnail(url=thumbnail)
 
         return embed

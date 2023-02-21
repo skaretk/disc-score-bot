@@ -13,7 +13,7 @@ class Scraper():
         self.url = ''
         self._scrape_url = ''
         self._scraper_time = ''
-    
+
     @property
     def scrape_url(self):
         return self._scrape_url
@@ -21,7 +21,7 @@ class Scraper():
     @scrape_url.setter
     def scrape_url(self, url):
         self._scrape_url = urllib.parse.quote(url, safe='?:/=&+')
-    
+
     @property
     def scraper_time(self):
         return round(self._scraper_time, 2)
@@ -29,7 +29,7 @@ class Scraper():
     @scraper_time.setter
     def scraper_time(self, time):
         self._scraper_time = time
-    
+
     def selenium_get_chromedriver(self):
         opt = webdriver.ChromeOptions()
         opt.add_argument("--headless")
@@ -46,16 +46,16 @@ class Scraper():
         opt.add_argument("--disable-webgl")
         opt.add_argument("--disable-popup-blocking)")
         opt.page_load_strategy = 'eager'
-        
+
         chrome_prefs = {}
         opt.experimental_options["prefs"] = chrome_prefs
         chrome_prefs["profile.default_content_settings"] = {"images": 2}
 
-        driver = webdriver.Chrome(options=opt) 
+        driver = webdriver.Chrome(options=opt)
         driver.implicitly_wait(10)
         driver.set_page_load_timeout(30)
         return driver
-    
+
     def selenium_get_beatifulsoup(self, sleep_time = 0):
         with self.selenium_get_chromedriver() as driver:
             driver.get(self.scrape_url)
@@ -63,7 +63,7 @@ class Scraper():
                 time.sleep(sleep_time)
             soup = BeautifulSoup(driver.page_source, "html.parser")
             return soup
-    
+
     # Driver needs to be closed afterwards
     def selenium_get_beatifulsoup_and_chromedriver(self, sleep_time = 0):
         driver = self.selenium_get_chromedriver()
@@ -72,12 +72,12 @@ class Scraper():
             time.sleep(sleep_time)
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup, driver
-    
+
     def urllib_get_beatifulsoup(self):
         with urlopen(self.scrape_url) as sock:
             htmlSource = sock.read()
         return BeautifulSoup(htmlSource, "html.parser")
-    
+
     def urllib_header_get_beatifulsoup(self, headers={}):
         default_headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'}
         req_headers = dict(default_headers)

@@ -10,17 +10,17 @@ class Competition:
 
     def __str__(self):
         msg = ''
-        no = 0
+        position = 0
         last_score = ''
         no_same_scores = 0
         for player in self.players:
             if last_score == player.score:
                 no_same_scores += 1
             else:
-                no += no_same_scores + 1
+                position += no_same_scores + 1
                 no_same_scores = 0
 
-            msg += f'\n{no}: {player.get_full_info()}'
+            msg += f'\n{position}: {player.get_full_info()}'
 
             last_score = player.score
 
@@ -49,7 +49,7 @@ class Competition:
 
     def player_exist(self, player):
         if player in self.players:
-          return True
+            return True
         return False
 
     def sort_players(self):
@@ -60,17 +60,17 @@ class Competition:
 
     def get_league_str(self):
         msg = ''
-        no = 0
+        position = 0
         last_pts = ''
         no_same_pts = 0
         for player in self.players:
             if last_pts == player.league_pts:
                 no_same_pts += 1
             else:
-                no += no_same_pts + 1
+                position += no_same_pts + 1
                 no_same_pts = 0
 
-            msg += f'\n{no}: {player.get_league_info()}'
+            msg += f'\n{position}: {player.get_league_info()}'
 
             last_pts = player.league_pts
 
@@ -97,11 +97,11 @@ class Competition:
     # Check and return the biggest embed, return None if not possible
     def get_embed(self, thumbnail=''):
         embed = self.get_embed_max(thumbnail)
-        if (validate_embed(embed) == True):
+        if validate_embed(embed):
             return embed
         else:
             embed = self.get_embed_min(thumbnail)
-            if (validate_embed(embed) == True):
+            if validate_embed(embed):
                 return embed
             else:
                 return None
@@ -110,9 +110,9 @@ class Competition:
         embed=nextcord.Embed(title="EDK League", url="", description=f'Total{self.get_league_str()}', color=0x004899)
         #embed.set_footer(text=f'Total{self.get_league_str()}')
         if thumbnail != '':
-            embed.set_thumbnail(url=(thumbnail))
+            embed.set_thumbnail(url=thumbnail)
 
-        if (validate_embed(embed) == True):
+        if validate_embed(embed):
             return embed
         else:
             return None
@@ -120,11 +120,11 @@ class Competition:
     def get_embed_max(self, thumbnail=''):
         embed=nextcord.Embed(title="Scores", url="", description="", color=0x004899)
         for scorecard in self.scorecards:
-            embed.add_field(name=scorecard.course.name, value=f'{scorecard.date_time.date()} Par:{scorecard.par}\n{scorecard.get_players()}', inline=False)
-            if (len(self.scorecards) > 1):
+            embed.add_field(name=f'{scorecard.course.name} ({scorecard.course.layout}) {scorecard.date_time.date()}', value=f'```{scorecard.get_players()}```', inline=False)
+            if len(self.scorecards) > 1:
                 embed.set_footer(text=f'Total{self}')
         if thumbnail != '':
-            embed.set_thumbnail(url=(thumbnail))
+            embed.set_thumbnail(url=thumbnail)
 
         return embed
 
@@ -135,7 +135,7 @@ class Competition:
             score_cards += f'{scorecard.date_time.date()} - {scorecard.course}\n'
         embed.add_field(name="Kort", value=f'{score_cards}')
         if thumbnail != '':
-            embed.set_thumbnail(url=(thumbnail))
+            embed.set_thumbnail(url=thumbnail)
 
         return embed
 
@@ -154,14 +154,14 @@ class Competition:
         embed.add_field(name="Triple Bogey+", value=f'{self.statistics.triple_bogey_plus}', inline=False )
 
         if thumbnail != '':
-            embed.set_thumbnail(url=(thumbnail))
+            embed.set_thumbnail(url=thumbnail)
 
         return embed
 
     def save_scorecards_text(self, file):
-        str = f'{self.get_league_str()}\n'
+        txt = f'{self.get_league_str()}\n'
         for scorecard in self.scorecards:
-            str += f'\n{scorecard.date_time.date()} - {scorecard.course.name}'
-        f = open(file, "a")
-        f.write(str)
-        f.close()
+            txt += f'\n{scorecard.date_time.date()} - {scorecard.course.name}'
+        file_to_write = open(file, "a")
+        file_to_write.write(txt)
+        file_to_write.close()

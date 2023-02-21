@@ -1,7 +1,8 @@
 import os
+from pathlib import Path
 
-def is_path_empty(path):
-    if os.path.exists(path) and not os.path.isfile(path):  
+def is_path_empty(path: Path):
+    if os.path.exists(path) and not os.path.isfile(path):
         if not os.listdir(path):
             # Empty directory
             return True

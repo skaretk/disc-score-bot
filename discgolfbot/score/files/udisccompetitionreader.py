@@ -5,7 +5,7 @@ import dateutil.parser as dparser
 from score.player import Player, PlayerName
 from score.scorecard import Scorecard
 
-udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout", "hole_"]
+udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
 
 class UdiscCompetitionReader:
     def __init__(self, path, file):

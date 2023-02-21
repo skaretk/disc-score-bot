@@ -14,7 +14,7 @@ class PlayerName:
     def __eq__(self, other):
         if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
             return True
-        elif len(self.alias) != 0:
+        if len(self.alias) != 0:
             if self.has_alias(other.name):
                 return True
         elif len(other.alias) != 0:
@@ -24,7 +24,7 @@ class PlayerName:
 
     def has_alias(self, name):
         search_name = name.lower().replace(" ", "")
-        if type(self.alias) is list:
+        if isinstance(self.alias, list):
             if search_name in [alias.lower().replace(" ", "") for alias in self.alias]:
                 return True
         else: # Not a list
@@ -40,6 +40,7 @@ class Player:
         self.score = int(score)
         self.holes = []
         self.division = ""
+        self.payout = ""
         self.score_cards = 1
         self.score_cards_position = []
         self.league_pts = 0
@@ -66,17 +67,17 @@ class Player:
         self.holes.append(score)
 
     def get_scores(self, from_hole = '', to_hole = ''):
-            scores = ''
-            if from_hole and to_hole:
-                current_hole = from_hole-1
-                for score in self.holes[from_hole-1:to_hole]:
-                    if current_hole < 9:
-                        scores += f'{score} '
-                    else:
-                        scores += f'{score}  '
-                    current_hole += 1
+        scores = ''
+        if from_hole and to_hole:
+            current_hole = from_hole-1
+            for score in self.holes[from_hole-1:to_hole]:
+                if current_hole < 9:
+                    scores += f'{score} '
+                else:
+                    scores += f'{score}  '
+                current_hole += 1
 
-            return scores
+        return scores
 
     def get_average_result(self):
         return sum(self.score_cards_position) / len(self.score_cards_position)
@@ -85,11 +86,11 @@ class Player:
         return self.player_name.name.split(' ', 1)[0]
 
     def calculate_attendence(self, no_scorecards):
-         percentage = (self.score_cards / no_scorecards)*100
-         self.league_attendence = percentage.__round__(2)
+        percentage = (self.score_cards / no_scorecards)*100
+        self.league_attendence = percentage.__round__(2)
 
     def get_full_info(self):
-     return f'{self} Kast: {self.total} - Kort: {self.score_cards}'
+        return f'{self} Kast: {self.total} - Kort: {self.score_cards}'
 
     def get_full_info_min(self):
         return f'{self}: {self.total}: {self.score_cards}'

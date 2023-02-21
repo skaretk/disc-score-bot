@@ -1,11 +1,11 @@
+from os import getenv
+from dotenv import load_dotenv, find_dotenv # Fetch python bot token
+
+# nextcord
 import nextcord
 from nextcord import Interaction
 from nextcord.ext import commands
 from nextcord.message import Attachment
-
-# Fetch python bot token
-from dotenv import load_dotenv, find_dotenv
-from os import getenv
 
 # cogs
 from score.files.attachment import Attachment
