@@ -85,7 +85,7 @@ class Scorecard:
             header.append(f'hole_{hole}')
 
         for player in self.players:
-            player_csv = [player.division, player.score_cards_position, player.player_name, player.score, player.total, player.payout]
+            player_csv = [player.division, player.score_cards_position[0], player.player_name, player.score, player.total, player.payout]
             for score in player.holes:
                 player_csv.append(score)
             data.append(player_csv)
