@@ -47,7 +47,7 @@ class LeagueScraper(Udisc):
         divisions_list = []
         divisions = soup.find_all("p", {"class" : "jss77"})
         for division in divisions:
-            divisions_list.append(division.getText())
+            divisions_list.append(division.getText().split()[0]) # Only fetch the first word)
 
         #tour_id = soup.find("div", id="tour-leaderboard")
         tour_id = soup.find("div", {"id" : "tour-leaderboard"})

@@ -3,7 +3,7 @@ import datetime
 
 import dateutil.parser as dparser
 from score.player import Player, PlayerName
-from score.scorecard import Scorecard
+from score.scorecard import Scorecard, ScorecardTypes
 
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
 
@@ -18,6 +18,7 @@ class UdiscCompetitionReader:
         scorecard.date_time = date.strftime("%Y-%m-%d %H:%M")
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
+            scorecard.card_type = ScorecardTypes.UDISC_COMPETITION
 
             hole_no = 1
             for field in reader.fieldnames:

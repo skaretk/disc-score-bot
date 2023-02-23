@@ -1,5 +1,7 @@
+"""Contain Course specific data"""
 
 class Course:
+    """Discgolf Course"""
     def __init__(self, name):
         self._name = name
         self._layout = None
@@ -10,6 +12,7 @@ class Course:
 
     @property
     def name(self):
+        """Course Name"""
         return self._name
 
     @name.setter
@@ -18,6 +21,7 @@ class Course:
 
     @property
     def layout(self):
+        """Course Layout"""
         return self._layout
 
     @layout.setter
@@ -26,6 +30,7 @@ class Course:
 
     @property
     def url(self):
+        """Course Url"""
         return self._url
 
     @url.setter
