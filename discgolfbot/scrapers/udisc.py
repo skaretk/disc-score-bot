@@ -1,33 +1,42 @@
 import time
-from score.scorecard import Scorecard
+from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 from score.player import Player, PlayerName
 from .scraper import Scraper
 
 class Udisc(Scraper):
+    '''uDisc scraper base class'''
     def __init__(self):
         super().__init__()
         self.name = 'udisc.com'
         self.url = 'https://udisc.com'
 
 class LeagueScraper(Udisc):
+    '''uDisc League scraper Class'''
     def __init__(self, url):
         super().__init__()
         self.scrape_url = url
-        self.scorecard = Scorecard()
+        self.scorecard = ScorecardUdiscCompetition()
 
     def scrape(self):
+        '''Scrape from uDisc league'''
         start_time = time.time()
 
-        soup = self.selenium_get_beatifulsoup(5)
+        soup = self.selenium_get_beatifulsoup(4)
 
         header = soup.find("div", {"class" : ["jss55", "jss57"]})
         if header is None:
             return
 
+        # Competition/League Name
+        competition_name = header.find("p", {"class" : "jss56"})
+        if competition_name is not None:
+            self.scorecard.name = competition_name.get_text()
+
         # Course Name
         course_name = header.find("a", {"class" : "jss75"})
         if course_name is None:
             return
+
         self.scorecard.course.name = course_name.getText().rstrip()
         # Course url
         course_url = course_name['href']
@@ -47,11 +56,10 @@ class LeagueScraper(Udisc):
         divisions_list = []
         divisions = soup.find_all("p", {"class" : "jss77"})
         for division in divisions:
-            divisions_list.append(division.getText().split()[0]) # Only fetch the first word)
+            divisions_list.append(division.getText().split()[0]) # Only fetch the first word
 
-        #tour_id = soup.find("div", id="tour-leaderboard")
-        tour_id = soup.find("div", {"id" : "tour-leaderboard"})
-        par_list = tour_id.find_all("p", {"class" : ["jss122", "jss158"]})
+        tour_leaderboard = soup.find("div", {"id" : "tour-leaderboard"})
+        par_list = tour_leaderboard.find_all("p", {"class" : ["jss122", "jss158"]})
         for i, par in enumerate(par_list):
             if par == par_list[-1]: # Last element is par
                 self.scorecard.par = int(par.getText())
@@ -64,10 +72,13 @@ class LeagueScraper(Udisc):
                 player_name = PlayerName("")
                 score = ""
                 scores = []
+                total = 0
                 player_rows = player.find_all("td", {"class" : "jss126"})
 
                 for row_no, player_row in enumerate(player_rows):
-                    if row_no == 1:
+                    if player_row == player_rows[-1]: # last element is the total
+                        total = player_row.getText()
+                    elif row_no == 1:
                         player_name.name = player_row.getText()
                     elif row_no == 2:
                         if player_row.getText() == "E":
@@ -77,7 +88,6 @@ class LeagueScraper(Udisc):
                     elif row_no > 3:
                         scores.append(player_row.getText())
 
-                total = scores.pop() # last element is the total
                 scorecard_player = Player(player_name, total, score)
                 scorecard_player.division = divisions_list[i]
                 for hole_score in scores:

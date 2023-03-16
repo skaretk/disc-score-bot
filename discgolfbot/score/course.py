@@ -2,8 +2,8 @@
 
 class Course:
     """Discgolf Course"""
-    def __init__(self, name):
-        self._name = name
+    def __init__(self):
+        self._name = None
         self._layout = None
         self._url = ""
 

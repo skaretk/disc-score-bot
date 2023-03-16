@@ -3,6 +3,7 @@ from discord_utils.embed_validation import validate_embed
 from .statistics import Statistics
 
 class Competition:
+    '''Competition Class - Collection of scorecards'''
     def __init__(self):
         self.scorecards = []
         self.players = []
@@ -21,25 +22,28 @@ class Competition:
                 no_same_scores = 0
 
             msg += f'\n{position}: {player.get_full_info()}'
-
             last_score = player.score
 
         return msg
 
     def add_scorecard(self, scorecard):
+        '''Add Scorecard and players'''
         self.scorecards.append(scorecard)
         self.add_players(scorecard)
 
     def add_player(self, new_player):
+        '''Add a player'''
         self.players.append(new_player)
         self.sort_players()
 
     def add_player_alias(self, player, alias):
+        '''Add a player alias'''
         player_with_alias = alias.get_player_with_alias(player.player_name.name)
         if player_with_alias is not None:
             player.player_name = player_with_alias
 
     def add_players(self, scorecard):
+        '''Add all players from a scorecard'''
         for player in scorecard.players:
             if self.player_exist(player):
                 idx = self.players.index(player)
@@ -48,110 +52,87 @@ class Competition:
                 self.add_player(player)
 
     def player_exist(self, player):
+        '''Check if player exists'''
         if player in self.players:
             return True
         return False
 
     def sort_players(self):
+        '''Sort players by score'''
         self.players.sort(key=lambda x: x.score)
 
     def sort_players_points(self):
+        '''Sort players by league points'''
         self.players.sort(key=lambda x: x.league_pts, reverse=True)
 
-    def get_league_str(self):
-        msg = ''
-        position = 0
-        last_pts = ''
-        no_same_pts = 0
-        for player in self.players:
-            if last_pts == player.league_pts:
-                no_same_pts += 1
-            else:
-                position += no_same_pts + 1
-                no_same_pts = 0
-
-            msg += f'\n{position}: {player.get_league_info()}'
-
-            last_pts = player.league_pts
-
-        return msg
-
     def sort_players_position(self):
+        '''Sort Players by average result'''
         self.players.sort(key=lambda x: x.get_average_result())
 
     def get_total_throws(self):
+        '''Get total throws in this competition'''
         throws = 0
         for scorecard in self.scorecards:
             throws += scorecard.get_total_throws()
         return throws
 
-    def get_total_stats(self):
+    def calculate_statistics(self):
+        '''Calculate the statistics'''
         for player in self.players:
             self.statistics += player.player_stats
 
-    def print_scores(self):
-        print("Total Scores")
-        for player in self.players:
-            print(player)
-
-    # Check and return the biggest embed, return None if not possible
     def get_embed(self, thumbnail=''):
-        embed = self.get_embed_max(thumbnail)
+        '''Check and return the biggest embed, return None if not possible'''
+        embed = self.get_big_embed(thumbnail)
         if validate_embed(embed):
             return embed
-        else:
-            embed = self.get_embed_min(thumbnail)
-            if validate_embed(embed):
-                return embed
-            else:
-                return None
 
-    def get_embed_league(self, thumbnail=''):
-        embed=nextcord.Embed(title="EDK League", url="", description=f'Total{self.get_league_str()}', color=0x004899)
-        #embed.set_footer(text=f'Total{self.get_league_str()}')
-        if thumbnail != '':
-            embed.set_thumbnail(url=thumbnail)
-
+        embed = self.get_small_embed(thumbnail)
         if validate_embed(embed):
             return embed
-        else:
-            return None
 
-    def get_embed_max(self, thumbnail=''):
+        return None
+
+    def get_big_embed(self, thumbnail=''):
+        '''Get the largest embed, including scores'''
         embed=nextcord.Embed(title="Scores", url="", description="", color=0x004899)
         for scorecard in self.scorecards:
-            embed.add_field(name=f'{scorecard.course.name} ({scorecard.course.layout}) {scorecard.date_time.date()}', value=f'```{scorecard.get_players()}```', inline=False)
-            if len(self.scorecards) > 1:
-                embed.set_footer(text=f'Total{self}')
+            scorecard.append_field(embed)
+
+        if len(self.scorecards) > 1:
+            embed.set_footer(text=f'Total{self}')
         if thumbnail != '':
             embed.set_thumbnail(url=thumbnail)
 
         return embed
 
-    def get_embed_min(self, thumbnail=''):
-        embed=nextcord.Embed(title="Total", url="", description=f'{self}', color=0x004899)
+    def get_small_embed(self, thumbnail=''):
+        '''Get small embed, only scorecards and total score'''
+        embed=nextcord.Embed(title="Scores", url="", description="", color=0x004899)
         score_cards = ''
         for scorecard in self.scorecards:
-            score_cards += f'{scorecard.date_time.date()} - {scorecard.course}\n'
-        embed.add_field(name="Kort", value=f'{score_cards}')
+            score_cards += f'{str(scorecard)}\n'
+        embed.add_field(name="Scorecards", value=f'{score_cards}')
+        embed.set_footer(text=f'Total{self}')
         if thumbnail != '':
             embed.set_thumbnail(url=thumbnail)
 
         return embed
 
-    def get_embed_stats(self, thumbnail=''):
-        embed=nextcord.Embed(title="Stats", url="", description="Statistics for saved scorecards", color=0x004899)
+    def get_stats_embed(self, thumbnail=''):
+        '''Get statistics as embed'''
+        embed=nextcord.Embed(title="Stats", url="", description="Statistics for scorecards", color=0x004899)
         embed.add_field(name="Scorecards", value=f'{len(self.scorecards)}', inline=False)
         embed.add_field(name="Players", value=f'{len(self.players)}', inline=False)
-        self.get_total_stats()
+        self.calculate_statistics()
         embed.add_field(name="Throws", value=f'{self.get_total_throws()}', inline=False)
         embed.add_field(name="Aces", value=f'{self.statistics.ace}', inline=False )
         embed.add_field(name="Eagles", value=f'{self.statistics.eagle}', inline=False )
         embed.add_field(name="Birdies", value=f'{self.statistics.birdie}', inline=False )
         embed.add_field(name="Pars", value=f'{self.statistics.par}', inline=False )
-        embed.add_field(name="Bogey", value=f'{self.statistics.bogey}', inline=False )
-        embed.add_field(name="Double Bogey", value=f'{self.statistics.double_bogey}', inline=False )
-        embed.add_field(name="Triple Bogey+", value=f'{self.statistics.triple_bogey_plus}', inline=False )
+        embed.add_field(name="Bogeys", value=f'{self.statistics.bogey}', inline=False )
+        embed.add_field(name="Double Bogeys", value=f'{self.statistics.double_bogey}', inline=False )
+        embed.add_field(name="Triple Bogeys+", value=f'{self.statistics.triple_bogey_plus}', inline=False )
 
         if thumbnail != '':
             embed.set_thumbnail(url=thumbnail)
@@ -159,9 +140,10 @@ class Competition:
         return embed
 
     def save_scorecards_text(self, file):
-        txt = f'{self.get_league_str()}\n'
+        '''Save the scorecards as a text file'''
+        txt = f'{self}\n'
         for scorecard in self.scorecards:
-            txt += f'\n{scorecard.date_time.date()} - {scorecard.course.name}'
-        file_to_write = open(file, "a")
+            txt += f'\n{str(scorecard)}'
+        file_to_write = open(file, "a", encoding="utf-8")
         file_to_write.write(txt)
         file_to_write.close()

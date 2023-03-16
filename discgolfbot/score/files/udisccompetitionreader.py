@@ -3,7 +3,7 @@ import datetime
 
 import dateutil.parser as dparser
 from score.player import Player, PlayerName
-from score.scorecard import Scorecard, ScorecardTypes
+from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
 
@@ -14,11 +14,11 @@ class UdiscCompetitionReader:
 
     def parse(self):
         date = self.get_date()
-        scorecard = Scorecard()
+        scorecard = ScorecardUdiscCompetition()
         scorecard.date_time = date.strftime("%Y-%m-%d %H:%M")
+        scorecard.name = self.file.split('_')[0]
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
-            scorecard.card_type = ScorecardTypes.UDISC_COMPETITION
 
             hole_no = 1
             for field in reader.fieldnames:
@@ -52,7 +52,7 @@ class UdiscCompetitionReader:
             for row in reader:
                 if reader.line_num == 2:
                     if course.lower() in row['CourseName'].lower():
-                        scorecard = Scorecard()
+                        scorecard = ScorecardUdiscCompetition()
                         scorecard.course.name = row['CourseName']
                         scorecard.course.layout = row['LayoutName']
                         scorecard.date_time = row['Date']
@@ -72,19 +72,13 @@ class UdiscCompetitionReader:
                     scorecard_date = datetime.datetime.strptime(row['Date'],'%Y-%m-%d %H:%M')
                     # Parse scores between two dates ?
                     if date_to:
-                        if date.date() <= scorecard_date.date() and date_to.date() >= scorecard_date.date():
-                            add_scorecard = True
-                        else:
-                            add_scorecard = False
+                        add_scorecard = date.date() <= scorecard_date.date() and date_to.date() >= scorecard_date.date()
                     # Only one date
                     else:
-                        if date.date() == scorecard_date.date():
-                            add_scorecard = True
-                        else:
-                            add_scorecard = False
+                        add_scorecard = date.date() == scorecard_date.date()
 
                     if add_scorecard:
-                        scorecard = Scorecard()
+                        scorecard = ScorecardUdiscCompetition()
                         scorecard.course.name = row['CourseName']
                         scorecard.course.layout = row['LayoutName']
                         scorecard.date_time = row['Date']

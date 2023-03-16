@@ -48,7 +48,7 @@ def get_scorecards_course(path, alias, course, member_list = None):
             reader = UdiscCsvReader(path, file)
             scorecard = reader.parse()
 
-            if scorecard is not None:
+            if scorecard is not None and scorecard.course.name is not None:
                 if course.lower() in scorecard.course.name.lower():
                     # Add aliases
                     for player in scorecard.players:
@@ -140,7 +140,7 @@ class Scores(commands.Cog):
                 print("Embed not OK")
                 competition.save_scorecards_text(f'{path}/scores.txt')
                 await interaction.send('https://giphy.com/embed/32mC2kXYWCsg0')
-                await interaction.send(f'WOW {interaction.author.mention}, thats a lot of scores!)')
+                await interaction.send(f'WOW {interaction.user.mention}, thats a lot of scores!)')
         else:
             await interaction.send("No courses found")
 
@@ -175,7 +175,7 @@ class Scores(commands.Cog):
         scorecards = get_scorecards(path, alias)
 
         if scorecards.scorecards:
-            embed = scorecards.get_embed_stats(interaction.user.avatar.url)
+            embed = scorecards.get_stats_embed(interaction.user.avatar.url)
             await interaction.send(embed=embed)
         else:
             await interaction.send("No stats found")
@@ -262,10 +262,13 @@ class Scores(commands.Cog):
                 reader = UdiscCsvReader(path, file)
                 scorecard = reader.parse()
 
-                if scorecard.course.name not in course_list:
+                if scorecard.course.name is not None and scorecard.course.name not in course_list:
                     course_list.append(scorecard.course.name)
 
-        msg = "\n".join(course_list)
+        if len(course_list) != 0:
+            msg = "\n".join(course_list)
+        else:
+            msg = "Could not find any stored courses"
 
         await interaction.send(msg)
 
@@ -304,10 +307,10 @@ class Scores(commands.Cog):
         scraper_list = [league]
         self.scrape(scraper_list)
 
-        date = league.scorecard.date_time.strftime('%Y-%m-%d%H%M')
-        file_name = f'{date}-{league.scorecard.course.name}-{league.scorecard.course.layout}-Udisc.csv'
+        date = league.scorecard.date_time.strftime('%Y-%m-%d')
+        file_name = f'{league.scorecard.name.replace(" ", "-")}_{date}.csv'
         scorecard_writer = ScorecardWriter(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}', file_name)
-        header, data = league.scorecard.get_league_csv()
+        header, data = league.scorecard.get_csv()
         scorecard_writer.write(header, data)
 
         embed = league.scorecard.get_embed(interaction.user.avatar.url)

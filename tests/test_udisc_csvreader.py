@@ -3,7 +3,8 @@ import os
 import sys
 from context import score
 from score.files.udisccsvreader import UdiscCsvReader, UdiscCsvTypes
-from score.scorecard import ScorecardTypes
+from score.scorecard_udisc import ScorecardUdisc
+from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 
 mocked_scorecard = mock_open(read_data="""PlayerName,CourseName,LayoutName,Date,Total,+/-,Hole1,Hole2,Hole3,Hole4,Hole5,Hole6,Hole7,Hole8,Hole9,Hole10,Hole11,Hole12,Hole13,Hole14,Hole15,Hole16,Hole17,Hole18
@@ -34,7 +35,7 @@ def test_udisc_scorecardreader():
         reader = UdiscCsvReader("", mocked_scorecard)
         scorecard = reader.parse()
 
-    assert scorecard.card_type == ScorecardTypes.UDISC_SCORECARD
+    assert isinstance(scorecard, ScorecardUdisc)
     assert scorecard.course.name == "Krokhol Disc Golf Course"
     assert scorecard.course.url == "" # no course_url in the csv
     assert scorecard.course.layout == "Krokhol Gold Layout 2022"
@@ -50,8 +51,8 @@ def test_udisc_competition_scorecardreader():
         reader = UdiscCsvReader("", mocked_league)
         scorecard = reader.parse()
 
-    assert scorecard.card_type == ScorecardTypes.UDISC_COMPETITION
-    assert scorecard.course.name == "" # no coursename in the csv
+    assert isinstance(scorecard, ScorecardUdiscCompetition)
+    assert scorecard.course.name is None # no coursename in the csv
     assert scorecard.course.url == "" # no course_url in the csv
     assert scorecard.course.layout is None
     assert scorecard.date_time is not None

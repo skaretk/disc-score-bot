@@ -16,6 +16,7 @@ class UdiscCsvReader:
         self.type = self.identify_csv()
 
     def identify_csv(self):
+        '''Identify the given csv input. Possible options is given in UdiscCsvTypes'''
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             if udisc_scorecard_header[1] in reader.fieldnames and udisc_scorecard_header[2] in reader.fieldnames:
@@ -25,6 +26,7 @@ class UdiscCsvReader:
         return UdiscCsvTypes.UNKNOWN
 
     def parse(self):
+        '''Parse the given Scorecard, and return the correct Scorecard'''
         if self.type == UdiscCsvTypes.SCORECARD:
             reader = UdiscScoreCardReader(self.path, self.file)
             return reader.parse()
