@@ -64,28 +64,16 @@ class UdiscCompetitionReader:
                     scorecard.add_player(player)
         return scorecard
 
-    def parse_dates(self, date, date_to = ''):
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                if reader.line_num == 2:
-                    scorecard_date = datetime.datetime.strptime(row['Date'],'%Y-%m-%d %H:%M')
-                    # Parse scores between two dates ?
-                    if date_to:
-                        add_scorecard = date.date() <= scorecard_date.date() and date_to.date() >= scorecard_date.date()
-                    # Only one date
-                    else:
-                        add_scorecard = date.date() == scorecard_date.date()
+    def parse_dates(self, date:datetime, date_to:datetime=None):
+        scorecard_date = self.get_date()
+        # Parse scores between two dates ?
+        if date_to:
+            add_scorecard = date.date() <= scorecard_date.date() and date_to.date() >= scorecard_date.date()
+        # Only one date
+        else:
+            add_scorecard = date.date() == scorecard_date.date()
 
-                    if add_scorecard:
-                        scorecard = ScorecardUdiscCompetition()
-                        scorecard.course.name = row['CourseName']
-                        scorecard.course.layout = row['LayoutName']
-                        scorecard.date_time = row['Date']
-                        scorecard.par = int(row['Total'])
-                    else:
-                        return None
-                else:
-                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
-                    scorecard.add_player(player)
-        return scorecard
+        if add_scorecard:
+            return self.parse()
+
+        return None

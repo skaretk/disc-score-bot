@@ -1,4 +1,5 @@
 import csv
+import datetime
 from enum import Enum
 
 from .udiscscorecardreader import UdiscScoreCardReader, udisc_scorecard_header
@@ -33,4 +34,14 @@ class UdiscCsvReader:
         if self.type == UdiscCsvTypes.COMPETITION:
             reader = UdiscCompetitionReader(self.path, self.file)
             return reader.parse()
+        return None
+
+    def parse_dates(self, date:datetime, date_to:datetime):
+        '''Parse the given dates, and return the Scorecard if it is a match'''
+        if self.type == UdiscCsvTypes.SCORECARD:
+            reader = UdiscScoreCardReader(self.path, self.file)
+            return reader.parse_dates(date, date_to)
+        if self.type == UdiscCsvTypes.COMPETITION:
+            reader = UdiscCompetitionReader(self.path, self.file)
+            return reader.parse_dates(date, date_to)
         return None

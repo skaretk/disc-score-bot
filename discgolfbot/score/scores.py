@@ -68,14 +68,13 @@ def get_scorecards_course(path, alias, course, member_list=None):
 
     return competition
 
-def get_scorecards_date(path, alias, date, date_to='', member_list=None):
+def get_scorecards_date(path, alias, date:datetime, date_to:datetime=None, member_list=None):
     competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
+            scorecard = None
             reader = UdiscCsvReader(path, file)
-            if reader.type == UdiscCsvTypes.SCORECARD:
-                scorecard_reader = UdiscScoreCardReader(path, file)
-                scorecard = scorecard_reader.parse_dates(date, date_to)
+            scorecard = reader.parse_dates(date, date_to)
 
             if scorecard is not None:
                 # Add aliases
@@ -236,13 +235,13 @@ class Scores(commands.Cog):
 
         if arg1 is not None:
             try:
-                date = dparser.parse(arg1, fuzzy=True)
+                date = dparser.parse(arg1, dayfirst=True, fuzzy=True)
             except dparser.ParserError:
                 date = datetime.date.today()
 
             if arg2 is not None:
                 try:
-                    date_to = dparser.parse(arg2, fuzzy=True)
+                    date_to = dparser.parse(arg2, dayfirst=True, fuzzy=True)
                 except dparser.ParserError:
                     date_to = datetime.date.today()
 

@@ -56,7 +56,7 @@ class UdiscScoreCardReader:
                     scorecard.add_player(player)
         return scorecard
 
-    def parse_dates(self, date, date_to = ''):
+    def parse_dates(self, date:datetime, date_to:datetime):
         '''Check if the given scorecard is within the dates'''
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
