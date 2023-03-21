@@ -25,10 +25,12 @@ class Statistics:
         return stats
 
     def add_score(self, score, par):
-        '''Add new score, calculate type'''
+        '''Add new score, calculate restult. If we don`t know what par is we can only add aces'''
         if score == 1:
             self.ace += 1
-        elif score == par - 4:
+        if par == 0:
+            return
+        if score == par - 4:
             self.kondor += 1
         elif score == par - 3:
             self.albatross += 1

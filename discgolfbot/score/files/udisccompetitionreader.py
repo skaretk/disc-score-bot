@@ -42,7 +42,7 @@ class UdiscCompetitionReader:
     def get_date(self):
         try:
             date = dparser.parse(self.file, fuzzy=True)
-        except:
+        except dparser.ParserError:
             date = datetime.date.today()
         return date
 

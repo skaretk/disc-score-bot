@@ -16,7 +16,7 @@ from .alias import Alias
 from .point_system import calculate_player_score
 from .competition import Competition
 
-def get_scorecards(path, alias, member_list = None):
+def get_scorecards(path, alias, member_list=None):
     competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
@@ -41,7 +41,7 @@ def get_scorecards(path, alias, member_list = None):
 
     return competition
 
-def get_scorecards_course(path, alias, course, member_list = None):
+def get_scorecards_course(path, alias, course, member_list=None):
     competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
@@ -68,7 +68,7 @@ def get_scorecards_course(path, alias, course, member_list = None):
 
     return competition
 
-def get_scorecards_date(path, alias, date, date_to = '', member_list = None):
+def get_scorecards_date(path, alias, date, date_to='', member_list=None):
     competition = Competition()
     for file in os.listdir(path):
         if file.endswith(".csv"):
@@ -110,7 +110,7 @@ class Scores(commands.Cog):
 
     # Checks
     def has_scorecards():
-        async def predicate(interaction: Interaction):
+        async def predicate(interaction:Interaction):
             folder = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
             if utilities.is_path_empty(folder):
                 await interaction.send("No scorecards found")
@@ -124,7 +124,10 @@ class Scores(commands.Cog):
 
     @scores.subcommand(name="print", description="Print stored scores!")
     @has_scorecards()
-    async def scores_print(self, interaction: Interaction):
+    async def scores_print(
+        self,
+        interaction:Interaction
+    ):
         alias = Alias(interaction.guild.name)
         alias.parse()
 
@@ -146,7 +149,10 @@ class Scores(commands.Cog):
 
     @scores.subcommand(name='files', description='Lists stored files in this channel')
     @has_scorecards()
-    async def scores_files(self, interaction: Interaction):
+    async def scores_files(
+        self,
+        interaction:Interaction
+    ):
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
         scorecards = ''
         file_count = 0
@@ -167,7 +173,10 @@ class Scores(commands.Cog):
 
     @scores.subcommand(name='stats', description='Print statistics for scorecards')
     @has_scorecards()
-    async def scores_stats(self, interaction: Interaction):
+    async def scores_stats(
+        self,
+        interaction:Interaction
+    ):
         alias = Alias(interaction.guild.name)
         alias.parse()
 
@@ -181,12 +190,18 @@ class Scores(commands.Cog):
             await interaction.send("No stats found")
 
     @scores.subcommand()
-    async def dates(self, interaction: Interaction):
+    async def dates(
+        self,
+        interaction:Interaction
+    ):
         pass
 
     @dates.subcommand(name='list', description='Print dates for scorecards')
     @has_scorecards()
-    async def scores_dates(self, interaction: Interaction):
+    async def scores_dates(
+        self,
+        interaction:Interaction
+    ):
         date_list = []
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
         for file in os.listdir(path):
@@ -206,9 +221,9 @@ class Scores(commands.Cog):
     @has_scorecards()
     async def scores_dates_search (
         self,
-        interaction: Interaction,
-        arg1: str = SlashOption(name="date", description="Date / Date from", required=True),
-        arg2: str = SlashOption(name="date_to", description="Date To", required=False)
+        interaction:Interaction,
+        arg1:str=SlashOption(name="date", description="Date / Date from", required=True),
+        arg2:str=SlashOption(name="date_to", description="Date To", required=False)
     ):
         if arg1 is None and arg2 is None:
             await interaction.send("Missing date(s)")
@@ -249,12 +264,15 @@ class Scores(commands.Cog):
             await interaction.send("No scores found")
 
     @scores.subcommand()
-    async def courses(self, interaction: Interaction):
+    async def courses(self, interaction:Interaction):
         pass
 
     @courses.subcommand(name='print', description='Print stored courses')
     @has_scorecards()
-    async def courses_print(self, interaction: Interaction):
+    async def courses_print(
+        self,
+        interaction:Interaction
+    ):
         course_list = []
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
         for file in os.listdir(path):
@@ -276,16 +294,14 @@ class Scores(commands.Cog):
     @has_scorecards()
     async def courses_search(
         self,
-        interaction: Interaction,
-        course: str = SlashOption(name="course", description="Course to search for", required=True)
+        interaction:Interaction,
+        course:str=SlashOption(name="course", description="Course to search for", required=True)
     ):
         alias = Alias(interaction.guild.name)
         alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-
         competition = get_scorecards_course(path, alias, course)
-
         embed = competition.get_embed(interaction.user.avatar.url)
 
         if embed is not None:
@@ -296,12 +312,12 @@ class Scores(commands.Cog):
     @scores.subcommand(name="udiscleague", description="Parse uDisc League")
     async def udiscleague(
         self,
-        interaction: Interaction,
-        url: str = SlashOption(name="url", description="Link to parse", required=True)
+        interaction:Interaction,
+        url:str=SlashOption(name="url", description="Link to parse", required=True)
     ):
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for scores online"))
-        #TODO: validate url
+        #TODO: validate url ?
 
         league = LeagueScraper(url)
         scraper_list = [league]
