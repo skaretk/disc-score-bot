@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import mock_open, patch
 import os
 import sys
@@ -49,9 +50,12 @@ def test_udisc_scorecardreader():
 def test_udisc_competition_scorecardreader():
     with patch('builtins.open', mocked_league):
         reader = UdiscCsvReader("", mocked_league)
+        reader.file = "test-competition_1999-12-31"
         scorecard = reader.parse()
 
     assert isinstance(scorecard, ScorecardUdiscCompetition)
+    assert scorecard.name == "test-competition"
+    assert scorecard.date_time == datetime.datetime(1999,12,31)
     assert scorecard.course.name is None # no coursename in the csv
     assert scorecard.course.url == "" # no course_url in the csv
     assert scorecard.course.layout is None
