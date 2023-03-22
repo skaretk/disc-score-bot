@@ -36,12 +36,24 @@ class UdiscCsvReader:
             return reader.parse()
         return None
 
-    def parse_dates(self, date:datetime, date_to:datetime):
+    def contain_course(self, course):
         '''Parse the given dates, and return the Scorecard if it is a match'''
         if self.type == UdiscCsvTypes.SCORECARD:
             reader = UdiscScoreCardReader(self.path, self.file)
-            return reader.parse_dates(date, date_to)
+            return reader.contain_course(course)
         if self.type == UdiscCsvTypes.COMPETITION:
             reader = UdiscCompetitionReader(self.path, self.file)
-            return reader.parse_dates(date, date_to)
+            return reader.contain_course(course)
         return None
+
+    def contain_dates(self, date:datetime, date_to:datetime):
+        '''Parse the given dates, and return the Scorecard if it is a match'''
+        if self.type == UdiscCsvTypes.SCORECARD:
+            reader = UdiscScoreCardReader(self.path, self.file)
+            return reader.contain_dates(date, date_to)
+        if self.type == UdiscCsvTypes.COMPETITION:
+            reader = UdiscCompetitionReader(self.path, self.file)
+            return reader.contain_dates(date, date_to)
+        return None
+
+

@@ -37,26 +37,22 @@ class UdiscScoreCardReader:
 
         return scorecard
 
-    def parse_course(self, course):
-        '''Check if the given scorecard contain the given course'''
+    def contain_course(self, course):
+        '''Check if the scorecard is course'''
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
                     if course.lower() in row['CourseName'].lower():
-                        scorecard = ScorecardUdisc()
-                        scorecard.course.name = row['CourseName']
-                        scorecard.course.layout = row['LayoutName']
-                        scorecard.date_time = row['Date']
-                        scorecard.par = int(row['Total'])
+                        add_scorecard = True
                     else:
-                        return None
-                else:
-                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
-                    scorecard.add_player(player)
-        return scorecard
+                        add_scorecard = False
 
-    def parse_dates(self, date:datetime, date_to:datetime):
+        if add_scorecard:
+            return self.parse()
+        return None
+
+    def contain_dates(self, date:datetime, date_to:datetime):
         '''Check if the given scorecard is within the dates'''
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
@@ -70,15 +66,7 @@ class UdiscScoreCardReader:
                     else:
                         add_scorecard = date.date() == scorecard_date.date()
 
-                    if add_scorecard:
-                        scorecard = ScorecardUdisc()
-                        scorecard.course.name = row['CourseName']
-                        scorecard.course.layout = row['LayoutName']
-                        scorecard.date_time = row['Date']
-                        scorecard.par = int(row['Total'])
-                    else:
-                        return None
-                else:
-                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
-                    scorecard.add_player(player)
-        return scorecard
+        if add_scorecard:
+            return self.parse()
+
+        return None

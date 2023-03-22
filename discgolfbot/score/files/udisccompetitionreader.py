@@ -8,11 +8,13 @@ from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
 
 class UdiscCompetitionReader:
+    '''uDisc Competition / League Reader'''
     def __init__(self, path, file):
         self.path = path
         self.file = file
 
     def parse(self):
+        '''Parse the .csv file'''
         date = self.get_date()
         scorecard = ScorecardUdiscCompetition()
         scorecard.date_time = date.strftime("%Y-%m-%d %H:%M")
@@ -40,31 +42,19 @@ class UdiscCompetitionReader:
         return scorecard
 
     def get_date(self):
+        '''Fetch date from the filename'''
         try:
             date = dparser.parse(self.file, fuzzy=True)
         except dparser.ParserError:
             date = datetime.date.today()
         return date
 
-    def parse_course(self, course):
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
-            reader = csv.DictReader(csv_file)
-            for row in reader:
-                if reader.line_num == 2:
-                    if course.lower() in row['CourseName'].lower():
-                        scorecard = ScorecardUdiscCompetition()
-                        scorecard.course.name = row['CourseName']
-                        scorecard.course.layout = row['LayoutName']
-                        scorecard.date_time = row['Date']
-                        scorecard.par = int(row['Total'])
-                    else:
-                        return None
-                else:
-                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
-                    scorecard.add_player(player)
-        return scorecard
+    def contain_course(self, course):
+        '''Not possible from the csv file.'''
+        return None
 
-    def parse_dates(self, date:datetime, date_to:datetime=None):
+    def contain_dates(self, date:datetime, date_to:datetime=None):
+        '''Is the scorecard within the date(s)'''
         scorecard_date = self.get_date()
         # Parse scores between two dates ?
         if date_to:

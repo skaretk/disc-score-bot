@@ -9,91 +9,10 @@ from nextcord import Interaction, SlashOption
 import dateutil.parser as dparser
 from scrapers.udisc import LeagueScraper
 import utilities
-from .files.udisccsvreader import UdiscCsvReader, UdiscCsvTypes
-from .files.udiscscorecardreader import UdiscScoreCardReader
+from .files.udisccsvreader import UdiscCsvReader
 from .files.scorecardwriter import ScorecardWriter
 from .alias import Alias
-from .point_system import calculate_player_score
 from .competition import Competition
-
-def get_scorecards(path, alias, member_list=None):
-    competition = Competition()
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            reader = UdiscCsvReader(path, file)
-            scorecard = reader.parse()
-
-            # Add aliases
-            for player in scorecard.players:
-                competition.add_player_alias(player, alias)
-
-            # Check and remove players
-            if member_list is not None:
-                scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
-                scorecard.sort_players()
-                scorecard.add_player_position()
-
-            competition.add_scorecard(scorecard)
-
-    if member_list is not None:
-        for player in competition.players:
-            calculate_player_score(player, len(competition.scorecards))
-
-    return competition
-
-def get_scorecards_course(path, alias, course, member_list=None):
-    competition = Competition()
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            reader = UdiscCsvReader(path, file)
-            scorecard = reader.parse()
-
-            if scorecard is not None and scorecard.course.name is not None:
-                if course.lower() in scorecard.course.name.lower():
-                    # Add aliases
-                    for player in scorecard.players:
-                        competition.add_player_alias(player, alias)
-
-                    # Check and remove players
-                    if member_list is not None:
-                        scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
-                        scorecard.sort_players()
-                        scorecard.add_player_position()
-
-                    competition.add_scorecard(scorecard)
-
-    if member_list is not None:
-        for player in competition.players:
-            calculate_player_score(player, len(competition.scorecards))
-
-    return competition
-
-def get_scorecards_date(path, alias, date:datetime, date_to:datetime=None, member_list=None):
-    competition = Competition()
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            scorecard = None
-            reader = UdiscCsvReader(path, file)
-            scorecard = reader.parse_dates(date, date_to)
-
-            if scorecard is not None:
-                # Add aliases
-                for player in scorecard.players:
-                    competition.add_player_alias(player, alias)
-
-                # Check and remove players
-                if member_list is not None:
-                    scorecard.players = [player for player in scorecard.players if player.player_name in member_list]
-                    scorecard.sort_players()
-                    scorecard.add_player_position()
-
-                competition.add_scorecard(scorecard)
-
-    if member_list is not None:
-        for player in competition.players:
-            calculate_player_score(player, len(competition.scorecards))
-
-    return competition
 
 class Scores(commands.Cog):
     def __init__(self, bot):
@@ -107,8 +26,60 @@ class Scores(commands.Cog):
 
         print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
+    def get_scorecards(self, path, alias):
+        '''Get all scorecards'''
+        competition = Competition()
+        for file in os.listdir(path):
+            if file.endswith(".csv"):
+                reader = UdiscCsvReader(path, file)
+                scorecard = reader.parse()
+
+                # Add aliases
+                for player in scorecard.players:
+                    competition.add_player_alias(player, alias)
+
+                competition.add_scorecard(scorecard)
+
+        return competition
+
+    def get_scorecards_course(self, path, alias, course):
+        '''Get all scorecards for a course'''
+        competition = Competition()
+        for file in os.listdir(path):
+            if file.endswith(".csv"):
+                reader = UdiscCsvReader(path, file)
+                scorecard = reader.contain_course(course)
+
+                if scorecard is not None and scorecard.course.name is not None:
+                    if course.lower() in scorecard.course.name.lower():
+                        # Add aliases
+                        for player in scorecard.players:
+                            competition.add_player_alias(player, alias)
+
+                        competition.add_scorecard(scorecard)
+
+        return competition
+
+    def get_scorecards_date(self, path, alias, date:datetime, date_to:datetime):
+        '''Get all scorecards within date(s)'''
+        competition = Competition()
+        for file in os.listdir(path):
+            if file.endswith(".csv"):
+                reader = UdiscCsvReader(path, file)
+                scorecard = reader.contain_dates(date, date_to)
+
+                if scorecard is not None:
+                    # Add aliases
+                    for player in scorecard.players:
+                        competition.add_player_alias(player, alias)
+
+                    competition.add_scorecard(scorecard)
+
+        return competition
+
     # Checks
     def has_scorecards():
+        '''Does the channel contain any scorecards'''
         async def predicate(interaction:Interaction):
             folder = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
             if utilities.is_path_empty(folder):
@@ -116,6 +87,7 @@ class Scores(commands.Cog):
                 return False
             return True
         return application_checks.check(predicate)
+
     # Slash commands
     @nextcord.slash_command(name="scores", description="Score commands", guild_ids=[603273004641681441])
     async def scores(self):
@@ -131,7 +103,7 @@ class Scores(commands.Cog):
         alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = get_scorecards(path, alias)
+        competition = self.get_scorecards(path, alias)
 
         if competition.scorecards:
             embed = competition.get_embed(interaction.user.avatar.url)
@@ -180,10 +152,10 @@ class Scores(commands.Cog):
         alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        scorecards = get_scorecards(path, alias)
+        competition = self.get_scorecards(path, alias)
 
-        if scorecards.scorecards:
-            embed = scorecards.get_stats_embed(interaction.user.avatar.url)
+        if competition.scorecards:
+            embed = competition.get_stats_embed(interaction.user.avatar.url)
             await interaction.send(embed=embed)
         else:
             await interaction.send("No stats found")
@@ -244,10 +216,9 @@ class Scores(commands.Cog):
                     date_to = dparser.parse(arg2, dayfirst=True, fuzzy=True)
                 except dparser.ParserError:
                     date_to = datetime.date.today()
-
-                competition = get_scorecards_date(path, alias, date, date_to)
             else:
-                competition = get_scorecards_date(path, alias, date)
+                date_to = None
+            competition = self.get_scorecards_date(path, alias, date, date_to)
 
         if competition.scorecards:
             embed = competition.get_embed(interaction.user.avatar.url)
@@ -300,7 +271,7 @@ class Scores(commands.Cog):
         alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = get_scorecards_course(path, alias, course)
+        competition = self.get_scorecards_course(path, alias, course)
         embed = competition.get_embed(interaction.user.avatar.url)
 
         if embed is not None:
