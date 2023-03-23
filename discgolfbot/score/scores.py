@@ -9,6 +9,7 @@ from nextcord import Interaction, SlashOption
 import dateutil.parser as dparser
 from scrapers.udisc import LeagueScraper
 import utilities
+import validators
 from .files.udisccsvreader import UdiscCsvReader
 from .files.scorecardwriter import ScorecardWriter
 from .alias import Alias
@@ -285,9 +286,12 @@ class Scores(commands.Cog):
         interaction:Interaction,
         url:str=SlashOption(name="url", description="Link to parse", required=True)
     ):
+        if not validators.url(url) or "udisc.com" not in url.lower():
+            await interaction.send("Not an valid url")
+            return
+
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for scores online"))
-        #TODO: validate url ?
 
         league = LeagueScraper(url)
         scraper_list = [league]
