@@ -45,7 +45,7 @@ class Discs(commands.Cog):
 
         return text
 
-    def get_embed_discs(self):
+    def get_discs_embed(self):
         if len(self.discs) == 0:
             return None
 
@@ -59,12 +59,11 @@ class Discs(commands.Cog):
         # Format output
         embed.description = self.format_discs_description()
         # Validate and return embed
-        if validate_embed(embed) == True:
+        if validate_embed(embed):
             return embed
-        else:
-            return None
+        return None
 
-    def get_embed_disc_flight(self, disc_flight_scraper):
+    def get_disc_flight_embed(self, disc_flight_scraper):
         if (len(self.discs) == 1):
             disc = self.discs[0]
             if (disc.manufacturer == "Other"):
@@ -76,10 +75,9 @@ class Discs(commands.Cog):
             embed.set_footer(text="Marshall Street", icon_url=disc_flight_scraper.icon_url)
 
             # Validate and return embed
-            if (validate_embed(embed) == True):
+            if validate_embed(embed):
                 return embed
-            else:
-                return None
+            return None
         else:
             return None
 
@@ -101,7 +99,7 @@ class Discs(commands.Cog):
             self.scrape(disc_scrapers.norwegian_scrapers)
             self.stores = split_discs_in_stores(self.discs)
 
-            embed = self.get_embed_discs()
+            embed = self.get_discs_embed()
             if embed is not None:
                 if self.get_disc_image(embed) == False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -134,7 +132,7 @@ class Discs(commands.Cog):
             self.scrape(disc_scrapers.voec_scrapers)
             self.stores = split_discs_in_stores(self.discs)
 
-            embed = self.get_embed_discs()
+            embed = self.get_discs_embed()
             if embed is not None:
                 if self.get_disc_image(embed) == False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -167,7 +165,7 @@ class Discs(commands.Cog):
             self.scrape(disc_scrapers.all_scrapers)
             self.stores = split_discs_in_stores(self.discs)
 
-            embed = self.get_embed_discs()
+            embed = self.get_discs_embed()
             if embed is not None:
                 if self.get_disc_image(embed) == False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
@@ -196,7 +194,7 @@ class Discs(commands.Cog):
         scraper_list = [DiscFlightScraper(search)]
         self.scrape(scraper_list)
 
-        embed = self.get_embed_disc_flight(scraper_list[0])
+        embed = self.get_disc_flight_embed(scraper_list[0])
         if embed is not None:
             await ctx.send(ctx.author.mention, embed=embed)
         else:
@@ -236,7 +234,7 @@ class Discs(commands.Cog):
 
         self.scrape(scraper_list)
         self.stores = split_discs_in_stores(self.discs)
-        embed = self.get_embed_discs()
+        embed = self.get_discs_embed()
         if embed is not None:
             if self.get_disc_image(embed) == False:
                 embed.set_thumbnail(url=(interaction.user.display_avatar))
@@ -264,7 +262,7 @@ class Discs(commands.Cog):
         scraper_list = [DiscFlightScraper(search)]
         self.scrape(scraper_list)
 
-        embed = self.get_embed_disc_flight(scraper_list[0])
+        embed = self.get_disc_flight_embed(scraper_list[0])
         if embed is not None:
             await interaction.followup.send(interaction.user.mention, embed=embed)
         else:
@@ -302,7 +300,7 @@ class Discs(commands.Cog):
 
         self.scrape(scraper_list)
         self.stores = split_discs_in_stores(self.discs, 5)
-        embed = self.get_embed_discs()
+        embed = self.get_discs_embed()
         if embed is not None:
             if self.get_disc_image(embed) == False:
                 embed.set_thumbnail(url=(interaction.user.display_avatar))

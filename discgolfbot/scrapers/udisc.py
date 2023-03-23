@@ -1,81 +1,98 @@
 import time
-from dateutil.parser import parse
-from score.scorecard import Scorecard
+from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 from score.player import Player, PlayerName
 from .scraper import Scraper
 
 class Udisc(Scraper):
+    """uDisc scraper base class"""
     def __init__(self):
         super().__init__()
         self.name = 'udisc.com'
         self.url = 'https://udisc.com'
 
 class LeagueScraper(Udisc):
+    """uDisc League scraper Class"""
     def __init__(self, url):
         super().__init__()
         self.scrape_url = url
-        self.score_card = Scorecard("", "", "2021-01-01 12:00", 0)
+        self.scorecard = ScorecardUdiscCompetition()
 
     def scrape(self):
+        """Scrape from uDisc league"""
         start_time = time.time()
 
         soup = self.selenium_get_beatifulsoup(4)
 
-        header = soup.find("div", class_="jss55 jss57")
+        header = soup.find("div", {"class" : ["jss55", "jss57"]})
         if header is None:
             return
 
+        # Competition/League Name
+        competition_name = header.find("p", {"class" : "jss56"})
+        if competition_name is not None:
+            self.scorecard.name = competition_name.get_text()
+
         # Course Name
-        course_name = header.find("a", class_="MuiTypography-root MuiLink-root MuiLink-underlineHover jss75 MuiTypography-colorPrimary")
+        course_name = header.find("a", {"class" : "jss75"})
         if course_name is None:
             return
-        self.score_card.coursename = course_name.getText().rstrip()
-        # Course link
+
+        self.scorecard.course.name = course_name.getText().rstrip()
+        # Course url
         course_url = course_name['href']
         if course_url is not None:
-            self.score_card.course_url = f'{self.url}{course_url}'
+            self.scorecard.course.url = f'{self.url}{course_url}'
 
         # Layout Name
-        self.score_card.layoutname = soup.find("p", class_="MuiTypography-root jss96 MuiTypography-body1").getText().replace("LAYOUT: ", "").rstrip(" ")
+        self.scorecard.course.layout = soup.find("p", {"class" : "jss96"}).getText().replace("LAYOUT: ", "").rstrip(" ")
 
-        date = header.find("p", class_="MuiTypography-root jss74 MuiTypography-body1")
+        date = header.find("p", {"class" : "jss74"})
         if date is None:
             return
         # Date, varies between two formats ("September 12th 2021, or "Sept 12")
-        date_text = date.getText().split("·")[1]
-        self.score_card.date_time = parse(date_text)
+        date = date.getText().split("·")[1].rstrip().lstrip()
+        self.scorecard.date_time = date
 
-        tour_id = soup.find("div", id="tour-leaderboard")
-        # Add par
-        par = tour_id.find("p", class_="jss122 jss158 undefined").getText()
-        self.score_card.par = int(par)
-        # Add par for holes
-        hole_par_list = tour_id.find_all("p", class_="jss122 jss158")
-        for i in range(len(hole_par_list)):
-            self.score_card.add_hole(i+1, int(hole_par_list[i].getText()))
+        divisions_list = []
+        divisions = soup.find_all("p", {"class" : "jss77"})
+        for division in divisions:
+            divisions_list.append(division.getText().split()[0]) # Only fetch the first word
 
-        # Add players and scores
-        for player in tour_id.find_all("tr", class_="jss124 false collapsed"):
-            player_name = PlayerName("")
-            score = ""
-            scores = []
-            player_row = player.find_all("td", class_="jss126 jss159")
-            for row_no in range(len(player_row)):
-                if(row_no == 0):
-                    player_name.name = player_row[row_no].getText()
-                elif (row_no == 1):
-                    if (player_row[row_no].getText() == "E"):
-                        score = "0"
-                    else:
-                        score = player_row[row_no].getText().replace("+", "")
-                elif(row_no > 2):
-                    scores.append(player_row[row_no].getText())
+        tour_leaderboard = soup.find("div", {"id" : "tour-leaderboard"})
+        par_list = tour_leaderboard.find_all("p", {"class" : ["jss122", "jss158"]})
+        for i, par in enumerate(par_list):
+            if par == par_list[-1]: # Last element is par
+                self.scorecard.par = int(par.getText())
+            else:
+                self.scorecard.add_hole(i+1, int(par.getText()))
 
-            total = scores.pop()
-            scorecard_player = Player(player_name, total, score)
-            for hole_score in scores:
-                scorecard_player.add_hole(hole_score)
-            self.score_card.add_player(scorecard_player)
+        division_scores = soup.findAll("div", {"class" : "jss113"} )
+        for i, division_score in enumerate(division_scores):
+            for player in division_score.find_all("tr", {"class" : ["jss126", "false"]}):
+                player_name = PlayerName("")
+                score = ""
+                scores = []
+                total = 0
+                player_rows = player.find_all("td", {"class" : "jss126"})
+
+                for row_no, player_row in enumerate(player_rows):
+                    if player_row == player_rows[-1]: # last element is the total
+                        total = player_row.getText()
+                    elif row_no == 1:
+                        player_name.name = player_row.getText()
+                    elif row_no == 2:
+                        if player_row.getText() == "E":
+                            score = "0"
+                        else:
+                            score = player_row.getText().replace("+", "")
+                    elif row_no > 3:
+                        scores.append(player_row.getText())
+
+                scorecard_player = Player(player_name, total, score)
+                scorecard_player.division = divisions_list[i]
+                for hole_score in scores:
+                    scorecard_player.add_hole(hole_score)
+                self.scorecard.add_player(scorecard_player)
 
         self.scraper_time = time.time() - start_time
         print(f'UdiscLeague scraper: {self.scraper_time}')

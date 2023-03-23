@@ -122,7 +122,6 @@ class Bag(commands.Cog):
             embed.set_footer(text="Provided by discgolfbagbuilder.com", icon_url=bag_scraper.icon_url)
 
         # Validate and return embed
-        if (validate_embed(embed) == True):
+        if validate_embed(embed):
             return embed
-        else:
-            return None
+        return None
