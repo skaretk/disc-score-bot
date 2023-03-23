@@ -3,6 +3,7 @@ from discord_utils.embed_validation import validate_embed
 from .scorecard import Scorecard
 
 class ScorecardUdisc(Scorecard):
+    """uDisc Scorecard"""
     def __init__(self):
         super().__init__()
 

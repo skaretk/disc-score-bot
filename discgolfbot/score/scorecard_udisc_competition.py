@@ -3,7 +3,7 @@ from discord_utils.embed_validation import validate_embed
 from .scorecard import Scorecard
 
 class ScorecardUdiscCompetition(Scorecard):
-    '''uDisc Scorecard Competition/League Class'''
+    """uDisc Scorecard Competition/League Class"""
     def __init__(self):
         super().__init__()
         self._name = None
@@ -13,7 +13,7 @@ class ScorecardUdiscCompetition(Scorecard):
 
     @property
     def name(self):
-        '''uDisc Competition/League Name'''
+        """uDisc Competition/League Name"""
         return self._name
 
     @name.setter

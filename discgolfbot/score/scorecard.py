@@ -1,4 +1,3 @@
-import datetime
 import dateutil.parser as dparser
 import nextcord
 from discord_utils.embed_validation import validate_embed
@@ -6,6 +5,7 @@ from .course import Course
 from .player import Player
 
 class Scorecard:
+    """Scorecard class"""
     def __init__(self):
         self._course = Course()
         self._date_time = None
@@ -19,10 +19,12 @@ class Scorecard:
 
     @property
     def course(self):
+        """Scorecard course"""
         return self._course
 
     @property
     def date_time(self):
+        """Scorecard date"""
         return self._date_time
 
     @date_time.setter
@@ -34,6 +36,7 @@ class Scorecard:
 
     @property
     def par(self):
+        """scorecard par"""
         return self._par
 
     @par.setter
@@ -41,18 +44,21 @@ class Scorecard:
         self._par = par
 
     def get_csv(self):
-        pass
+        """Get the csv file, must be overrided in child classes"""
 
     def add_hole(self, number, par):
+        """Add a hole to the scorecard"""
         self.holes[number] = par
 
     def get_players_str(self):
+        """Return a string containing all players and their division/scores"""
         players_str = ''
         for division in self.divisions:
             players_str += f'\n{division}\n{self.get_players(division)}'
         return players_str
 
     def get_players(self, division=""):
+        """Get all players in the given division"""
         players = ''
         first_player = True
         for player in self.players:
@@ -66,6 +72,7 @@ class Scorecard:
         return players
 
     def add_player(self, player:Player):
+        """Add a Player to the scorecard, sort and add the position"""
         self.players.append(player)
         if player.division not in self.divisions:
             self.divisions.append(player.division)
@@ -73,9 +80,11 @@ class Scorecard:
         self.add_player_position()
 
     def sort_players(self):
+        """Sort players based on the score"""
         self.players.sort(key=lambda x: x.score)
 
     def add_player_position(self):
+        """Add the player position in all of the divisions"""
         for division in self.divisions:
             last_score = ""
             position = 0
@@ -93,13 +102,14 @@ class Scorecard:
                     last_score = player.score
 
     def get_total_throws(self):
+        """Returns total throws in the scorecard"""
         throws = 0
         for player in self.players:
             throws += player.total
         return throws
 
-    def get_longest_player_name(self, only_first_name = False):
-        '''Returns the lenth of the longest player name'''
+    def get_longest_player_name(self, only_first_name=False):
+        """Returns the lenth of the longest player name"""
         max_length = 0
         for player in self.players:
             if only_first_name:
@@ -111,12 +121,14 @@ class Scorecard:
                     max_length = len(player.player_name)
         return max_length
 
-    def add_column_offset(self, string, only_first_name = False):
+    def add_column_offset(self, string, only_first_name=False):
+        """Adds a column offset to the given string, for easier show the scores"""
         offset = self.get_longest_player_name(only_first_name) - len(string)
         string += ' ' * offset + ' '
         return string
 
-    def get_pars_str(self, from_hole = '', to_hole = ''):
+    def get_pars_str(self, from_hole='', to_hole=''):
+        """Return the pars from the given holes"""
         pars = ''
         for hole_number, hole in self.holes.items():
             if hole_number < from_hole:
@@ -129,7 +141,8 @@ class Scorecard:
                 pars += f'{hole}  '
         return pars
 
-    def get_holes_str(self, from_hole = '', to_hole = ''):
+    def get_holes_str(self, from_hole='', to_hole=''):
+        """Return the holes between given holes"""
         holes = ''
         if from_hole and to_hole:
             current_hole = from_hole
@@ -140,15 +153,17 @@ class Scorecard:
         return holes
 
     def append_field(self, embed=nextcord.Embed):
-        pass
+        """Append a field to the given embed, must be overrided in the child classes"""
 
     def get_embed(self, thumbnail=''):
+        """Get the nextcord.Embed"""
         embed = self.get_small_embed(thumbnail)
         if validate_embed(embed):
             return embed
         return None
 
     def get_small_embed(self, thumbnail=''):
+        """Get a small embed, only containing scores"""
         embed_title = self.course.name if self.course.name is not None else ''
         embed=nextcord.Embed(title=embed_title, url=self.course.url, description=f'{self.date_time}', color=0x004899)
         for division in self.divisions:
@@ -159,9 +174,10 @@ class Scorecard:
         return embed
 
     def get_big_embed(self, thumbnail=''):
+        """Get a big embed, including scores for each hole"""
         embed_title = self.course.name if self.course.name is not None else ''
         embed=nextcord.Embed(title=embed_title, url=self.course.url, description=f'{self.date_time} Par:{self.par}', color=0x004899)
-        embed.add_field(name="", value=f'''{self.get_players()}''', inline=False)
+        embed.add_field(name="", value=f'```{self.get_players()}```', inline=False)
 
         header_holes = self.add_column_offset('Hole', True)
         header_par = self.add_column_offset('Par', True)

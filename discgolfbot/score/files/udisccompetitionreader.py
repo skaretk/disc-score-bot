@@ -8,13 +8,13 @@ from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
 
 class UdiscCompetitionReader:
-    '''uDisc Competition / League Reader'''
+    """uDisc Competition / League Reader"""
     def __init__(self, path, file):
         self.path = path
         self.file = file
 
     def parse(self):
-        '''Parse the .csv file'''
+        """Parse the csv file"""
         date = self.get_date()
         scorecard = ScorecardUdiscCompetition()
         scorecard.date_time = date.strftime("%Y-%m-%d %H:%M")
@@ -42,7 +42,7 @@ class UdiscCompetitionReader:
         return scorecard
 
     def get_date(self):
-        '''Fetch date from the filename'''
+        """Fetch date from the filename"""
         try:
             date = dparser.parse(self.file, fuzzy=True)
         except dparser.ParserError:
@@ -50,11 +50,11 @@ class UdiscCompetitionReader:
         return date
 
     def contain_course(self, course):
-        '''Not possible from the csv file.'''
+        """Not possible from the csv file."""
         return None
 
     def contain_dates(self, date:datetime, date_to:datetime=None):
-        '''Is the scorecard within the date(s)'''
+        """Is the scorecard within the date(s)"""
         scorecard_date = self.get_date()
         # Parse scores between two dates ?
         if date_to:

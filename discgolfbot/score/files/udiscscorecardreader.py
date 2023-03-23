@@ -7,12 +7,13 @@ from score.scorecard_udisc import ScorecardUdisc
 udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "Date", "Total", "+/-", "Hole"]
 
 class UdiscScoreCardReader:
+    """uDisc Scorecard reader for uDisc .csv files"""
     def __init__(self, path="", file=""):
         self.path = path
         self.file = file
 
     def parse(self):
-        '''Parse and return the Udisc Scorecard'''
+        """Parse and return the Udisc Scorecard"""
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
@@ -24,7 +25,7 @@ class UdiscScoreCardReader:
                     scorecard.par = int(row['Total'])
                     for i in range(1, 28):
                         if f'Hole{i}' in row:
-                                scorecard.add_hole(i, int(row[f'Hole{i}']))
+                            scorecard.add_hole(i, int(row[f'Hole{i}']))
                         else:
                             break
                 else:
@@ -38,7 +39,7 @@ class UdiscScoreCardReader:
         return scorecard
 
     def contain_course(self, course):
-        '''Check if the scorecard is course'''
+        """Check if the scorecard is course"""
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
@@ -53,7 +54,7 @@ class UdiscScoreCardReader:
         return None
 
     def contain_dates(self, date:datetime, date_to:datetime):
-        '''Check if the given scorecard is within the dates'''
+        """Check if the given scorecard is within the dates"""
         with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:

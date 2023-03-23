@@ -16,10 +16,12 @@ from .alias import Alias
 from .competition import Competition
 
 class Scores(commands.Cog):
+    """Scores Class, Fetches scorecards locally or over web"""
     def __init__(self, bot):
         self.bot = bot
 
     def scrape(self, scraper_list):
+        """Scrape for scorecards over web"""
         start_time = time.time()
         with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
             for scraper in scraper_list:
@@ -28,7 +30,7 @@ class Scores(commands.Cog):
         print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
     def get_scorecards(self, path, alias):
-        '''Get all scorecards'''
+        """Get all scorecards"""
         competition = Competition()
         for file in os.listdir(path):
             if file.endswith(".csv"):
@@ -44,7 +46,7 @@ class Scores(commands.Cog):
         return competition
 
     def get_scorecards_course(self, path, alias, course):
-        '''Get all scorecards for a course'''
+        """Get all scorecards for a course"""
         competition = Competition()
         for file in os.listdir(path):
             if file.endswith(".csv"):
@@ -62,7 +64,7 @@ class Scores(commands.Cog):
         return competition
 
     def get_scorecards_date(self, path, alias, date:datetime, date_to:datetime):
-        '''Get all scorecards within date(s)'''
+        """Get all scorecards within date(s)"""
         competition = Competition()
         for file in os.listdir(path):
             if file.endswith(".csv"):
@@ -80,7 +82,7 @@ class Scores(commands.Cog):
 
     # Checks
     def has_scorecards():
-        '''Does the channel contain any scorecards'''
+        """Does the channel contain any scorecards"""
         async def predicate(interaction:Interaction):
             folder = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
             if utilities.is_path_empty(folder):
@@ -90,7 +92,7 @@ class Scores(commands.Cog):
         return application_checks.check(predicate)
 
     # Slash commands
-    @nextcord.slash_command(name="scores", description="Score commands", guild_ids=[603273004641681441])
+    @nextcord.slash_command(name="scores", description="Score commands", guild_ids=[])
     async def scores(self):
         pass
 

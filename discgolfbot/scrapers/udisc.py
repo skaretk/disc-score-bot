@@ -4,21 +4,21 @@ from score.player import Player, PlayerName
 from .scraper import Scraper
 
 class Udisc(Scraper):
-    '''uDisc scraper base class'''
+    """uDisc scraper base class"""
     def __init__(self):
         super().__init__()
         self.name = 'udisc.com'
         self.url = 'https://udisc.com'
 
 class LeagueScraper(Udisc):
-    '''uDisc League scraper Class'''
+    """uDisc League scraper Class"""
     def __init__(self, url):
         super().__init__()
         self.scrape_url = url
         self.scorecard = ScorecardUdiscCompetition()
 
     def scrape(self):
-        '''Scrape from uDisc league'''
+        """Scrape from uDisc league"""
         start_time = time.time()
 
         soup = self.selenium_get_beatifulsoup(4)

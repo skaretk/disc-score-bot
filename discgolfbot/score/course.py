@@ -1,4 +1,4 @@
-"""Contain Course specific data"""
+"""Course specific data"""
 
 class Course:
     """Discgolf Course"""

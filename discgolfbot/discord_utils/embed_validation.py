@@ -13,7 +13,7 @@ import nextcord
 # | author.name | 256 characters         |
 # +-------------+------------------------+
 def validate_embed(embed:nextcord.Embed):
-    '''Validate the embed'''
+    """Validate the embed"""
     embed_ok = True
     if validate_embed_total_length(embed) is False:
         embed_ok = False
@@ -30,14 +30,14 @@ def validate_embed(embed:nextcord.Embed):
     return embed_ok
 
 def validate_embed_total_length(embed:nextcord.Embed):
-    '''Validate the total length of the embed'''
+    """Validate the total length of the embed"""
     if len(embed) > 6000:
         print(f'Embed size too long: {len(embed)}')
         return False
     return True
 
 def validate_embed_title(title:nextcord.Embed.title):
-    '''Validate the embed title'''
+    """Validate the embed title"""
     if str(title) != 'Embed.Empty':
         if len(title) > 256:
             print(f'title too long: {len(title)}')
@@ -45,7 +45,7 @@ def validate_embed_title(title:nextcord.Embed.title):
     return True
 
 def validate_embed_description(description:nextcord.Embed.description):
-    '''Validate the embed description'''
+    """Validate the embed description"""
     if str(description) != 'Embed.Empty':
         if len(description) > 4096:
             print(f'description too long: {len(description)}')
@@ -53,7 +53,7 @@ def validate_embed_description(description:nextcord.Embed.description):
     return True
 
 def validate_embed_fields(fields:nextcord.Embed.fields):
-    '''Validate the embed fields'''
+    """Validate the embed fields"""
     fields_ok = True
     if validate_embed_no_of_fields(fields) is False:
         fields_ok = False
@@ -64,14 +64,14 @@ def validate_embed_fields(fields:nextcord.Embed.fields):
     return fields_ok
 
 def validate_embed_no_of_fields(fields:nextcord.Embed.fields):
-    '''Validate the number of fields'''
+    """Validate the number of fields"""
     if len(fields) > 25:
         print(f'too many fields!: {len(fields)}')
         return False
     return True
 
 def validate_embed_field_names(fields:nextcord.Embed.fields):
-    '''Validate the embed field names'''
+    """Validate the embed field names"""
     fields_name = []
     fields_name.extend([field.name for field in fields])
     for name in fields_name:
@@ -81,7 +81,7 @@ def validate_embed_field_names(fields:nextcord.Embed.fields):
     return True
 
 def validate_embed_field_value(fields:nextcord.Embed.fields):
-    '''Validate the embed fields value'''
+    """Validate the embed fields value"""
     fields_value = []
     fields_value.extend([field.value for field in fields])
     for value in fields_value:
@@ -91,7 +91,7 @@ def validate_embed_field_value(fields:nextcord.Embed.fields):
     return True
 
 def validate_embed_footer(footer:nextcord.Embed.footer):
-    '''Validate the embed footer'''
+    """Validate the embed footer"""
     if str(footer.text) != 'Embed.Empty':
         if len(footer.text) > 2048:
             print(f'footer.text too long: {len(footer.text)}')
@@ -99,7 +99,7 @@ def validate_embed_footer(footer:nextcord.Embed.footer):
     return True
 
 def validate_embed_author(author:nextcord.Embed.author):
-    '''Validate the embed author'''
+    """Validate the embed author"""
     if str(author.name) != 'Embed.Empty':
         if len(author.name) > 256:
             print(f'author.name too long: {len(author.name)}')
