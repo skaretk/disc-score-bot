@@ -10,6 +10,7 @@ from . import discrepublic
 from . import discsport
 from . import frisbeefeber
 from . import gurudiscgolf
+from . import kastmeg
 from . import krokholdgs
 from . import latitude64
 from . import pdga

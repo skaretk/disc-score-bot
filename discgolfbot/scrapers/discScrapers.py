@@ -10,6 +10,7 @@ from . import discrepublic
 from . import discsport
 from . import frisbeefeber
 from . import fyndisc
+from . import kastmeg
 from . import krokholdgs
 from . import latitude64
 from . import rocketdiscs
@@ -22,6 +23,7 @@ class DiscScrapers():
         self.norwegian =     [dgshop.DiscScraper(search),
                               discinstock.DiscScraperApi(search),
                               frisbeefeber.DiscScraper(search),
+                              kastmeg.DiscScraper(search),
                               krokholdgs.DiscScraper(search),
                               sunesport.DiscScraper(search)]
         self.voec =          [discsport.DiscScraper(search),

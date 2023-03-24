@@ -80,6 +80,10 @@ def test_gurudiscgolf_scraper():
     search = "firebird"
     scrape_and_check(scrapers.gurudiscgolf.DiscScraper(search))
 
+def test_kastmeg_scraper():
+    search = "firebird"
+    scrape_and_check(scrapers.kastmeg.DiscScraper(search))
+
 def test_krokholdgs_scraper():
     search = "firebird"
     scrape_and_check(scrapers.krokholdgs.DiscScraper(search))
