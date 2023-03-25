@@ -21,37 +21,43 @@ def test_discgolfmetrix_courses_list_course_name():
     assert len(courses) != 0
 
 def test_discgolfmetrix_course_id():
-    course_id = "8752"
     api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
     assert api is not None
-    response = api.course(course_id)
+    response = api.course(course_id="8752")
     assert response is not None
 
 def test_discgolfmetrix_course_id_code():
-    course_id = "8752"
-    code = "0"
     api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
     assert api is not None
-    response = api.course(course_id, code)
+    response = api.course(course_id="8752", code="0")
     assert response is not None
 
 def test_discgolfmetrix_get_results():
-    results_id = "2023035"
     api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
     assert api is not None
-    response = api.get_results(results_id)
+    response = api.get_results(result_id="2023035")
+    assert response is not None
+
+def test_discgolfmetrix_get_results_class():
+    api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
+    assert api is not None
+    response = api.get_results(result_id="2023035", class_="MPO")
+    assert response is not None
+
+def test_discgolfmetrix_get_results_group():
+    api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
+    assert api is not None
+    response = api.get_results(result_id="2023035", group="1")
     assert response is not None
 
 def test_discgolfmetrix_bagtag():
-    bagtag_id = "4" # Norway bagtag
     api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
     assert api is not None
-    response = api.bagtag_list(bagtag_id)
+    response = api.bagtag_list(bagtag_id="4") # Norway bagtag
     assert response is not None
 
 def test_discgolfmetrix_my_competitions():
-    player_code = "HtDz6uLTsF76bFmCGToVsNe9khDf3sJA" # My Current Player ID
     api = apis.discgolfmetrixapi.DiscgolfMetrixApi()
     assert api is not None
-    response = api.my_competitions(player_code)
+    response = api.my_competitions(code="HtDz6uLTsF76bFmCGToVsNe9khDf3sJA") # My Current Player ID
     assert response is not None
