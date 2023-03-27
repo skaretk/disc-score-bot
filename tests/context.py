@@ -5,6 +5,7 @@ print(sys.path)
 
 import apis
 import bag
+import config
 import discs
 import discord_utils
 import score
