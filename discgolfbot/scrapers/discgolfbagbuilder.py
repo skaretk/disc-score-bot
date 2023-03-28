@@ -15,10 +15,10 @@ class DiscgolfBagBuilder(Scraper):
         self.bag_description = ""
         self.icon_url = 'https://pbs.twimg.com/profile_images/1298004778224619520/XfPTj4i1.jpg'
         self.image_file = "flight.png"
-        self.distance_drivers = []
-        self.fairway_drivers = []
-        self.midranges = []
-        self.putt_approach = []
+        self.distance_drivers = None
+        self.fairway_drivers = None
+        self.midranges = None
+        self.putt_approach = None
 
     def scrape_discs(self):
         '''Scrape discs from the bag'''
@@ -78,13 +78,13 @@ class DiscgolfBagBuilder(Scraper):
                 discs_list.append(disc)
 
             if category.getText() == "Distance Driver":
-                self.distance_drivers.extend(discs_list)
+                self.distance_drivers = discs_list
             elif category.getText() == "Fairway Driver":
-                self.fairway_drivers.extend(discs_list)
+                self.fairway_drivers = discs_list
             elif category.getText() == "Midrange":
-                self.midranges.extend(discs_list)
+                self.midranges = discs_list
             elif category.getText() == "Putt Approach":
-                self.putt_approach.extend(discs_list)
+                self.putt_approach = discs_list
             else:
                 print(f'Unknown category {category.getText()}')
 
