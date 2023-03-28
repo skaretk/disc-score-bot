@@ -94,7 +94,7 @@ class Bag(commands.Cog):
             embed.add_field(name="Midranges", value=midranges, inline=True)
             embed.add_field(name="Flight", value=midranges_flights, inline=True)
             embed.add_field(name="\u200b", value="\u200b", inline=True)
-        if bag_scraper.fairway_drivers:
+        if bag_scraper.putt_approach:
             putters = ''
             putters_flights = ''
             for putter in bag_scraper.putt_approach:
