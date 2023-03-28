@@ -1,7 +1,7 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 from context import scrapers
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 
 def test_discgolfbagbuilder_bag_scraper():
     search = "https://www.discgolfbagbuilder.com/bags/oyv10ykqvre0jibt"
