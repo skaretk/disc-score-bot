@@ -1,1 +1,2 @@
-from .metrix import Metrix
+from .discgolfmetrix import DiscgolfMetrix
+from .discgolfmetrix import DiscgolfmetrixConfig

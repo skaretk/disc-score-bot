@@ -1,6 +1,6 @@
 import datetime
 
-class MetrixCompetition:
+class DiscgolfmetrixCompetition:
     def __init__(self, json):
         self.json = json
         self.competition_url = f'https://discgolfmetrix.com/{self.get_id()}'

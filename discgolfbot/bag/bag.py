@@ -3,7 +3,7 @@ from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 from discord_utils.embed_validation import validate_embed
 from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
-from .bags import Bags
+from .bagconfig import BagConfig
 
 class Bag(commands.Cog):
     '''Bag Class Cog'''
@@ -45,8 +45,8 @@ class Bag(commands.Cog):
         ):
         '''/bag add url'''
         user = interaction.user
-        bags = Bags(interaction.guild.name, user.display_name)
-        modified = bags.add_player_bag(bag_url)
+        cfg = BagConfig(interaction.guild.name)
+        modified = cfg.add_player_bag(bag_url)
         if modified:
             await interaction.response.send_message(f'Modified your bag {user.mention}')
         else:

@@ -4,12 +4,12 @@ from enum import Enum
 import nextcord
 from apis.discgolfmetrixapi import metrix_favicon
 
-class MetrixCourseSource(Enum):
+class DiscgolfmetrixCourseSource(Enum):
     ID = 1
     LIST = 2
 
-class MetrixCourse:
-    def __init__(self, json, type: MetrixCourseSource):
+class DiscgolfmetrixCourse:
+    def __init__(self, json, type: DiscgolfmetrixCourseSource):
         self.type = type
         self.course_json = json.get("course") if type == type.ID else json
         self.baskets_json = json.get("baskets") if type == type.ID else None
@@ -17,7 +17,7 @@ class MetrixCourse:
 
     def calculate_rating(self, result = None):
         # rating values is only returned if searched by ID
-        if self.type == MetrixCourseSource.LIST:
+        if self.type == DiscgolfmetrixCourseSource.LIST:
             return None
         if self.course_json is not None:
             rating_value_1 = self.course_json.get("RatingValue1")

@@ -1,7 +1,7 @@
 import nextcord
 from apis.discgolfmetrixapi import metrix_favicon, metrix_logo
 
-class MetrixCompetitions:
+class DiscgolfmetrixCompetitions:
     def __init__(self):
         self.competitions = []
 
