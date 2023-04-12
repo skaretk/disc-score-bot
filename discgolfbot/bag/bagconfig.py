@@ -5,40 +5,40 @@ class BagConfig(Config):
     def __init__(self, server):
         super().__init__(server, "bag.json")
 
-    def get_player_bag(self, player):
-        '''Return the player bag url'''
+    def get_bag(self, user:int):
+        '''Return the users bag url'''
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return None
 
         json = self.read()
         for bag in json['bags']:
-            if bag.get('user').lower() == player.lower():
-                return bag.get('bag')
+            if bag.get('user') == user:
+                return bag.get('url')
 
         return None
 
-    def add_player_bag(self, player, url):
-        '''Add the player bag. Return True if url is modifed, false otherwise'''
+    def add_bag(self, user:int, url):
+        '''Add the users bag. Return True if url is modifed, false otherwise'''
         json = self.read()
 
         modified = False
         if json:
             for bag in json['bags']:
-                if bag.get('user').lower() == player.lower():
-                    bag['bag'] = url
+                if bag.get('user') == user:
+                    bag['url'] = url
                     modified = True
                     break
             if modified is False:
-                json['bags'].append({'user':player, 'bag':url})
+                json['bags'].append({'user':user, 'url':url})
         else: # Create new cfg
-            json = {'bags':[{'user':player, 'bag':url}]}
+            json = {'bags':[{'user':user, 'url':url}]}
 
         self.write(json)
         return modified
 
-    def remove_player_bag(self, player):
-        '''Remove the player bag. Return True if removed, False othervise'''
+    def remove_bag(self, user:int):
+        '''Remove the users bag. Return True if removed, False othervise'''
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return False
@@ -47,7 +47,7 @@ class BagConfig(Config):
 
         idx = None
         for i, bag in enumerate(json['bags']):
-            if bag.get('user').lower() == player.lower():
+            if bag.get('user') == user:
                 idx = i
                 break
 
