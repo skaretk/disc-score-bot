@@ -29,13 +29,12 @@ def test_bag_config_get_player():
 def test_bag_config_add_modify_remove_player():
     '''Test to add, modify and remove a player'''
     cfg = bag.BagConfig("server_example")
-    bag_url = "https://www.discgolfbagbuilder.com/bags/testbag2"
     assert cfg.get_bag(2) is None
     assert cfg.remove_bag(2) is False
-    assert cfg.add_bag(2, bag_url) is False
-    assert cfg.get_bag(2) == bag_url
-    assert cfg.add_bag(2, bag_url) is True
-    assert cfg.get_bag(2) == bag_url
+    assert cfg.add_bag(2, "https://www.discgolfbagbuilder.com/bags/testbag2") is False
+    assert cfg.get_bag(2) == "https://www.discgolfbagbuilder.com/bags/testbag2"
+    assert cfg.add_bag(2, "https://www.discgolfbagbuilder.com/bags/testbagtest") is True
+    assert cfg.get_bag(2) == "https://www.discgolfbagbuilder.com/bags/testbagtest"
     assert cfg.remove_bag(2) is True
     assert cfg.get_bag(2) is None
 
@@ -44,12 +43,10 @@ def test_bag_config_create():
     cfg = bag.BagConfig("new_server")
     assert cfg.get_bag(2) is None
     assert cfg.remove_bag(2) is False
-    bag_url = "https://www.discgolfbagbuilder.com/bags/testbag2"
-    assert cfg.add_bag(2, bag_url) is False
-    assert cfg.get_bag(2) == bag_url
-    bag_url_test = "https://www.discgolfbagbuilder.com/bags/testbagtest"
-    assert cfg.add_bag(2, bag_url_test) is True
-    assert cfg.get_bag(2) == bag_url_test
+    assert cfg.add_bag(2, "https://www.discgolfbagbuilder.com/bags/testbag2") is False
+    assert cfg.get_bag(2) == "https://www.discgolfbagbuilder.com/bags/testbag2"
+    assert cfg.add_bag(2, "https://www.discgolfbagbuilder.com/bags/testbagtest") is True
+    assert cfg.get_bag(2) == "https://www.discgolfbagbuilder.com/bags/testbagtest"
     assert cfg.remove_bag(2) is True
     assert cfg.get_bag(2) is None
     # Cleanup

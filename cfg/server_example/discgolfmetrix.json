@@ -1,7 +1,7 @@
 {
     "metrix_players": [
         {
-            "user": "metrixuser",
+            "user": 1,
             "code": "metrix_code"
         }
     ]

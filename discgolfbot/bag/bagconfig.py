@@ -19,7 +19,7 @@ class BagConfig(Config):
         return None
 
     def add_bag(self, user:int, url):
-        '''Add the users bag. Return True if url is modifed, false otherwise'''
+        '''Add the users bag. Return True if url is modifed, False otherwise'''
         json = self.read()
 
         modified = False

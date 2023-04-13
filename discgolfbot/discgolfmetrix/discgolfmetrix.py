@@ -27,14 +27,14 @@ class DiscgolfMetrix(commands.Cog):
         interaction:Interaction,
         player_code:str = SlashOption(name="code", description="Player code from discgolfmetrix", required=True)
     ):
-        '''Add a player code'''
+        '''/discgolfmetrix add_player_code'''
         user = interaction.user
         cfg = DiscgolfmetrixConfig(interaction.guild)
-        modified = cfg.add_player_code(user.display_name, player_code)
+        modified = cfg.add_code(user.id, player_code)
         if modified:
-            await interaction.response.send_message(f'Modified your metrix player code {user.mention}')
+            await interaction.response.send_message(f'Modified your discgolfmetrix player code {user.mention}')
         else:
-            await interaction.response.send_message(f'Added your metrix player code {user.mention}')
+            await interaction.response.send_message(f'Added your discgolfmetrix player code {user.mention}')
 
     @discgolfmetrix_slash_command.subcommand(name="competitions", description="Lists your competitions, or for a given player")
     async def competitions(
@@ -49,7 +49,7 @@ class DiscgolfMetrix(commands.Cog):
         if user is None:
             user = interaction.user
         cfg = DiscgolfmetrixConfig(interaction.guild)
-        code = cfg.get_player_code(user.display_name)
+        code = cfg.get_code(user.id)
 
         if code is not None:
             api = DiscgolfMetrixApi()
@@ -67,16 +67,16 @@ class DiscgolfMetrix(commands.Cog):
 
             for future in future_list:
                 if future.result() is not None:
-                    metrix_competition = DiscgolfmetrixCompetition(future.result())
-                    if metrix_competition.is_valid():
-                        if datetime.today().date() <= metrix_competition.datetime.date():
-                            competitions.add_competition(metrix_competition)
+                    competition = DiscgolfmetrixCompetition(future.result())
+                    if competition.is_valid():
+                        if datetime.today().date() <= competition.datetime.date():
+                            competitions.add_competition(competition)
 
             embed = competitions.get_embed()
 
             await interaction.followup.send(embed=embed)
         else:
-            await interaction.followup.send(f'Could not find your player code {user.display_name}, please add it by using %metrix add_player code')
+            await interaction.followup.send(f'Could not find your player code {user.mention}, please add it by using [/metrix add_player_code]')
 
         print(f'competitions: {round(time.time() - start_time, 2)}')
 
@@ -90,7 +90,7 @@ class DiscgolfMetrix(commands.Cog):
         api = DiscgolfMetrixApi()
         user = interaction.user
         cfg = DiscgolfmetrixConfig(interaction.guild)
-        code = cfg.get_player_code(user.display_name)
+        code = cfg.get_code(user.id)
         if code is not None:
             json = api.course(course_id, code)
             if json is not None:
@@ -100,7 +100,7 @@ class DiscgolfMetrix(commands.Cog):
             else:
                 await interaction.response.send_message('Could not find the course')
         else:
-            await interaction.response.send_message(f'Could not find your player code {user.display_name}, please add it by using [metrix add_player_code]')
+            await interaction.response.send_message(f'Could not find your player code {user.mention}, please add it by using [/metrix add_player_code]')
 
     @discgolfmetrix_slash_command.subcommand(name='search_course_name', description='Search for course on discgolfmetrix by name')
     async def search_course_name(
