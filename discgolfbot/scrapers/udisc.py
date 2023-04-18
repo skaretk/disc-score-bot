@@ -1,6 +1,7 @@
 import time
 from score.scorecard_udisc_competition import ScorecardUdiscCompetition
-from score.player import Player, PlayerName
+from score.player import Player
+from score.name import Name
 from .scraper import Scraper
 
 class Udisc(Scraper):
@@ -69,7 +70,7 @@ class LeagueScraper(Udisc):
         division_scores = soup.findAll("div", {"class" : "jss113"} )
         for i, division_score in enumerate(division_scores):
             for player in division_score.find_all("tr", {"class" : ["jss126", "false"]}):
-                player_name = PlayerName("")
+                player_name = Name("")
                 score = ""
                 scores = []
                 total = 0

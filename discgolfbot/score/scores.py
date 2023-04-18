@@ -29,7 +29,7 @@ class Scores(commands.Cog):
 
         print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
-    def get_scorecards(self, path, alias):
+    def get_competition(self, path, alias:Alias) -> Competition:
         """Get all scorecards"""
         competition = Competition()
         for file in os.listdir(path):
@@ -45,7 +45,7 @@ class Scores(commands.Cog):
 
         return competition
 
-    def get_scorecards_course(self, path, alias, course):
+    def get_competition_course(self, path, alias:Alias, course) -> Competition:
         """Get all scorecards for a course"""
         competition = Competition()
         for file in os.listdir(path):
@@ -63,7 +63,7 @@ class Scores(commands.Cog):
 
         return competition
 
-    def get_scorecards_date(self, path, alias, date:datetime, date_to:datetime):
+    def get_competition_date(self, path, alias:Alias, date:datetime, date_to:datetime) -> Competition:
         """Get all scorecards within date(s)"""
         competition = Competition()
         for file in os.listdir(path):
@@ -102,11 +102,9 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
-        alias = Alias(interaction.guild.name)
-        alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = self.get_scorecards(path, alias)
+        competition = self.get_competition(path, Alias(interaction.guild.name))
 
         if competition.scorecards:
             embed = competition.get_embed(interaction.user.avatar.url)
@@ -151,11 +149,9 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
-        alias = Alias(interaction.guild.name)
-        alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = self.get_scorecards(path, alias)
+        competition = self.get_competition(path, Alias(interaction.guild.name))
 
         if competition.scorecards:
             embed = competition.get_stats_embed(interaction.user.avatar.url)
@@ -203,9 +199,6 @@ class Scores(commands.Cog):
             await interaction.send("Missing date(s)")
             return
 
-        alias = Alias(interaction.guild.name)
-        alias.parse()
-
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
 
         if arg1 is not None:
@@ -221,7 +214,7 @@ class Scores(commands.Cog):
                     date_to = datetime.date.today()
             else:
                 date_to = None
-            competition = self.get_scorecards_date(path, alias, date, date_to)
+            competition = self.get_competition_date(path, Alias(interaction.guild.name), date, date_to)
 
         if competition.scorecards:
             embed = competition.get_embed(interaction.user.avatar.url)
@@ -270,11 +263,9 @@ class Scores(commands.Cog):
         interaction:Interaction,
         course:str=SlashOption(name="course", description="Course to search for", required=True)
     ):
-        alias = Alias(interaction.guild.name)
-        alias.parse()
 
         path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = self.get_scorecards_course(path, alias, course)
+        competition = self.get_competition_course(path, Alias(interaction.guild.name), course)
         embed = competition.get_embed(interaction.user.avatar.url)
 
         if embed is not None:

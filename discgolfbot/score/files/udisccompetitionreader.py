@@ -2,7 +2,8 @@ import csv
 import datetime
 
 import dateutil.parser as dparser
-from score.player import Player, PlayerName
+from score.player import Player
+from score.name import Name
 from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
@@ -31,7 +32,7 @@ class UdiscCompetitionReader:
             for row in reader:
                 if "DUP" in row['position']:
                     continue
-                player = Player(PlayerName(row['name']), int(row['total_score']), int(row['relative_score']))
+                player = Player(row['name'], int(row['total_score']), int(row['relative_score']))
                 player.division = row['division']
                 player.score_cards_position.append(row['position'])
                 for i in range(0, len(scorecard.holes)):

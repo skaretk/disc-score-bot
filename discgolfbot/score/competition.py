@@ -1,6 +1,7 @@
 import nextcord
 from discord_utils.embed_validation import validate_embed
 from .statistics import Statistics
+from .alias import Alias
 
 class Competition:
     """Competition Class - Collection of scorecards"""
@@ -45,11 +46,11 @@ class Competition:
             else:
                 self.add_player(player)
 
-    def add_player_alias(self, player, alias):
+    def add_player_alias(self, player, alias:Alias):
         """Add alias to given player"""
-        player_with_alias = alias.get_player_with_alias(player.player_name.name)
+        player_with_alias = alias.get_player_with_alias(str(player.name))
         if player_with_alias is not None:
-            player.player_name = player_with_alias
+            player.name = player_with_alias
 
     def player_exist(self, player):
         """Check if player exists"""

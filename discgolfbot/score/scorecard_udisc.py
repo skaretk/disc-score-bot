@@ -26,7 +26,7 @@ class ScorecardUdisc(Scorecard):
         data.append(course_header)
 
         for player in self.players:
-            player_csv = [player.player_name, self.course.name, self.course.layout, date, player.total, player.score]
+            player_csv = [str(player.name), self.course.name, self.course.layout, date, player.total, player.score]
             for score in player.holes:
                 player_csv.append(score)
             data.append(player_csv)

@@ -1,11 +1,13 @@
 {
     "aliases": [
         {
-            "name": "uDisc nickname",
-            "alias": "uDisc league or tournament name"
+            "name": "uDisc name",
+            "alias": [
+                "uDisc league or tournament name"
+            ]
         },
         {
-            "name": "uDisc name",
+            "name": "uDisc name 2",
             "alias": [
                 "alias1",
                 "alias2",

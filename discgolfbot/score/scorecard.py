@@ -63,7 +63,7 @@ class Scorecard:
         first_player = True
         for player in self.players:
             if player.division == division:
-                curr_player_str = f'{player.score_cards_position[0]} {self.add_column_offset(str(player.player_name))} {player.get_score()}'
+                curr_player_str = f'{player.score_cards_position[0]} {self.add_column_offset(str(player.name))} {player.get_score()}'
                 if first_player is True:
                     players += curr_player_str
                     first_player = False
@@ -117,8 +117,8 @@ class Scorecard:
                 if len(first_name) > max_length:
                     max_length = len(first_name)
             else:
-                if len(player.player_name) > max_length:
-                    max_length = len(player.player_name)
+                if len(str(player.name)) > max_length:
+                    max_length = len(str(player.name))
         return max_length
 
     def add_column_offset(self, string, only_first_name=False):
