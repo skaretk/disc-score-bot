@@ -31,6 +31,10 @@ class Name:
         """Add new alias"""
         self.alias.append(alias)
 
+    def remove_alias(self, alias):
+        """Remove alias"""
+        self.alias.remove(alias)
+
     def has_alias(self, name):
         """Check if the players has any aliases"""
         search_name = name.lower().replace(" ", "")

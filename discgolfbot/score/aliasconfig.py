@@ -46,6 +46,26 @@ class AliasConfig(Config):
 
         return self.write(json_object)
 
+    def remove_user_alias(self, user_name, user_alias):
+        """Remove the users alias. Return True if removed, False othervise"""
+        json_object = self.read()
+
+        alias_removed = False
+        if json_object:
+            for user in json_object['aliases']:
+                player_name = Name.from_json(user)
+                if player_name.name.lower() == user_name.lower(): # Found player
+                    if player_name.has_alias(user_alias):
+                        player_name.remove_alias(user_alias)
+                        user = json.dumps(player_name.__dict__, indent=4)
+                        alias_removed = True
+                    break
+
+        if alias_removed is False:
+            return False
+
+        return self.write(json_object)
+
     def remove_user(self, user_name):
         """Remove the user from the alias list. Return True if removed, False othervise"""
         if self.config_exists() is False:
@@ -66,6 +86,3 @@ class AliasConfig(Config):
         del json_object['aliases'][idx]
         self.write(json_object)
         return True
-
-    def remove_user_alias(self, player_name, alias):
-        """Remove the player alias. Return True if removed, False othervise"""

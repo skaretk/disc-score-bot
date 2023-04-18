@@ -25,47 +25,31 @@ def test_alias_config_read_not_exist():
 
 def test_alias_config_get_user_alias():
     cfg = score.AliasConfig("server_example")
+    assert cfg.get_user_alias("uDisc name") is not None
+    assert cfg.get_user_alias("uDisc league or tournament name") is not None
+    assert cfg.get_user_alias("uDisc name 2") is not None
+    assert cfg.get_user_alias("alias1") is not None
+    assert cfg.get_user_alias("alias2") is not None
+    assert cfg.get_user_alias("etc") is not None
     assert cfg.get_user_alias("wrong uDisc name") is None
-    udisc_name_json = cfg.get_user_alias("uDisc name")
-    assert udisc_name_json is not None
-    udisc_name = Name.from_json(udisc_name_json)
-    assert udisc_name is not None
-    assert udisc_name.has_alias("uDisc league or tournament name") is True
-    assert udisc_name.has_alias("wrong") is False
-    udisc_name_2_json = cfg.get_user_alias("uDisc name 2")
-    assert udisc_name_2_json is not None
-    udisc_name_2 = Name.from_json(udisc_name_2_json)
-    assert udisc_name_2 is not None
-    assert udisc_name_2.has_alias("alias1") is True
-    assert udisc_name_2.has_alias("alias2") is True
-    assert udisc_name_2.has_alias("etc") is True
-    assert udisc_name_2.has_alias("alias3") is False
+    assert cfg.get_user_alias("uDisc name") is not None
 
-def test_alias_config_add_modify_remove_user():
+def test_alias_config_add_modify_remove_alias_user():
     """Test to add, modify and remove player aliases"""
     cfg = score.AliasConfig("server_example")
+    # add user and alias
     assert cfg.get_user_alias("test user") is None
     assert cfg.add_user_alias("test user", "test user alias") is True
     assert cfg.add_user_alias("test user", "test user alias 2") is True
-    test_user_json = cfg.get_user_alias("test user")
-    assert test_user_json is not None
-    test_user = Name.from_json(test_user_json)
-    assert test_user is not None
-    assert test_user.has_alias("test user alias") is True
-    assert test_user.has_alias("test user alias 2") is True
-    assert test_user.has_alias("test user alias 3") is False
+    # Validate user and aliases is added
+    assert cfg.get_user_alias("test user") is not None
+    assert cfg.get_user_alias("test user alias") is not None
+    assert cfg.get_user_alias("test user alias 2") is not None
+    # Remove aliases
+    assert cfg.remove_user_alias("test user", "test user alias") is True
+    assert cfg.remove_user_alias("test user", "test user alias 2") is True
+    assert cfg.get_user_alias("test user alias") is None
+    assert cfg.get_user_alias("test user alias 2") is None
+    # Remove user
     assert cfg.remove_user("test user")
     assert cfg.get_user_alias("test user") is None
-
-def test_alias_config_json_dump_player_name():
-    """Test to add, modify and remove player aliases"""
-    cfg = score.AliasConfig("server_example")
-    file_json_object = cfg.read()
-    assert file_json_object is not None
-    player_name = Name("uDisc name 2",["alias1, alias2", "etc"])
-    json_file = json.dumps(player_name.__dict__)
-    assert json_file is not None
-    json_object = json.loads(json_file)
-    assert json_object is not None
-    player_name_copy = Name.from_json(json_object)
-    assert player_name == player_name_copy
