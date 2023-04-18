@@ -29,7 +29,7 @@ class DiscgolfMetrix(commands.Cog):
     ):
         '''/discgolfmetrix add_player_code'''
         user = interaction.user
-        cfg = DiscgolfmetrixConfig(interaction.guild)
+        cfg = DiscgolfmetrixConfig(interaction.guild.name)
         modified = cfg.add_code(user.id, player_code)
         if modified:
             await interaction.response.send_message(f'Modified your discgolfmetrix player code {user.mention}')
@@ -48,7 +48,7 @@ class DiscgolfMetrix(commands.Cog):
         start_time = time.time()
         if user is None:
             user = interaction.user
-        cfg = DiscgolfmetrixConfig(interaction.guild)
+        cfg = DiscgolfmetrixConfig(interaction.guild.name)
         code = cfg.get_code(user.id)
 
         if code is not None:
@@ -89,7 +89,7 @@ class DiscgolfMetrix(commands.Cog):
         '''/discgolfmetrix search_course_id'''
         api = DiscgolfMetrixApi()
         user = interaction.user
-        cfg = DiscgolfmetrixConfig(interaction.guild)
+        cfg = DiscgolfmetrixConfig(interaction.guild.name)
         code = cfg.get_code(user.id)
         if code is not None:
             json = api.course(course_id, code)
