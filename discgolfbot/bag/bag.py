@@ -6,13 +6,13 @@ from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
 from .bagconfig import BagConfig
 
 class Bag(commands.Cog):
-    '''Bag Class Cog'''
+    """Bag Class Cog"""
     def __init__(self, bot):
         self.bot = bot
 
     @nextcord.slash_command(name="bag", description="Get bag from discgolfbagbuilder", guild_ids=[])
     async def bag_slash_command(self, interaction:Interaction):
-        '''/bag slash command'''
+        """/bag slash command"""
 
     @bag_slash_command.subcommand(name="show", description="Show your bag, or from another player")
     async def show(
@@ -20,7 +20,7 @@ class Bag(commands.Cog):
         interaction:Interaction,
         user:nextcord.Member=SlashOption(description="user", required=False)
         ):
-        '''/bag show'''
+        """/bag show"""
         await interaction.response.defer()
         if user is None:
             user = interaction.user
@@ -43,7 +43,7 @@ class Bag(commands.Cog):
         interaction:Interaction,
         bag_url=SlashOption(description="discgolfbagbuilder.com url", required=True)
         ):
-        '''/bag add url'''
+        """/bag add url"""
         user = interaction.user
         cfg = BagConfig(interaction.guild.name)
         modified = cfg.add_bag(user.id, bag_url)
@@ -53,7 +53,7 @@ class Bag(commands.Cog):
             await interaction.response.send_message(f'Added your bag {user.mention}')
 
     def scrape_bag(self, guild_name, user):
-        '''Scrape user bag from discgolfbagbuilder.com'''
+        """Scrape user bag from discgolfbagbuilder.com"""
         cfg = BagConfig(guild_name)
         bag = cfg.get_bag(user)
         if bag is not None:
@@ -63,7 +63,7 @@ class Bag(commands.Cog):
         return None
 
     def get_embed(self, bag_scraper):
-        '''Get bag embed'''
+        """Get bag embed"""
         embed = nextcord.Embed(title=bag_scraper.bag_name, description=bag_scraper.bag_description, url=bag_scraper.scrape_url, color=0x004899)
         embed.set_image(url="attachment://flight.png")
 

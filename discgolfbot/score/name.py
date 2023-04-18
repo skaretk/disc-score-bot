@@ -24,11 +24,11 @@ class Name:
 
     @staticmethod
     def from_json(json_object):
-        '''Returns Name object from json object'''
+        """Returns Name object from json object"""
         return Name(json_object['name'], json_object['alias'])
 
     def add_alias(self, alias):
-        '''Add new alias'''
+        """Add new alias"""
         self.alias.append(alias)
 
     def has_alias(self, name):

@@ -5,17 +5,20 @@ import nextcord
 from apis.discgolfmetrixapi import metrix_favicon
 
 class DiscgolfmetrixCourseSource(Enum):
+    """Discgolfmetric course source"""
     ID = 1
     LIST = 2
 
 class DiscgolfmetrixCourse:
-    def __init__(self, json, type: DiscgolfmetrixCourseSource):
-        self.type = type
-        self.course_json = json.get("course") if type == type.ID else json
-        self.baskets_json = json.get("baskets") if type == type.ID else None
+    """Discgolfmetrix Course"""
+    def __init__(self, json, course_source:DiscgolfmetrixCourseSource):
+        self.type = course_source
+        self.course_json = json.get("course") if course_source == course_source.ID else json
+        self.baskets_json = json.get("baskets") if course_source == course_source.ID else None
         self.course_url = f'https://discgolfmetrix.com/course/{self.course_id}'
 
     def calculate_rating(self, result = None):
+        """Calculate and return course rating"""
         # rating values is only returned if searched by ID
         if self.type == DiscgolfmetrixCourseSource.LIST:
             return None
@@ -40,6 +43,7 @@ class DiscgolfmetrixCourse:
 
     @property
     def par(self):
+        """Course par"""
         if self.baskets_json is not None:
             par = 0
             for hole in self.baskets_json:
@@ -49,6 +53,7 @@ class DiscgolfmetrixCourse:
 
     @property
     def total_length(self):
+        """Course total length"""
         if self.baskets_json is not None:
             length = 0
             for hole in self.baskets_json:
@@ -59,21 +64,25 @@ class DiscgolfmetrixCourse:
 
     @property
     def no_of_baskets(self):
+        """Number of baskets on the course"""
         if self.baskets_json is not None:
-           return len(self.baskets_json)
+            return len(self.baskets_json)
         return None
 
     @property
     def course_name(self):
+        """Course name"""
         if self.course_json is not None:
             return self.course_json.get("Fullname")
         return None
 
     @property
     def course_id(self):
+        """Course id"""
         return self.course_json.get("ID")
 
     def get_embed(self):
+        """Returns embed for discord"""
         description_text = ""
         try:
             description_text = f'Baskets: {self.no_of_baskets or "Unknown"} Par: {self.par or "0"} Length: {self.total_length or "0"}m PAR Rating: {self.calculate_rating() or "0"}'

@@ -42,7 +42,7 @@ def test_alias_config_get_user_alias():
     assert udisc_name_2.has_alias("alias3") is False
 
 def test_alias_config_add_modify_remove_user():
-    '''Test to add, modify and remove player aliases'''
+    """Test to add, modify and remove player aliases"""
     cfg = score.AliasConfig("server_example")
     assert cfg.get_user_alias("test user") is None
     assert cfg.add_user_alias("test user", "test user alias") is True
@@ -58,7 +58,7 @@ def test_alias_config_add_modify_remove_user():
     assert cfg.get_user_alias("test user") is None
 
 def test_alias_config_json_dump_player_name():
-    '''Test to add, modify and remove player aliases'''
+    """Test to add, modify and remove player aliases"""
     cfg = score.AliasConfig("server_example")
     file_json_object = cfg.read()
     assert file_json_object is not None

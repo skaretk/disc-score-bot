@@ -7,7 +7,7 @@ from score.alias import Alias
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 
 def test_alias_list():
-    '''Test alias list'''
+    """Test alias list"""
     wrong_server_alias = score.Alias("wrong_server")
     assert wrong_server_alias.server == "wrong_server"
     assert len(wrong_server_alias.alias_list) == 0
@@ -16,7 +16,7 @@ def test_alias_list():
     assert len(server_example_alias.alias_list) != 0
 
 def test_alias_get_player_with_alias():
-    '''Test get_player_with_alias'''
+    """Test get_player_with_alias"""
     server_example_alias = score.Alias("server_example")
     assert server_example_alias.get_player_with_alias("uDisc name") is not None
     assert server_example_alias.get_player_with_alias("uDisc league or tournament name") is not None

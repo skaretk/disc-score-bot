@@ -24,7 +24,7 @@ def test_discgolfmetrix_config_get_player_code():
     assert cfg.get_code(1) == "metrix_code"
 
 def test_discgolfmetrix_config_add_modify_remove_player():
-    '''Test to add, modify and remove a player'''
+    """Test to add, modify and remove a player"""
     cfg = discgolfmetrix.DiscgolfmetrixConfig("server_example")
     assert cfg.get_code(2) is None
     assert cfg.remove_code(2) is False
@@ -36,7 +36,7 @@ def test_discgolfmetrix_config_add_modify_remove_player():
     assert cfg.get_code(2) is None
 
 def test_discgolfmetrix_config_create():
-    '''Test to add a new server, add a user'''
+    """Test to add a new server, add a user"""
     cfg = discgolfmetrix.DiscgolfmetrixConfig("new_server")
     assert cfg.get_code(2) is None
     assert cfg.remove_code(2) is False

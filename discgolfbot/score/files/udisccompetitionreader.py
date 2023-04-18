@@ -1,9 +1,7 @@
 import csv
 import datetime
-
 import dateutil.parser as dparser
 from score.player import Player
-from score.name import Name
 from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]

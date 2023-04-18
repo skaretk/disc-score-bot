@@ -27,7 +27,7 @@ def test_bag_config_get_player():
     assert cfg.get_bag(1) == "https://www.discgolfbagbuilder.com/bags/testbag"
 
 def test_bag_config_add_modify_remove_player():
-    '''Test to add, modify and remove a player'''
+    """Test to add, modify and remove a player"""
     cfg = bag.BagConfig("server_example")
     assert cfg.get_bag(2) is None
     assert cfg.remove_bag(2) is False
@@ -39,7 +39,7 @@ def test_bag_config_add_modify_remove_player():
     assert cfg.get_bag(2) is None
 
 def test_bag_config_create():
-    '''Test to add, modify and remove a player'''
+    """Test to add, modify and remove a player"""
     cfg = bag.BagConfig("new_server")
     assert cfg.get_bag(2) is None
     assert cfg.remove_bag(2) is False

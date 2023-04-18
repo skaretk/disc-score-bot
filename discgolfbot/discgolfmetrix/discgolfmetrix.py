@@ -13,13 +13,13 @@ from .discgolfmetrixcourse import DiscgolfmetrixCourse, DiscgolfmetrixCourseSour
 from .discgolfmetrixcourses import DiscgolfmetrixCourses
 
 class DiscgolfMetrix(commands.Cog):
-    '''Discgolfmetrix Cog'''
+    """Discgolfmetrix Cog"""
     def __init__(self, bot):
         self.bot = bot
 
     @nextcord.slash_command(name="discgolfmetrix", description="Discgolfmetrix commands", guild_ids=[])
     async def discgolfmetrix_slash_command(self):
-        '''/discgolfmetrix'''
+        """/discgolfmetrix"""
 
     @discgolfmetrix_slash_command.subcommand(name="add_player_code", description="Add your discgolfmetrix player code")
     async def add_player_code(
@@ -27,7 +27,7 @@ class DiscgolfMetrix(commands.Cog):
         interaction:Interaction,
         player_code:str = SlashOption(name="code", description="Player code from discgolfmetrix", required=True)
     ):
-        '''/discgolfmetrix add_player_code'''
+        """/discgolfmetrix add_player_code"""
         user = interaction.user
         cfg = DiscgolfmetrixConfig(interaction.guild.name)
         modified = cfg.add_code(user.id, player_code)
@@ -42,7 +42,7 @@ class DiscgolfMetrix(commands.Cog):
         interaction:Interaction,
         user: Optional[nextcord.Member] = SlashOption(name="player", description="Player name", required=False)
     ):
-        '''/discgolfmetrix competitions'''
+        """/discgolfmetrix competitions"""
         await interaction.response.defer()
 
         start_time = time.time()
@@ -86,7 +86,7 @@ class DiscgolfMetrix(commands.Cog):
         interaction:Interaction,
         course_id: str = SlashOption(name="course", description="Course ID from discgolfmetrix", required=True)
     ):
-        '''/discgolfmetrix search_course_id'''
+        """/discgolfmetrix search_course_id"""
         api = DiscgolfMetrixApi()
         user = interaction.user
         cfg = DiscgolfmetrixConfig(interaction.guild.name)
@@ -108,7 +108,7 @@ class DiscgolfMetrix(commands.Cog):
         interaction:Interaction,
         course_name:str = SlashOption(name="course", description="Course name", required=True)
     ):
-        '''/discgolfmetrix search_course_name'''
+        """/discgolfmetrix search_course_name"""
         api = DiscgolfMetrixApi()
         json = api.courses_list("NO", course_name)
         if json is not None:

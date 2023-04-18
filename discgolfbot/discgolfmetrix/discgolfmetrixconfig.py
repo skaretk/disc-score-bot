@@ -1,12 +1,12 @@
 from config import Config
 
 class DiscgolfmetrixConfig(Config):
-    '''Discgolfmetrix Configuration'''
+    """Discgolfmetrix Configuration"""
     def __init__(self, server):
         super().__init__(server, "discgolfmetrix.json")
 
     def get_code(self, user:int):
-        '''Get the users discgolfmetrix code'''
+        """Get the users discgolfmetrix code"""
         if self.config_exists() is False:
             print(f'No Discgolfmetrix codes stored for {self.server}')
             return None
@@ -19,7 +19,7 @@ class DiscgolfmetrixConfig(Config):
         return None
 
     def add_code(self, user:int, code):
-        '''Add the users discgolfmetrix code, return True if added, False if modified'''
+        """Add the users discgolfmetrix code, return True if added, False if modified"""
         json_object = self.read()
 
         modified = False
@@ -38,7 +38,7 @@ class DiscgolfmetrixConfig(Config):
         return modified
 
     def remove_code(self, user:int):
-        '''Remove the users discgolfmetrix code. Return True if removed, False othervise'''
+        """Remove the users discgolfmetrix code. Return True if removed, False othervise"""
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return False

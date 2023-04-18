@@ -3,12 +3,12 @@ from score.name import Name
 from config import Config
 
 class AliasConfig(Config):
-    '''Alias Config'''
+    """Alias Config"""
     def __init__(self, server):
         super().__init__(server, "alias.json")
 
     def get_user_alias(self, user_name):
-        '''Return the json object from the alias list, or None if player has no aliases stored'''
+        """Return the json object from the alias list, or None if player has no aliases stored"""
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return None
@@ -25,7 +25,7 @@ class AliasConfig(Config):
         return None
 
     def add_user_alias(self, user_name, user_alias):
-        '''Add a new user alias to json. Return True if added or modifed, False otherwise'''
+        """Add a new user alias to json. Return True if added or modifed, False otherwise"""
         json_object = self.read()
 
         alias_added = False
@@ -47,7 +47,7 @@ class AliasConfig(Config):
         return self.write(json_object)
 
     def remove_user(self, user_name):
-        '''Remove the user from the alias list. Return True if removed, False othervise'''
+        """Remove the user from the alias list. Return True if removed, False othervise"""
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return False
@@ -68,4 +68,4 @@ class AliasConfig(Config):
         return True
 
     def remove_user_alias(self, player_name, alias):
-        '''Remove the player alias. Return True if removed, False othervise'''
+        """Remove the player alias. Return True if removed, False othervise"""

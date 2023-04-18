@@ -5,7 +5,7 @@ from .scraper import Scraper
 
 # DiscgolfBagBuilder does not contain disc manufacturer
 class DiscgolfBagBuilder(Scraper):
-    '''Discgolfbagbuilder Scraper, scrapes bag'''
+    """Discgolfbagbuilder Scraper, scrapes bag"""
     def __init__(self, url):
         super().__init__()
         self.name = 'discgolfbagbuilder.com'
@@ -21,7 +21,7 @@ class DiscgolfBagBuilder(Scraper):
         self.putt_approach = None
 
     def scrape_discs(self):
-        '''Scrape discs from the bag'''
+        """Scrape discs from the bag"""
         start_time = time.time()
         soup, driver = self.selenium_get_beatifulsoup_and_chromedriver()
         # add cookie in order to get meters instead of feet

@@ -1,12 +1,12 @@
 from config import Config
 
 class BagConfig(Config):
-    '''Bag Config'''
+    """Bag Config"""
     def __init__(self, server):
         super().__init__(server, "bag.json")
 
     def get_bag(self, user:int):
-        '''Return the users bag url'''
+        """Return the users bag url"""
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return None
@@ -19,7 +19,7 @@ class BagConfig(Config):
         return None
 
     def add_bag(self, user:int, url):
-        '''Add the users bag. Return True if url is modifed, False otherwise'''
+        """Add the users bag. Return True if url is modifed, False otherwise"""
         json = self.read()
 
         modified = False
@@ -38,7 +38,7 @@ class BagConfig(Config):
         return modified
 
     def remove_bag(self, user:int):
-        '''Remove the users bag. Return True if removed, False othervise'''
+        """Remove the users bag. Return True if removed, False othervise"""
         if self.config_exists() is False:
             print(f'No Config stored for {self.server}')
             return False

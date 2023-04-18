@@ -1,8 +1,6 @@
 import csv
 import datetime
-
 from score.player import Player
-from score.name import Name
 from score.scorecard_udisc import ScorecardUdisc
 
 udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "Date", "Total", "+/-", "Hole"]
