@@ -23,7 +23,8 @@ class Player:
         return self.name == other.name
 
     def __add__(self, other):
-        player = Player(Name(self.name.name, self.name.alias), self.total + other.total, self._score + other._score)
+        player = Player(self.name.name, self.total + other.total, self._score + other._score)
+        player.name.alias = self.name.alias
         player.score_cards = self.score_cards + 1
         player.score_cards_position = self.score_cards_position + other.score_cards_position
         player.player_stats = self.player_stats + other.player_stats
