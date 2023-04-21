@@ -1,6 +1,7 @@
 import datetime
 
-class MetrixCompetition:
+class DiscgolfmetrixCompetition:
+    """Discgolfmetrix Competition"""
     def __init__(self, json):
         self.json = json
         self.competition_url = f'https://discgolfmetrix.com/{self.get_id()}'
@@ -9,26 +10,22 @@ class MetrixCompetition:
         self.datetime = self.get_datetime()
 
     def __eq__(self, other):
-        if self.datetime == other.datetime:
-            return True
+        return self.datetime == other.datetime
 
     def __lt__(self, other):
-        if self.datetime < other.datetime:
-            return True
+        return self.datetime < other.datetime
 
     def __le__(self, other):
-        if self.datetime <= other.datetime:
-            return True
+        return self.datetime <= other.datetime
 
     def __gt__(self, other):
-        if self.datetime < other.datetime:
-            return True
+        return self.datetime < other.datetime
 
     def __ge__(self, other):
-        if self.datetime >= other.datetime:
-            return True
+        return self.datetime >= other.datetime
 
     def get_name(self):
+        """Discgolfmetrix competition name"""
         if self.json is not None:
             competition = self.json.get("Competition")
             name = competition.get("Name")
@@ -38,6 +35,7 @@ class MetrixCompetition:
         return None
 
     def get_id(self):
+        """Discgolfmetrix competition ID"""
         if self.json is not None:
             competition = self.json.get("Competition")
             name = competition.get("ID")
@@ -46,14 +44,17 @@ class MetrixCompetition:
             return name
         return None
 
-    # "Date":"2017-06-02"
-    # "Time":"09:34:00"
     def get_datetime(self):
+        """Return datetime for competition
+        "Date":"2017-06-02"
+        "Time":"09:34:00"
+        """
         competition = self.json.get("Competition")
         date_time = datetime.datetime.strptime(f'{competition.get("Date")} {competition.get("Time")}','%Y-%m-%d %H:%M:%S')
         return date_time
 
     def is_valid(self):
+        """Is the competition valid"""
         if self.error is None and self.name is not None:
             return True
         return False

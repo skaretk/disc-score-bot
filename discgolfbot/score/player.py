@@ -1,45 +1,10 @@
 from .statistics import Statistics
-
-class PlayerName:
-    """Player Name class, contain players name and aliases"""
-    def __init__(self, name, alias=None):
-        self.name = name
-        self.alias = alias
-
-    def __str__(self):
-        return self.name
-
-    def __len__(self):
-        return len(self.name)
-
-    def __eq__(self, other):
-        if self.name.lower().replace(" ", "") == other.name.lower().replace(" ", ""):
-            return True
-        if self.alias is not None:
-            if self.has_alias(other.name):
-                return True
-        elif other.alias is not None:
-            if other.has_alias(self.name):
-                return True
-        return False
-
-    def has_alias(self, name):
-        """Check if the players has any aliases"""
-        search_name = name.lower().replace(" ", "")
-        if self.alias is not None:
-            if isinstance(self.alias, list):
-                if search_name in [alias.lower().replace(" ", "") for alias in self.alias]:
-                    return True
-            else: # Not a list
-                if search_name == self.alias.lower().replace(" ", ""):
-                    return True
-
-        return False
+from .name import Name
 
 class Player:
     """Player Class"""
-    def __init__(self, player_name, total, score):
-        self.player_name = player_name
+    def __init__(self, name, total, score):
+        self.name = Name(name)
         self.total = int(total)
         self._score = int(score)
         self.holes = []
@@ -52,16 +17,14 @@ class Player:
         self.player_stats = Statistics()
 
     def __str__(self):
-        return f'{self.player_name} {self.get_score()}'
+        return f'{self.name} {self.get_score()}'
 
     def __eq__(self, other):
-        if self.player_name == other.player_name:
-            return True
-        else:
-            return False
+        return self.name == other.name
 
     def __add__(self, other):
-        player = Player(PlayerName(self.player_name.name, self.player_name.alias), self.total + other.total, self._score + other._score)
+        player = Player(self.name.name, self.total + other.total, self._score + other._score)
+        player.name.alias = self.name.alias
         player.score_cards = self.score_cards + 1
         player.score_cards_position = self.score_cards_position + other.score_cards_position
         player.player_stats = self.player_stats + other.player_stats
@@ -108,7 +71,7 @@ class Player:
 
     def get_first_name(self):
         """Get the players first name"""
-        return self.player_name.name.split(' ', 1)[0]
+        return self.name.name.split(' ', 1)[0]
 
     def calculate_attendence(self, no_scorecards):
         """Calculate the attendence over the players scorecards"""

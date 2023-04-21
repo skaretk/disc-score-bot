@@ -5,6 +5,8 @@ print(sys.path)
 
 import apis
 import bag
+import config
+import discgolfmetrix
 import discs
 import discord_utils
 import score

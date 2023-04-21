@@ -1,6 +1,6 @@
 import openpyxl
 import os
-from score.player import PlayerName
+from score.name import Name
 
 class ExcelFile:
     def __init__(self):
@@ -19,7 +19,7 @@ class Members:
         self.is_member = 'Betalt'
         self.member_list = []
         self.excel_file = ExcelFile()
-    
+
     def parse(self):
         wb = openpyxl.load_workbook(filename=f'{self.path}/{self.file}', read_only=True)
         sheet = wb.active
@@ -33,7 +33,7 @@ class Members:
                 self.excel_file.surname_column = cell.column
             elif (cell.value == self.excel_file.contingent):
                 self.excel_file.contingent_column = cell.column
-        
+
         # Fetch all members
         for row in sheet.iter_rows(min_row=2, max_col=sheet.max_column, max_row=sheet.max_row):
             first_name = ''
@@ -49,5 +49,5 @@ class Members:
                         member = True
             # Paid ?
             if (member == True):
-                self.member_list.append(PlayerName(f'{first_name} {surname}'))
+                self.member_list.append(Name(f'{first_name} {surname}'))
         wb.close()

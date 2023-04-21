@@ -1,7 +1,6 @@
 import csv
 import datetime
-
-from score.player import Player, PlayerName
+from score.player import Player
 from score.scorecard_udisc import ScorecardUdisc
 
 udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "Date", "Total", "+/-", "Hole"]
@@ -29,7 +28,7 @@ class UdiscScoreCardReader:
                         else:
                             break
                 else:
-                    player = Player(PlayerName(row['PlayerName']), int(row['Total']), int(row['+/-']))
+                    player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
                     for i in range(0, len(scorecard.holes)):
                         score = int(row[f'Hole{i+1}'])
                         player.add_hole(score)

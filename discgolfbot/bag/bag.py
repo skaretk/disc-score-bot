@@ -3,29 +3,29 @@ from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 from discord_utils.embed_validation import validate_embed
 from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
-from .bags import Bags
+from .bagconfig import BagConfig
 
 class Bag(commands.Cog):
-    '''Bag Class Cog'''
+    """Bag Class Cog"""
     def __init__(self, bot):
         self.bot = bot
 
     @nextcord.slash_command(name="bag", description="Get bag from discgolfbagbuilder", guild_ids=[])
     async def bag_slash_command(self, interaction:Interaction):
-        '''/bag slash command'''
+        """/bag slash command"""
 
     @bag_slash_command.subcommand(name="show", description="Show your bag, or from another player")
-    async def bag_show_slash_command(
+    async def show(
         self,
         interaction:Interaction,
         user:nextcord.Member=SlashOption(description="user", required=False)
         ):
-        '''/bag show'''
+        """/bag show"""
         await interaction.response.defer()
         if user is None:
             user = interaction.user
 
-        bag_scraper = self.scrape_bag(interaction.guild.name, user.display_name)
+        bag_scraper = self.scrape_bag(interaction.guild.name, user.id)
         if bag_scraper is not None:
             embed = self.get_embed(bag_scraper)
             if embed is not None:
@@ -38,24 +38,24 @@ class Bag(commands.Cog):
             await interaction.followup.send(f'Could not find any bag for player {user.display_name}')
 
     @bag_slash_command.subcommand(name="add", description="Add or modify your bag from discgolfbagbuilder.com")
-    async def bag_link_slash_command(
+    async def add(
         self,
-        interaction: Interaction,
+        interaction:Interaction,
         bag_url=SlashOption(description="discgolfbagbuilder.com url", required=True)
         ):
-        '''/bag add url'''
+        """/bag add url"""
         user = interaction.user
-        bags = Bags(interaction.guild.name, user.display_name)
-        modified = bags.add_player_bag(bag_url)
+        cfg = BagConfig(interaction.guild.name)
+        modified = cfg.add_bag(user.id, bag_url)
         if modified:
             await interaction.response.send_message(f'Modified your bag {user.mention}')
         else:
             await interaction.response.send_message(f'Added your bag {user.mention}')
 
     def scrape_bag(self, guild_name, user):
-        '''Scrape user bag from discgolfbagbuilder.com'''
-        bags = Bags(guild_name, user)
-        bag = bags.get_player_bag()
+        """Scrape user bag from discgolfbagbuilder.com"""
+        cfg = BagConfig(guild_name)
+        bag = cfg.get_bag(user)
         if bag is not None:
             bag_scraper = DiscgolfBagBuilder(bag)
             bag_scraper.scrape_discs()
@@ -63,7 +63,7 @@ class Bag(commands.Cog):
         return None
 
     def get_embed(self, bag_scraper):
-        '''Get bag embed'''
+        """Get bag embed"""
         embed = nextcord.Embed(title=bag_scraper.bag_name, description=bag_scraper.bag_description, url=bag_scraper.scrape_url, color=0x004899)
         embed.set_image(url="attachment://flight.png")
 
