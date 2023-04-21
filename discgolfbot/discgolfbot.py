@@ -14,6 +14,7 @@ from emoji import Emojis
 from discs import Discs, PdgaApprovedDiscs
 from bag import Bag
 from discgolfmetrix import DiscgolfMetrix
+from pdga.pdga_cog import PdgaPlayerStat
 
 # discord client
 def main():
@@ -24,6 +25,7 @@ def main():
     intents = nextcord.Intents.default()
     intents.typing = False
     intents.message_content = True
+    intents.members = True # find user by nick/displayname to retrieve discord user-id (pdga cog)
 
     bot = commands.Bot(command_prefix='%', intents=intents)
 
@@ -43,8 +45,11 @@ def main():
     bot.add_cog(Bag(bot))
     bot.add_cog(PdgaApprovedDiscs(bot))
     bot.add_cog(DiscgolfMetrix(bot))
-
-    bot.run(token)
+    bot.add_cog(PdgaPlayerStat(bot))
+    try:
+        bot.run(token)
+    except KeyboardInterrupt: # safe shutdown for sigint. /eva
+        bot.close()
 
 if __name__ == '__main__':
     main()
