@@ -1,6 +1,7 @@
 import csv
 import datetime
 from enum import Enum
+from pathlib import Path
 
 from .udiscscorecardreader import UdiscScoreCardReader, udisc_scorecard_header
 from .udisccompetitionreader import UdiscCompetitionReader, udisc_competition_header
@@ -13,14 +14,13 @@ class UdiscCsvTypes(Enum):
 
 class UdiscCsvReader:
     """uDisc csv reader, can identify and read the correct type of csv files"""
-    def __init__(self, path="", file=""):
-        self.path = path
+    def __init__(self, file:Path):
         self.file = file
         self.type = self.identify_csv()
 
     def identify_csv(self):
         """Identify the given csv input. Possible options is given in UdiscCsvTypes"""
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(self.file, encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             if udisc_scorecard_header[1] in reader.fieldnames and udisc_scorecard_header[2] in reader.fieldnames:
                 return UdiscCsvTypes.SCORECARD
@@ -31,29 +31,29 @@ class UdiscCsvReader:
     def parse(self):
         """Parse the given Scorecard, and return the correct Scorecard"""
         if self.type == UdiscCsvTypes.SCORECARD:
-            reader = UdiscScoreCardReader(self.path, self.file)
+            reader = UdiscScoreCardReader(self.file)
             return reader.parse()
         if self.type == UdiscCsvTypes.COMPETITION:
-            reader = UdiscCompetitionReader(self.path, self.file)
+            reader = UdiscCompetitionReader(self.file)
             return reader.parse()
         return None
 
     def contain_course(self, course):
         """Parse the given dates, and return the Scorecard if it is a match"""
         if self.type == UdiscCsvTypes.SCORECARD:
-            reader = UdiscScoreCardReader(self.path, self.file)
+            reader = UdiscScoreCardReader(self.file)
             return reader.contain_course(course)
         if self.type == UdiscCsvTypes.COMPETITION:
-            reader = UdiscCompetitionReader(self.path, self.file)
+            reader = UdiscCompetitionReader(self.file)
             return reader.contain_course(course)
         return None
 
     def contain_dates(self, date:datetime, date_to:datetime):
         """Parse the given dates, and return the Scorecard if it is a match"""
         if self.type == UdiscCsvTypes.SCORECARD:
-            reader = UdiscScoreCardReader(self.path, self.file)
+            reader = UdiscScoreCardReader(self.file)
             return reader.contain_dates(date, date_to)
         if self.type == UdiscCsvTypes.COMPETITION:
-            reader = UdiscCompetitionReader(self.path, self.file)
+            reader = UdiscCompetitionReader(self.file)
             return reader.contain_dates(date, date_to)
         return None

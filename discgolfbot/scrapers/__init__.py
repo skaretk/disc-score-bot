@@ -9,6 +9,7 @@ from . import discmania
 from . import discrepublic
 from . import discsport
 from . import frisbeefeber
+from . import fyndisc
 from . import gurudiscgolf
 from . import kastmeg
 from . import krokholdgs

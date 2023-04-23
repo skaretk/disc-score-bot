@@ -1,6 +1,7 @@
 import csv
 import datetime
 import dateutil.parser as dparser
+from pathlib import Path
 from score.player import Player
 from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 
@@ -8,8 +9,7 @@ udisc_competition_header = ["division", "position", "name", "relative_score", "t
 
 class UdiscCompetitionReader:
     """uDisc Competition / League Reader"""
-    def __init__(self, path, file):
-        self.path = path
+    def __init__(self, file:Path):
         self.file = file
 
     def parse(self):
@@ -17,8 +17,8 @@ class UdiscCompetitionReader:
         date = self.get_date()
         scorecard = ScorecardUdiscCompetition()
         scorecard.date_time = date.strftime("%Y-%m-%d %H:%M")
-        scorecard.name = self.file.split('_')[0]
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
+        scorecard.name = self.file.name.split('_')[0]
+        with open(self.file, encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
 
             hole_no = 1
@@ -43,7 +43,7 @@ class UdiscCompetitionReader:
     def get_date(self):
         """Fetch date from the filename"""
         try:
-            date = dparser.parse(self.file, fuzzy=True)
+            date = dparser.parse(self.file.name, fuzzy=True)
         except dparser.ParserError:
             date = datetime.date.today()
         return date

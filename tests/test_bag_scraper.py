@@ -1,11 +1,12 @@
-import os
 import sys
+from pathlib import Path
 from context import scrapers
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
+from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
+sys.path.insert(0, str(Path().cwd()))
 
 def test_discgolfbagbuilder_bag_scraper():
     search = "https://www.discgolfbagbuilder.com/bags/oyv10ykqvre0jibt"
-    scraper = scrapers.discgolfbagbuilder.DiscgolfBagBuilder(search)
+    scraper = DiscgolfBagBuilder(search)
     assert scraper.distance_drivers is None
     assert scraper.fairway_drivers is None
     assert scraper.midranges is None

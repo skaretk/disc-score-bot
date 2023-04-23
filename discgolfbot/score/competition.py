@@ -1,7 +1,10 @@
+from datetime import datetime
 import nextcord
+from pathlib import Path
 from discord_utils.embed_validation import validate_embed
 from .statistics import Statistics
 from .alias import Alias
+from .files.udisccsvreader import UdiscCsvReader
 
 class Competition:
     """Competition Class - Collection of scorecards"""
@@ -148,3 +151,57 @@ class Competition:
         file_to_write = open(file, "a", encoding="utf-8")
         file_to_write.write(txt)
         file_to_write.close()
+
+    @staticmethod
+    def parse(path:Path, alias:Alias):
+        """Get all scorecards"""
+        competition = Competition()
+        for file in list(path.iterdir()):
+            if file.suffix == ".csv":
+                reader = UdiscCsvReader(file)
+                scorecard = reader.parse()
+
+                # Add aliases
+                for player in scorecard.players:
+                    competition.add_player_alias(player, alias)
+
+                competition.add_scorecard(scorecard)
+
+        return competition
+
+    @staticmethod
+    def parse_course(path:Path, alias:Alias, course):
+        """Get all scorecards for a course"""
+        competition = Competition()
+        for file in list(path.iterdir()):
+            if file.suffix == ".csv":
+                reader = UdiscCsvReader(file)
+                scorecard = reader.contain_course(course)
+
+                if scorecard is not None and scorecard.course.name is not None:
+                    if course.lower() in scorecard.course.name.lower():
+                        # Add aliases
+                        for player in scorecard.players:
+                            competition.add_player_alias(player, alias)
+
+                        competition.add_scorecard(scorecard)
+
+        return competition
+
+    @staticmethod
+    def parse_dates(path:Path, alias:Alias, date:datetime, date_to:datetime):
+        """Get all scorecards within date(s)"""
+        competition = Competition()
+        for file in list(path.iterdir()):
+            if file.suffix == ".csv":
+                reader = UdiscCsvReader(file)
+                scorecard = reader.contain_dates(date, date_to)
+
+                if scorecard is not None:
+                    # Add aliases
+                    for player in scorecard.players:
+                        competition.add_player_alias(player, alias)
+
+                    competition.add_scorecard(scorecard)
+
+        return competition

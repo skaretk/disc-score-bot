@@ -1,5 +1,6 @@
 import csv
 import datetime
+from pathlib import Path
 from score.player import Player
 from score.scorecard_udisc import ScorecardUdisc
 
@@ -7,13 +8,12 @@ udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "Date", "Tot
 
 class UdiscScoreCardReader:
     """uDisc Scorecard reader for uDisc .csv files"""
-    def __init__(self, path="", file=""):
-        self.path = path
+    def __init__(self, file:Path):
         self.file = file
 
     def parse(self):
         """Parse and return the Udisc Scorecard"""
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(self.file, encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
@@ -39,7 +39,7 @@ class UdiscScoreCardReader:
 
     def contain_course(self, course):
         """Check if the scorecard is course"""
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(self.file, encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
@@ -54,7 +54,7 @@ class UdiscScoreCardReader:
 
     def contain_dates(self, date:datetime, date_to:datetime):
         """Check if the given scorecard is within the dates"""
-        with open(f'{self.path}/{self.file}', encoding='UTF-8', newline='') as csv_file:
+        with open(self.file, encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:

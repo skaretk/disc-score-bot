@@ -1,4 +1,3 @@
-import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -15,6 +14,17 @@ from .files.scorecardwriter import ScorecardWriter
 from .alias import Alias
 from .competition import Competition
 
+# Application checks
+def has_scorecards():
+    """Does the channel contain any scorecards"""
+    async def predicate(interaction:Interaction):
+        folder = Path.cwd() / "cfg" / interaction.guild.name / interaction.channel.name
+        if utilities.is_path_empty(folder):
+            await interaction.send("No scorecards found")
+            return False
+        return True
+    return application_checks.check(predicate)
+
 class Scores(commands.Cog):
     """Scores Class, Fetches scorecards locally or over web"""
     def __init__(self, bot):
@@ -29,72 +39,41 @@ class Scores(commands.Cog):
 
         print(f'Spent {round(time.time() - start_time, 2)} scraping')
 
-    def get_competition(self, path, alias:Alias) -> Competition:
-        """Get all scorecards"""
-        competition = Competition()
-        for file in os.listdir(path):
-            if file.endswith(".csv"):
-                reader = UdiscCsvReader(path, file)
-                scorecard = reader.parse()
+    def folder_path(self, interaction:Interaction):
+        """Returns the folder to the guild and channel"""
+        return Path.cwd() / "cfg" / interaction.guild.name / interaction.channel.name
 
-                # Add aliases
-                for player in scorecard.players:
-                    competition.add_player_alias(player, alias)
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        """Listenes for attachement in a discord channel, stores it and displays the scorecard"""
+        if message.attachments:
+            for attachment in message.attachments:
+                if 'text/csv' in attachment.content_type:
+                    folder = Path.cwd() / "cfg" / message.guild.name / message.channel.name
+                    if not folder.exists():
+                        folder.mkdir()
+                    file = folder / attachment.filename
+                    await attachment.save(fp=file) # saves the file in a guild/channel folder
+                    print(f'csv attached and stored in {file}!')
 
-                competition.add_scorecard(scorecard)
+                    reader = UdiscCsvReader(file)
+                    scorecard = reader.parse()
 
-        return competition
+                    if scorecard is None:
+                        await message.channel.send("Stored scorecard, could not parse it!")
+                    else:
+                        embed = scorecard.get_embed(message.author.avatar.url)
+                        if embed is not None:
+                            await message.channel.send(embed=embed)
+                        else:
+                            await message.channel.send("Stored scorecard, but it is to big to display!")
 
-    def get_competition_course(self, path, alias:Alias, course) -> Competition:
-        """Get all scorecards for a course"""
-        competition = Competition()
-        for file in os.listdir(path):
-            if file.endswith(".csv"):
-                reader = UdiscCsvReader(path, file)
-                scorecard = reader.contain_course(course)
-
-                if scorecard is not None and scorecard.course.name is not None:
-                    if course.lower() in scorecard.course.name.lower():
-                        # Add aliases
-                        for player in scorecard.players:
-                            competition.add_player_alias(player, alias)
-
-                        competition.add_scorecard(scorecard)
-
-        return competition
-
-    def get_competition_date(self, path, alias:Alias, date:datetime, date_to:datetime) -> Competition:
-        """Get all scorecards within date(s)"""
-        competition = Competition()
-        for file in os.listdir(path):
-            if file.endswith(".csv"):
-                reader = UdiscCsvReader(path, file)
-                scorecard = reader.contain_dates(date, date_to)
-
-                if scorecard is not None:
-                    # Add aliases
-                    for player in scorecard.players:
-                        competition.add_player_alias(player, alias)
-
-                    competition.add_scorecard(scorecard)
-
-        return competition
-
-    # Checks
-    def has_scorecards():
-        """Does the channel contain any scorecards"""
-        async def predicate(interaction:Interaction):
-            folder = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-            if utilities.is_path_empty(folder):
-                await interaction.send("No scorecards found")
-                return False
-            return True
-        return application_checks.check(predicate)
+                    await message.delete()
 
     # Slash commands
     @nextcord.slash_command(name="scores", description="Score commands", guild_ids=[])
     async def scores(self):
-        pass
+        """/scores"""
 
     @scores.subcommand(name="print", description="Print stored scores!")
     @has_scorecards()
@@ -102,9 +81,9 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
-
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = self.get_competition(path, Alias(interaction.guild.name))
+        """/scores print"""
+        folder = self.folder_path(interaction)
+        competition = Competition.parse(folder, Alias(interaction.guild.name))
 
         if competition.scorecards:
             embed = competition.get_embed(interaction.user.avatar.url)
@@ -113,7 +92,7 @@ class Scores(commands.Cog):
                 await interaction.send(embed=embed)
             else:
                 print("Embed not OK")
-                competition.save_scorecards_text(f'{path}/scores.txt')
+                competition.save_scorecards_text(folder / "scores.txt")
                 await interaction.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await interaction.send(f'WOW {interaction.user.mention}, thats a lot of scores!)')
         else:
@@ -125,21 +104,22 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
+        """/scores files"""
+        folder = self.folder_path(interaction)
         scorecards = ''
         file_count = 0
-        for file in os.listdir(path):
-            if file.endswith(".csv"):
+        for file in list(folder.iterdir()):
+            if file.suffix == ".csv":
                 file_count += 1
-                print(os.path.join(f'{path}/{file}'))
-                scorecards += f'\n{file}'
+                print(folder / file)
+                scorecards += f'\n{file.name}'
 
-        msg_to_send = f'No of files: {file_count}\n{scorecards}'
+        msg = f'No of files: {file_count}\n{scorecards}'
 
-        if len(msg_to_send) > 2000:
+        if len(msg) > 2000:
             await interaction.send(f'No of files: {file_count}')
         elif file_count:
-            await interaction.send(msg_to_send)
+            await interaction.send(msg)
         else:
             await interaction.send('No .csv files stored for this channel')
 
@@ -149,9 +129,9 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
-
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = self.get_competition(path, Alias(interaction.guild.name))
+        """/scores stats"""
+        folder = self.folder_path(interaction)
+        competition = Competition.parse(folder, Alias(interaction.guild.name))
 
         if competition.scorecards:
             embed = competition.get_stats_embed(interaction.user.avatar.url)
@@ -160,11 +140,8 @@ class Scores(commands.Cog):
             await interaction.send("No stats found")
 
     @scores.subcommand()
-    async def dates(
-        self,
-        interaction:Interaction
-    ):
-        pass
+    async def dates(self, interaction:Interaction):
+        """/scores dates"""
 
     @dates.subcommand(name='list', description='Print dates for scorecards')
     @has_scorecards()
@@ -172,11 +149,12 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
+        """/scores dates list"""
         date_list = []
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        for file in os.listdir(path):
-            if file.endswith(".csv"):
-                reader = UdiscCsvReader(path, file)
+        folder = self.folder_path(interaction)
+        for file in list(folder.iterdir()):
+            if file.suffix == ".csv":
+                reader = UdiscCsvReader(file)
                 scorecard = reader.parse()
 
                 date = scorecard.date_time.date().strftime("%d.%m.%Y")
@@ -195,11 +173,12 @@ class Scores(commands.Cog):
         arg1:str=SlashOption(name="date", description="Date / Date from", required=True),
         arg2:str=SlashOption(name="date_to", description="Date To", required=False)
     ):
+        """/scores dates search [date] [date_to]"""
         if arg1 is None and arg2 is None:
             await interaction.send("Missing date(s)")
             return
 
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
+        folder = self.folder_path(interaction)
 
         if arg1 is not None:
             try:
@@ -214,7 +193,7 @@ class Scores(commands.Cog):
                     date_to = datetime.date.today()
             else:
                 date_to = None
-            competition = self.get_competition_date(path, Alias(interaction.guild.name), date, date_to)
+            competition = Competition.parse_dates(folder, Alias(interaction.guild.name), date, date_to)
 
         if competition.scorecards:
             embed = competition.get_embed(interaction.user.avatar.url)
@@ -223,7 +202,7 @@ class Scores(commands.Cog):
                 await interaction.send(embed=embed)
             else:
                 print("Embed not OK")
-                competition.save_scorecards_text(f'{path}/scores.txt')
+                competition.save_scorecards_text(f'{folder}/scores.txt')
                 await interaction.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await interaction.send(f'WOW {interaction.user.mention}, thats a lot of scores!)')
         else:
@@ -231,7 +210,7 @@ class Scores(commands.Cog):
 
     @scores.subcommand()
     async def courses(self, interaction:Interaction):
-        pass
+        """/scores courses"""
 
     @courses.subcommand(name='print', description='Print stored courses')
     @has_scorecards()
@@ -239,11 +218,12 @@ class Scores(commands.Cog):
         self,
         interaction:Interaction
     ):
+        """/scores courses print"""
         course_list = []
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        for file in os.listdir(path):
-            if file.endswith(".csv"):
-                reader = UdiscCsvReader(path, file)
+        folder = self.folder_path(interaction)
+        for file in list(folder.iterdir()):
+            if file.suffix == ".csv":
+                reader = UdiscCsvReader(file)
                 scorecard = reader.parse()
 
                 if scorecard.course.name is not None and scorecard.course.name not in course_list:
@@ -263,9 +243,9 @@ class Scores(commands.Cog):
         interaction:Interaction,
         course:str=SlashOption(name="course", description="Course to search for", required=True)
     ):
-
-        path = Path(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}')
-        competition = self.get_competition_course(path, Alias(interaction.guild.name), course)
+        """/scores courses search [course]"""
+        folder = self.folder_path(interaction)
+        competition = Competition.parse_course(folder, Alias(interaction.guild.name), course)
         embed = competition.get_embed(interaction.user.avatar.url)
 
         if embed is not None:
@@ -279,6 +259,7 @@ class Scores(commands.Cog):
         interaction:Interaction,
         url:str=SlashOption(name="url", description="Link to parse", required=True)
     ):
+        """/udiscleague [url]"""
         if not validators.url(url) or "udisc.com" not in url.lower():
             await interaction.send("Not an valid url")
             return
@@ -292,7 +273,8 @@ class Scores(commands.Cog):
 
         date = league.scorecard.date_time.strftime('%Y-%m-%d')
         file_name = f'{league.scorecard.name.replace(" ", "-")}_{date}.csv'
-        scorecard_writer = ScorecardWriter(f'{os.getcwd()}/cfg/{interaction.guild.name}/{interaction.channel}', file_name)
+        folder = self.folder_path(interaction)
+        scorecard_writer = ScorecardWriter(folder, file_name)
         header, data = league.scorecard.get_csv()
         scorecard_writer.write(header, data)
 
