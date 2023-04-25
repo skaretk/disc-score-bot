@@ -1,5 +1,4 @@
 from collections import OrderedDict
-import os
 import json
 from pathlib import Path
 
@@ -12,16 +11,16 @@ class Config:
     @property
     def path(self):
         """Get the config path"""
-        return Path(Path.cwd()).joinpath('cfg', self.server)
+        return Path.cwd() / "cfg" / self.server
 
     @property
     def config(self):
         """Get the config file"""
-        return Path(self.path).joinpath(self.file)
+        return self.path / self.file
 
     def path_exists(self):
         """Check if the config folder exists for the server"""
-        if os.path.exists(self.path) is False:
+        if self.path.exists() is False:
             print(f'No Config folder for {self.server}')
             return False
 
@@ -29,7 +28,7 @@ class Config:
 
     def config_exists(self):
         """Check if the config file exists for the server"""
-        if os.path.isfile(self.config) is False:
+        if self.config.is_file() is False:
             print(f'No {self.file} stored for {self.server}')
             return False
 
@@ -47,7 +46,7 @@ class Config:
     def write(self, json_object):
         """Writes the Config file as a json object, returns True on success"""
         if self.path_exists() is False:
-            os.mkdir(self.path)
+            self.path.mkdir()
         try:
             with open(self.config, 'w', encoding='UTF-8', newline='') as json_file:
                 json.dump(json_object, json_file, indent=4, sort_keys=False)

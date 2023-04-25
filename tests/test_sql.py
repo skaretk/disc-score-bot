@@ -1,14 +1,15 @@
-import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
+from pathlib import Path
 from context import discs
+from discs.pdga_sql import PdgaSql
+sys.path.insert(0, str(Path().cwd()))
 
 def test_pdga_sql_get_discs():
-    pdga_sql = discs.PdgaSql()
+    pdga_sql = PdgaSql()
     results = pdga_sql.get_discs()
     assert len(results) != 0
 
 def test_pdga_sql_search_manufacturer():
-    pdga_sql = discs.PdgaSql()
+    pdga_sql = PdgaSql()
     results = pdga_sql.search_manufacturer("Innova")
     assert len(results) != 0

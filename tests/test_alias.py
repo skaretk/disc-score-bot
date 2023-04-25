@@ -1,10 +1,10 @@
 import json
-import os
 import sys
+from pathlib import Path
 from context import score
 from score.name import Name
 from score.alias import Alias
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
+sys.path.insert(0, str(Path().cwd()))
 
 def test_alias_list():
     """Test alias list"""

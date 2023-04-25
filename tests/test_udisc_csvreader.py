@@ -1,12 +1,12 @@
 import datetime
 from unittest.mock import mock_open, patch
-import os
 import sys
+from pathlib import Path
 from context import score
 from score.files.udisccsvreader import UdiscCsvReader, UdiscCsvTypes
 from score.scorecard_udisc import ScorecardUdisc
 from score.scorecard_udisc_competition import ScorecardUdiscCompetition
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
+sys.path.insert(0, str(Path().cwd()))
 
 mocked_scorecard = mock_open(read_data="""PlayerName,CourseName,LayoutName,Date,Total,+/-,Hole1,Hole2,Hole3,Hole4,Hole5,Hole6,Hole7,Hole8,Hole9,Hole10,Hole11,Hole12,Hole13,Hole14,Hole15,Hole16,Hole17,Hole18
 Par,Krokhol Disc Golf Course,Krokhol Gold Layout 2022,2022-01-01 23:59,60,,3,3,3,3,3,4,3,3,4,4,3,4,3,3,4,3,4,3
@@ -23,17 +23,17 @@ MP40,1,"Master Player 1",-3,33,,2,3,3,4,3,3,2,2,2,3,4,2""")
 
 def test_udisc_csv_reader_scorecard():
     with patch('builtins.open', mocked_scorecard):
-        reader = UdiscCsvReader("", mocked_scorecard)
+        reader = UdiscCsvReader(mocked_scorecard)
         assert reader.type == UdiscCsvTypes.SCORECARD
 
 def test_udisc_csv_reader_competition():
     with patch('builtins.open', mocked_league):
-        reader = UdiscCsvReader("", mocked_league)
+        reader = UdiscCsvReader(mocked_league)
         assert reader.type == UdiscCsvTypes.COMPETITION
 
 def test_udisc_scorecardreader():
     with patch('builtins.open', mocked_scorecard):
-        reader = UdiscCsvReader("", mocked_scorecard)
+        reader = UdiscCsvReader(mocked_scorecard)
         scorecard = reader.parse()
 
     assert isinstance(scorecard, ScorecardUdisc)
@@ -49,8 +49,8 @@ def test_udisc_scorecardreader():
 
 def test_udisc_competition_scorecardreader():
     with patch('builtins.open', mocked_league):
-        reader = UdiscCsvReader("", mocked_league)
-        reader.file = "test-competition_1999-12-31"
+        reader = UdiscCsvReader(mocked_league)
+        reader.file.name = "test-competition_1999-12-31"
         scorecard = reader.parse()
 
     assert isinstance(scorecard, ScorecardUdiscCompetition)

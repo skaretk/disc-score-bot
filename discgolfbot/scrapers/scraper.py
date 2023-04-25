@@ -1,4 +1,3 @@
-import os
 import time
 import urllib.parse
 #from concurrent.futures import ThreadPoolExecutor

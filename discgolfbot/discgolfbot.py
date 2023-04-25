@@ -3,12 +3,9 @@ from dotenv import load_dotenv, find_dotenv # Fetch python bot token
 
 # nextcord
 import nextcord
-from nextcord import Interaction
 from nextcord.ext import commands
-from nextcord.message import Attachment
 
 # cogs
-from score.files.attachment import Attachment
 from score import Scores
 from emoji import Emojis
 from discs import Discs, PdgaApprovedDiscs
@@ -36,7 +33,6 @@ def main():
     async def on_message(message):
         await bot.process_commands(message)
 
-    bot.add_cog(Attachment(bot))
     bot.add_cog(Scores(bot))
     bot.add_cog(Emojis(bot))
     bot.add_cog(Discs(bot))
