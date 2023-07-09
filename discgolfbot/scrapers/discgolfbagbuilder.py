@@ -70,11 +70,13 @@ class DiscgolfBagBuilder(Scraper):
                     disc.url = f'{self.url}{disc_url}'
 
                 # Disc flight numbers
-                flight = disc_div.find("div", {"class":"text-right"}).getText().split("/")
-                disc.speed = flight[0].strip()
-                disc.glide = flight[1].strip()
-                disc.turn = flight[2].strip()
-                disc.fade = flight[3].strip()
+                flight = disc_div.find("div", {"class":"text-right"}).text.split("/")
+                flight = list(map(str.strip, flight))
+                if len(flight) == 4: # Make sure we have all flight numbers
+                    disc.speed = flight[0]
+                    disc.glide = flight[1]
+                    disc.turn = flight[2]
+                    disc.fade = flight[3]
                 discs_list.append(disc)
 
             if category.getText() == "Distance Driver":
