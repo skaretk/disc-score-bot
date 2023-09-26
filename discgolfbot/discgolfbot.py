@@ -25,7 +25,6 @@ def main():
     intents = nextcord.Intents.default()
     intents.typing = False
     intents.message_content = True
-    intents.members = True # find user by nick/displayname to retrieve discord user-id (pdga cog)
 
     bot = commands.Bot(command_prefix='%', intents=intents)
 

@@ -2,7 +2,8 @@
 import nextcord
 from nextcord.ext import commands
 from nextcord.message import Attachment
-from nextcord import Interaction, utils, embeds, emoji, slash_command, SlashOption, SlashCommandOption
+from nextcord import Interaction, utils, embeds, emoji, slash_command, SlashOption, SlashCommandOption, Member
+
 from discord_utils.embed_validation import *
 from typing import Optional
 from .pdgaPlayer import PdgaPlayer
@@ -53,29 +54,24 @@ class PdgaPlayerStat(commands.Cog):
     async def check_pdga_number_slash_command(
         self,
         interaction: Interaction,
-        displayname: Optional[str] = SlashOption(name="displayname", description="name of discord-user to check", required=False),
+        discord_user: Optional[nextcord.Member] = SlashOption(name="user", description="name of discord-user to check", required=False),
     ):
         try:
-            user_id = interaction.user.id
-            
-            if not isinstance(displayname, str):
-                user_id = interaction.user.id
-                displayname = interaction.user.nick
-            
-            user = self.__get_user_by_nick__(interaction=interaction,nick=displayname)
-            if user:
-                user_id = user.id
-                if None == user.nick:
-                    displayname = user.name
+            if discord_user == None:
+                discord_user = interaction.user 
+
+            if discord_user:
+                if None == discord_user.nick:
+                    displayname = discord_user.name
                 else:
-                    displayname = user.nick
-            if user_id in self.relations_handler.by_discord_id:
+                    displayname = discord_user.nick
+            if discord_user.id in self.relations_handler.by_discord_id:
             
                 embed_title = f"{displayname}'s pdga-bot info"
                 embed = nextcord.Embed(title=embed_title, color=0x004899)
                 obj = self.relations_handler.pdga_players[displayname].to_dict()
                 out = f"\nDiscord user: {obj['player_name']}\nPDGA Number: {obj['pdga_number']}"
-                embed.description = out # .add_field(name=segment, value=out, inline=False)
+                embed.description = out 
 
             else:
                 embed = nextcord.Embed(title=f"Uhm.. :confused:", description=f"I don't know of a discord-user whoose name is '{displayname}'", color=0x004899)
@@ -108,19 +104,21 @@ class PdgaPlayerStat(commands.Cog):
     async def get_pdga_discord_user_slash_command(
         self,
         interaction: Interaction,
-        discord_user: Optional[str] = SlashOption(name="discorduser", description="discord user's saved number to fetch from www.pdga.com",required=False)
+        discord_user: Optional[nextcord.Member] = SlashOption(name="discorduser", description="discord user's saved number to fetch from www.pdga.com",required=False)
     ):
         try:
             # user wants to retrieve own www.pdga.com info
             if discord_user == None:
-                user = interaction.user
+                discord_user = interaction.user
+            if discord_user.nick:
+                displayname = discord_user.nick
             else:
-                user = self.__get_user_by_nick__(interaction=interaction, nick=discord_user)
-            if user and (user.id in self.relations_handler.by_discord_id):
-                pdga_player = self.relations_handler.by_discord_id[user.id]
+                displayname = discord_user.name
+            if discord_user.id in self.relations_handler.by_discord_id:
+                pdga_player = self.relations_handler.by_discord_id[discord_user.id]
                 embed = self.get_www_pdga_com_user_data(pdga_player_number=pdga_player.pdga_number)
             else:
-                embed = nextcord.Embed(title=f"Hmmmmf.. :confused:", description=f"I must have misplaced the pdga-number for {user.nick}", color=0x004899)
+                embed = nextcord.Embed(title=f"Hmmmmf.. :confused:", description=f"I must have misplaced the pdga-number for {displayname}", color=0x004899)
         except:
             embed = nextcord.Embed(title="Oh, no! This didn't go very well :flushed:", color=0x004899)
         finally:

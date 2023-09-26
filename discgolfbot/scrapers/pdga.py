@@ -79,7 +79,7 @@ class PlayerScraper(Pdga):
 
     def scrape(self):
         start_time = time.time()
-        
+        # headers
         headers = {
             "Host": "www.pdga.com",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
@@ -91,10 +91,16 @@ class PlayerScraper(Pdga):
         
         # set up soup-objects for parsing/verification
         cr_obj=soup.find_all('li', 'current-rating')
-
+        # find all upcoming events
         upcoming_events_obj = soup.find_all("li", "upcoming-events")
+        if len(upcoming_events_obj) == 0:
+            # if no upcoming events, player might have 0 or just 1 upcoming event, aka next-event
+            upcoming_events_obj = soup.find_all("li", "next-event")
+        # find the location data of the player
         loc_obj = soup.find_all('li', 'location')       
+        # find the membership status of the player
         membership_obj = soup.find_all('li', 'membership-status')
+        # find the rules official status of the player
         official_obj = soup.find_all('li', 'official')
         singles_events_obj = soup.find_all('li', 'career-events disclaimer')
         
@@ -109,14 +115,17 @@ class PlayerScraper(Pdga):
 
         # parse players upcoming event and assemble a string worthy of discord-embeds :)
         player_upcoming_events = "```yaml\n"
-        for event in upcoming_events_obj[0].find_all('a'):
-            event_and_date = event['title'].split(",  on")
-            player_upcoming_events += "\n - " + event_and_date[0].replace("-",",") .lstrip().rstrip() + " " + event_and_date[1].replace("-", " ").lstrip().rstrip() #event['title'] + " \n"
-            #player_upcoming_events += ":white_small_square: " + event['title'] + " \n"
+        if len(upcoming_events_obj) >= 1:
+            for event in upcoming_events_obj[0].find_all('a'):
+                event_and_date = event['title'].split(",  on")
+                player_upcoming_events += "\n - " + event_and_date[0].replace("-",",") .lstrip().rstrip() + " " + event_and_date[1].replace("-", " ").lstrip().rstrip() #event['title'] + " \n"
+        else:
+            player_upcoming_events += 'No upcoming events found'
         player_upcoming_events +="\n```"
+        
         # assign player data to player_data attrs 
         self.player_data.upcoming_events = player_upcoming_events
-        self.player_data.current_rating =  cr_obj[0].text.split(": ")[-1].lstrip().rstrip() #cr_obj[0].text.lstrip().rstrip()
+        self.player_data.current_rating =  cr_obj[0].text.split(": ")[-1].lstrip().rstrip() 
         self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
         self.player_data.location = loc_obj[0].a.text
         self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
