@@ -46,10 +46,8 @@ def main():
     bot.add_cog(PdgaApprovedDiscs(bot))
     bot.add_cog(DiscgolfMetrix(bot))
     bot.add_cog(PdgaPlayerStat(bot))
-    try:
-        bot.run(token)
-    except KeyboardInterrupt: # safe shutdown for sigint. /eva
-        bot.close()
+    bot.run(token)
+    
 
 if __name__ == '__main__':
     main()
