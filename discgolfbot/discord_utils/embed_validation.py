@@ -92,16 +92,18 @@ def validate_embed_field_value(fields:nextcord.Embed.fields):
 
 def validate_embed_footer(footer:nextcord.Embed.footer):
     """Validate the embed footer"""
-    if str(footer.text) != 'Embed.Empty':
-        if len(footer.text) > 2048:
-            print(f'footer.text too long: {len(footer.text)}')
-            return False
+    if footer.text is not None:
+        if str(footer.text) != 'Embed.Empty':
+            if len(footer.text) > 2048:
+                print(f'footer.text too long: {len(footer.text)}')
+                return False
     return True
 
 def validate_embed_author(author:nextcord.Embed.author):
     """Validate the embed author"""
-    if str(author.name) != 'Embed.Empty':
-        if len(author.name) > 256:
-            print(f'author.name too long: {len(author.name)}')
-            return False
+    if author.name is not None:
+        if str(author.name) != 'Embed.Empty':
+            if len(author.name) > 256:
+                print(f'author.name too long: {len(author.name)}')
+                return False
     return True
