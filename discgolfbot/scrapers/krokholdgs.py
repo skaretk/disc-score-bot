@@ -17,16 +17,16 @@ class DiscScraper(Krokholdgs):
 
     def scrape(self):
         start_time = time.time()
-        soup = self.urllib_get_beatifulsoup()
+        soup = self.selenium_get_beatifulsoup(2)
 
-        for product in soup.findAll("div", class_="product"):
-            product_meta = product.find("div", class_="product-meta")
+        for product in soup.findAll("div", {"class" : ["crall-product-item", "crall-in-stock"]}):
+            product_meta = product.find("div", class_="crall-product-name")
             a = product_meta.find('a', href=True)
             product_name = a.getText()
             if self.search.lower() not in product_name.lower():
                 continue
             url = a['href']
-            price = product.find("div", class_="price").getText().strip().replace("/n", "").replace("/t", "")
+            price = product.find("span", {"class" : "crall-price"}).getText()
             img_item = product.find("img", class_="img-fluid")
             img = img_item["src"]
 
