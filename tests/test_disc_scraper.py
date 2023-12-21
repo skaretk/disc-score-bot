@@ -76,10 +76,6 @@ def test_fyndisc_disc_scraper():
     search = "firebird"
     scrape_and_check(scrapers.fyndisc.DiscScraper(search))
 
-def test_gurudiscgolf_scraper():
-    search = "firebird"
-    scrape_and_check(scrapers.gurudiscgolf.DiscScraper(search))
-
 def test_kastmeg_scraper():
     search = "firebird"
     scrape_and_check(scrapers.kastmeg.DiscScraper(search))
@@ -103,6 +99,10 @@ def test_starframe_disc_scraper():
 def test_sunesport_disc_scraper():
     search = "firebird"
     scrape_and_check(scrapers.sunesport.DiscScraper(search))
+
+def test_wearediscgolf_scraper():
+    search = "firebird"
+    scrape_and_check(scrapers.wearediscgolf.DiscScraper(search))
 
 def test_xxl_disc_scraper():
     search = "harp"
