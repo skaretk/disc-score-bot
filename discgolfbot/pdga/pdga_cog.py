@@ -31,22 +31,22 @@ class PdgaPlayerStat(commands.Cog):
         pdga_number: int = SlashOption(name="setpdganumber", description="associate a pdga number with your discord-user", required=True),
     ):
 
-        player_obj = PdgaPlayer(pdga_number=pdga_number,player_name=interaction.user.display_name, discord_id=interaction.user.id)
-        if player_obj.pdga_number in self.relations_handler.pdga_numbers:
-            
-            if self.relations_handler.pdga_numbers[pdga_number].discord_id != interaction.user.id:
-                diff_player = self.relations_handler.pdga_numbers[pdga_number]
-                title = 'Whoopsie!'
-                msg = f"Hey, {interaction.user.mention}. Looks like this pdga-number belongs to @{diff_player.player_name} , are you sure this was the correct pdga-number?"
+        if interaction.user.id in self.relations_handler.pdga_players:
+            player_obj = self.relations_handler.pdga_players[interaction.user.id]
+            if pdga_number != player_obj.pdga_number:
+                player_obj.pdga_number = pdga_number
+                title = 'PDGA-number updated'
+                msg = f"I've updated the pdga-number for your account, {interaction.user.mention}"
             else:
-                title = 'All good!'
-                msg = f"Hey, {interaction.user.mention}. I already have your pdga-number"
+                title = 'PDGA-number unchanged'
+                msg = f"Looks like you've already given me this exact number before, {interaction.user.mention}.\nTips: You can change your pdga number to any pdga-number you want, it doesn't really have to be yours"
         else:
-            msg = f"Sweet, {interaction.user.mention}! I've added your pdga-number"
-            title = 'Done and done'
+            player_obj = PdgaPlayer(pdga_number=pdga_number,player_name=interaction.user.display_name, discord_id=interaction.user.id)
+            msg = f"Thanks, {interaction.user.mention}! I've added pdga-number {pdga_number} to your account in my database"
+            title = 'PDGA-number stored'
             self.relations_handler.add_relation(player_obj) 
         embed = nextcord.Embed(title=title, color=0x004899)
-        embed.add_field(name="Pdga number added" ,value=msg, inline=False)
+        embed.add_field(name="Set PDGA-number" ,value=msg, inline=False)
         if validate_embed(embed=embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
     
@@ -59,23 +59,19 @@ class PdgaPlayerStat(commands.Cog):
         try:
             if discord_user == None:
                 discord_user = interaction.user 
-
-            if discord_user:
-                if None == discord_user.nick:
-                    displayname = discord_user.name
-                else:
-                    displayname = discord_user.nick
-            if discord_user.id in self.relations_handler.by_discord_id:
-            
+            if None == discord_user.nick:
+                displayname = discord_user.name
+            else:
+                displayname = discord_user.nick
+            if discord_user.id in self.relations_handler.pdga_players:
                 embed_title = f"{displayname}'s pdga-bot info"
                 embed = nextcord.Embed(title=embed_title, color=0x004899)
-                obj = self.relations_handler.pdga_players[displayname].to_dict()
-                out = f"\nDiscord user: {obj['player_name']}\nPDGA Number: {obj['pdga_number']}"
-                embed.description = out 
-
+                dict_data = self.relations_handler.pdga_players[discord_user.id]
+                embed_description_data = f"\nDiscord user: {dict_data['player_name']}\nPDGA Number: {dict_data['pdga_number']}"
+                embed.description = embed_description_data 
             else:
-                embed = nextcord.Embed(title=f"Uhm.. :confused:", description=f"I don't know of a discord-user whoose name is '{displayname}'", color=0x004899)
-                await interaction.send(embed=embed,content=f"Sorry, {interaction.user.mention}!")
+                embed = nextcord.Embed(title=f"Uhm.. :thinking:", description=f"'{displayname}' hasn't told me their pdga-number yet", color=0x004899)
+                await interaction.send(embed=embed,content=f"Sorry, I can't help you with this, {interaction.user.mention}")
         except:
             pass #FIXME: Do something
         finally:
@@ -85,7 +81,7 @@ class PdgaPlayerStat(commands.Cog):
     @pdga_slash_command.subcommand(name="get", description="get the discord users www.pdga.com info")
     async def get_pdga_slash_command(self, interaction: Interaction):
         pass
-
+    
     @get_pdga_slash_command.subcommand(name="pdganumber", description="get the discord users www.pdga.com info by pdga number")
     async def get_pdga_number_slash_command(
         self,
@@ -114,8 +110,8 @@ class PdgaPlayerStat(commands.Cog):
                 displayname = discord_user.nick
             else:
                 displayname = discord_user.name
-            if discord_user.id in self.relations_handler.by_discord_id:
-                pdga_player = self.relations_handler.by_discord_id[discord_user.id]
+            if discord_user.id in self.relations_handler.player_objects:
+                pdga_player = self.relations_handler.player_objects[discord_user.id] #pdga_players[discord_user.id]
                 embed = self.get_www_pdga_com_user_data(pdga_player_number=pdga_player.pdga_number)
             else:
                 embed = nextcord.Embed(title=f"Hmmmmf.. :confused:", description=f"I must have misplaced the pdga-number for {displayname}", color=0x004899)
@@ -130,8 +126,8 @@ class PdgaPlayerStat(commands.Cog):
             pdga_player_number
     ):
         try:
+            # construct the www.pdga.com/player/pdga_number scraper and start the scraping
             pdga_player_scraper = PlayerScraper(pdga_number=f"{pdga_player_number}")
-
             pdga_player_data = pdga_player_scraper.scrape()
 
             if isinstance(pdga_player_data.player_name, str) and len(pdga_player_data.player_name) >= 3:
@@ -143,12 +139,36 @@ class PdgaPlayerStat(commands.Cog):
             if isinstance(pdga_player_data.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_data.portrait_url):
                 embed.set_thumbnail(url=pdga_player_data.portrait_url)
 
-            embed_contents = "" 
+            # call the scrapers generate_dict method, creates custom headers 
+            data_dict = pdga_player_data.generate_dict()
+            # pass the data to the __process_embed_description_data method
+            desc_contents = self.__process_embed_description_data__(pdga_player_data_dict=data_dict)
+            embed.description = desc_contents
+
+            # filter out the upcoming events, alternatively "N/A" in case there are none # FIXME: need to write logic to limit / trim / split upcoming events data if there are too many
+            upcoming_events_data = self.__process_upcoming_events_data__(pdga_player_data_dict=data_dict)
+            embed.add_field(name="Upcoming events:", value=upcoming_events_data, inline=True)
+        except:
+            if not 'embed' in locals():
+                embed_title = "Sorry, I couldn't find the embed I was attempting to work on :("
+                embed = nextcord.Embed(title=embed_title, color=0x004899)
+            else:
+                embed_title = "Something went terribly wrong when I tried to get the pdga.com user data"
+                embed = nextcord.Embed(title=embed_title, color=0x004899)
+        finally:
+            return embed
+        
+    def __process_upcoming_events_data__(self, pdga_player_data_dict:dict):
+            if 'Upcoming Events' in pdga_player_data_dict:
+                if len(pdga_player_data_dict["Upcoming Events"]) >= 1:
+                    return pdga_player_data_dict['Upcoming Events']
+                else:
+                    return "N/A"
+                    # FIXME: Validate upcoming events content length 
+                    pass
+        
+    def __process_embed_description_data__(self, pdga_player_data_dict:dict, key_long=17, value_long=55, total=62):
             desc_contents = ""
-            key_long = 17
-            value_long = 55
-            total = 62
-            pdga_player_data_dict = pdga_player_data.prettify()
             for key in pdga_player_data_dict:
                 if None == pdga_player_data_dict[key]:
                     continue
@@ -167,28 +187,4 @@ class PdgaPlayerStat(commands.Cog):
                         insert_value_spaces = " "*add_value_spaces
                 # embed_contents
                 desc_contents += f"\n`{key}{insert_key_spaces}:{insert_value_spaces}{insert}`"
-            embed.description = desc_contents #f"```elm\n{desc_contents}```"  # Player bio:\n\n
-
-
-            if 'Upcoming Events' in pdga_player_data_dict:
-                if len(pdga_player_data_dict["Upcoming Events"]) >= 1:
-                    embed.add_field(name="Upcoming events:", value=pdga_player_data_dict['Upcoming Events'], inline=True)
-                    #embed.description = f"Upcoming events: \n\n{pdga_player_data_dict[key]}"
-                    # FIXME: Validate upcoming events content length 
-                    pass
-        except:
-            if not 'embed' in locals():
-                embed_title = "Sorry, I failed you :("
-                embed = nextcord.Embed(title=embed_title, color=0x004899)
-        finally:
-            return embed
-        
-    def __get_user_by_nick__(self, interaction: Interaction, nick):
-        try:
-            user= nextcord.utils.get(interaction.guild.members, nick=nick)
-            if None == user:
-                user= nextcord.utils.get(interaction.guild.members, name=nick)
-        except:
-            user = False
-        finally:
-            return user
+            return desc_contents

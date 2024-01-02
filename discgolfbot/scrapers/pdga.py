@@ -57,7 +57,7 @@ class PdgaPlayerData():
         self.portrait_url = ''
         self.player_name = ''
 
-    def prettify(self): # bør renames til __to_dict__
+    def generate_dict(self): # finnes det noen bedre måter å gjøre dette på?
         return {
             "Current Rating": self.current_rating,
             "Career Events": self.career_events,
@@ -68,7 +68,7 @@ class PdgaPlayerData():
             "Ratings Change": self.rating_change,
             "Upcoming Events": self.upcoming_events,
         }
-        
+    
 class PlayerScraper(Pdga):
     def __init__(self, pdga_number):
         super().__init__()
@@ -89,6 +89,7 @@ class PlayerScraper(Pdga):
         }
         soup = self.urllib_header_get_beatifulsoup(headers=headers)
         
+
         # set up soup-objects for parsing/verification
         cr_obj=soup.find_all('li', 'current-rating')
         # find all upcoming events
@@ -103,33 +104,22 @@ class PlayerScraper(Pdga):
         # find the rules official status of the player
         official_obj = soup.find_all('li', 'official')
         singles_events_obj = soup.find_all('li', 'career-events disclaimer')
-        
         # try to find player portrait data (url and player name)
-        player_portrait_data = None
-        regex_compile = re.compile(pattern=f"\w+\s{self.player_data.pdga_number}")
-        port_data = soup.find_all('img')
-        for pd in port_data:
-            regex_compile.findall(pd.attrs['alt'])
-            if regex_compile.search(string=pd.attrs['alt']):
-                player_portrait_data = pd.attrs.copy()
+        player_portrait_data = self.get_player_portrait_data(soup_object=soup)
 
         # parse players upcoming event and assemble a string worthy of discord-embeds :)
-        player_upcoming_events = "```yaml\n"
-        if len(upcoming_events_obj) >= 1:
-            for event in upcoming_events_obj[0].find_all('a'):
-                event_and_date = event['title'].split(",  on")
-                player_upcoming_events += "\n - " + event_and_date[0].replace("-",",") .lstrip().rstrip() + " " + event_and_date[1].replace("-", " ").lstrip().rstrip() #event['title'] + " \n"
-        else:
-            player_upcoming_events += 'No upcoming events found'
-        player_upcoming_events +="\n```"
-        
+        player_upcoming_events = self.get_player_upcoming_events_data(upcoming_events_obj=upcoming_events_obj)
+
         # assign player data to player_data attrs 
         self.player_data.upcoming_events = player_upcoming_events
         self.player_data.current_rating =  cr_obj[0].text.split(": ")[-1].lstrip().rstrip() 
         self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
         self.player_data.location = loc_obj[0].a.text
         self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
-        self.player_data.rating_change = cr_obj[0].find_all('a', 'rating-difference gain')[0].text
+        if len(cr_obj[0].find_all('a', 'rating-difference gain')) == 0:
+            self.player_data.rating_change = ''
+        else:
+            self.player_data.rating_change = cr_obj[0].find_all('a', 'rating-difference gain')[0].text
         self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
         self.player_data.portrait_url = player_portrait_data['src']
         self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].lstrip().rstrip() 
@@ -140,3 +130,31 @@ class PlayerScraper(Pdga):
         
         #return player_data
         return self.player_data
+    
+    def get_player_portrait_data(self, soup_object):
+        try:
+            
+            player_portrait_data = None
+            regex_compile = re.compile(pattern=f"\w+\s{self.player_data.pdga_number}")
+            port_data = soup_object.find_all('img')
+            for pd in port_data:
+                regex_compile.findall(pd.attrs['alt'])
+                if regex_compile.search(string=pd.attrs['alt']):
+                    player_portrait_data = pd.attrs.copy()
+        except:
+            return None
+        return player_portrait_data
+    
+    def get_player_upcoming_events_data(self, upcoming_events_obj):
+        try:
+            player_upcoming_events = "```yaml\n"
+            if len(upcoming_events_obj) >= 1:
+                for event in upcoming_events_obj[0].find_all('a'):
+                    event_and_date = event['title'].split(",  on")
+                    player_upcoming_events += "\n - " + event_and_date[0].replace("-",",") .lstrip().rstrip() + " " + event_and_date[1].replace("-", " ").lstrip().rstrip() #event['title'] + " \n"
+            else:
+                player_upcoming_events += 'No upcoming events found'
+            player_upcoming_events +="\n```"
+        except:
+            player_upcoming_events = "```yaml\nFailed to retrieve upcoming events\n```"
+        return player_upcoming_events
