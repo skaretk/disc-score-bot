@@ -98,8 +98,7 @@ class PlayerScraper(Pdga):
         membership_obj = self.soup.find_all('li', 'membership-status')
         self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
         # find the rules official status of the player
-        official_obj = self.soup.find_all('li', 'official')
-        self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
+        self.find_official_data()
         
         # retrieve the player current rating
         self.find_current_rating()
@@ -146,7 +145,7 @@ class PlayerScraper(Pdga):
         current_rating_data = None
         current_rating_data = self.soup.find('li', 'current-rating')
         if None == current_rating_data:
-            self.player_data.current_rating = 'N/A'
+            self.player_data.current_rating = 'n/a'
             return
         self.player_data.current_rating = current_rating_data.text.split(": ")[-1].lstrip().rstrip()
 
@@ -155,14 +154,13 @@ class PlayerScraper(Pdga):
 
         rating_diff_data = self.soup.find_all(name='a', property='rating-difference gain')
         if len(rating_diff_data) == 0:
-            self.player_data.rating_change = ''
+            self.player_data.rating_change = 'n/a'
         else:
             rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
             self.player_data.rating_change = rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
 
     def get_player_portrait_data(self):
         try:
-            
             player_portrait_data = None
             regex_compile = re.compile(pattern=f"\w+\s{self.player_data.pdga_number}")
             port_data = self.soup.find_all('img')
@@ -174,9 +172,9 @@ class PlayerScraper(Pdga):
         except:
             self.player_data.portrait_url = None
             return None
-        
-        return player_portrait_data
         # return player_portrait_data
+        return player_portrait_data
+        
     
     def get_player_upcoming_events_data(self):
         try:
@@ -197,3 +195,11 @@ class PlayerScraper(Pdga):
         except:
             player_upcoming_events = "```yaml\nFailed to retrieve upcoming events\n```"
         self.player_data.upcoming_events = player_upcoming_events
+
+    def find_official_data(self):
+
+        official_obj = self.soup.find_all('li', 'official')
+        if len(official_obj) >= 1:
+            self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
+            return
+        self.player_data.offical_status = 'n/a'
