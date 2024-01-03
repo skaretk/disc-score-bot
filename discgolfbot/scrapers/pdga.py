@@ -87,42 +87,44 @@ class PlayerScraper(Pdga):
             "Accept-Language": "no,en;q=0.7,en-US;q=0.3",
             "Accept-Encoding": "*",
         }
-        soup = self.urllib_header_get_beatifulsoup(headers=headers)
+        self.soup = self.urllib_header_get_beatifulsoup(headers=headers)
         
 
         # set up soup-objects for parsing/verification
-        cr_obj=soup.find_all('li', 'current-rating')
-        # find all upcoming events
-        upcoming_events_obj = soup.find_all("li", "upcoming-events")
-        if len(upcoming_events_obj) == 0:
-            # if no upcoming events, player might have 0 or just 1 upcoming event, aka next-event
-            upcoming_events_obj = soup.find_all("li", "next-event")
+        
         # find the location data of the player
-        loc_obj = soup.find_all('li', 'location')       
+        loc_obj = self.soup.find_all('li', 'location')       
         # find the membership status of the player
-        membership_obj = soup.find_all('li', 'membership-status')
+        membership_obj = self.soup.find_all('li', 'membership-status')
+        self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
         # find the rules official status of the player
-        official_obj = soup.find_all('li', 'official')
-        singles_events_obj = soup.find_all('li', 'career-events disclaimer')
+        official_obj = self.soup.find_all('li', 'official')
+        self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
+        
+        # retrieve the player current rating
+        self.find_current_rating()
+
+        # find the rating difference gain
+        self.find_rating_difference_gain()
+
         # try to find player portrait data (url and player name)
-        player_portrait_data = self.get_player_portrait_data(soup_object=soup)
+        player_portrait_data = self.get_player_portrait_data()
+
+        if player_portrait_data:
+            # assign the player name from the portrait data
+            self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].lstrip().rstrip() 
+        else:
+            # assign the player name from the meta tag
+            self.find_player_name(tag="meta", tag_property="og:title")
 
         # parse players upcoming event and assemble a string worthy of discord-embeds :)
-        player_upcoming_events = self.get_player_upcoming_events_data(upcoming_events_obj=upcoming_events_obj)
+        self.get_player_upcoming_events_data()
 
-        # assign player data to player_data attrs 
-        self.player_data.upcoming_events = player_upcoming_events
-        self.player_data.current_rating =  cr_obj[0].text.split(": ")[-1].lstrip().rstrip() 
+        # find the past events data
+        singles_events_obj = self.soup.find_all('li', 'career-events disclaimer')
         self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
         self.player_data.location = loc_obj[0].a.text
-        self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
-        if len(cr_obj[0].find_all('a', 'rating-difference gain')) == 0:
-            self.player_data.rating_change = ''
-        else:
-            self.player_data.rating_change = cr_obj[0].find_all('a', 'rating-difference gain')[0].text
-        self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
-        self.player_data.portrait_url = player_portrait_data['src']
-        self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].lstrip().rstrip() 
+        
 
         # print the chore
         self.scraper_time = time.time() - start_time
@@ -131,23 +133,59 @@ class PlayerScraper(Pdga):
         #return player_data
         return self.player_data
     
-    def get_player_portrait_data(self, soup_object):
+
+    def find_player_name(self, tag="meta", tag_property="og:title"):
+        player_name = '-'
+        player_name_metadata = self.soup.find(name=tag, property=tag_property)
+        if 'content' in player_name_metadata.attrs:
+            player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
+        self.player_data.player_name = player_name
+        #return player_name
+    
+    def find_current_rating(self):
+        current_rating_data = None
+        current_rating_data = self.soup.find('li', 'current-rating')
+        if None == current_rating_data:
+            self.player_data.current_rating = 'N/A'
+            return
+        self.player_data.current_rating = current_rating_data.text.split(": ")[-1].lstrip().rstrip()
+
+        #####
+    def find_rating_difference_gain(self):
+
+        rating_diff_data = self.soup.find_all(name='a', property='rating-difference gain')
+        if len(rating_diff_data) == 0:
+            self.player_data.rating_change = ''
+        else:
+            rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
+            self.player_data.rating_change = rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
+
+    def get_player_portrait_data(self):
         try:
             
             player_portrait_data = None
             regex_compile = re.compile(pattern=f"\w+\s{self.player_data.pdga_number}")
-            port_data = soup_object.find_all('img')
+            port_data = self.soup.find_all('img')
             for pd in port_data:
                 regex_compile.findall(pd.attrs['alt'])
                 if regex_compile.search(string=pd.attrs['alt']):
                     player_portrait_data = pd.attrs.copy()
+            self.player_data.portrait_url = player_portrait_data['src']
         except:
+            self.player_data.portrait_url = None
             return None
+        
         return player_portrait_data
+        # return player_portrait_data
     
-    def get_player_upcoming_events_data(self, upcoming_events_obj):
+    def get_player_upcoming_events_data(self):
         try:
-            player_upcoming_events = "```yaml\n"
+                    # find all upcoming events
+            upcoming_events_obj = self.soup.find_all("li", "upcoming-events")
+            if len(upcoming_events_obj) == 0:
+                # if no upcoming events, player might have 0 or just 1 upcoming event, aka next-event
+                upcoming_events_obj = self.soup.find_all("li", "next-event")
+                player_upcoming_events = "```yaml\n"
             if len(upcoming_events_obj) >= 1:
                 for event in upcoming_events_obj[0].find_all('a'):
                     event_and_date = event['title'].split(",  on")
@@ -155,6 +193,7 @@ class PlayerScraper(Pdga):
             else:
                 player_upcoming_events += 'No upcoming events found'
             player_upcoming_events +="\n```"
+        # assign player data to player_data attrs
         except:
             player_upcoming_events = "```yaml\nFailed to retrieve upcoming events\n```"
-        return player_upcoming_events
+        self.player_data.upcoming_events = player_upcoming_events

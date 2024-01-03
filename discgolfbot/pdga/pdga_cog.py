@@ -89,7 +89,7 @@ class PdgaPlayerStat(commands.Cog):
         pdga_number: int = SlashOption(name="pdganumber", description="pdga-number to fetch from www.pdga.com",required=True, min_value=1, max_value=500000)
     ):
         try:
-            embed = await self.get_www_pdga_com_user_data(pdga_player_number=pdga_number)  
+            embed = self.get_www_pdga_com_user_data(pdga_player_number=pdga_number)  
         except:
             embed = nextcord.Embed(title="Oh, no! This didn't go very well :flushed:", color=0x004899)
         finally:
@@ -159,7 +159,7 @@ class PdgaPlayerStat(commands.Cog):
             return embed
         
     def __process_upcoming_events_data__(self, pdga_player_data_dict:dict):
-            if 'Upcoming Events' in pdga_player_data_dict:
+            if 'Upcoming Events' in pdga_player_data_dict and isinstance(pdga_player_data_dict, dict):
                 if len(pdga_player_data_dict["Upcoming Events"]) >= 1:
                     return pdga_player_data_dict['Upcoming Events']
                 else:
