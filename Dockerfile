@@ -1,4 +1,4 @@
-FROM python:3.9.6
+FROM python:3.12.1
 
 # Install Google Chrome #
 
