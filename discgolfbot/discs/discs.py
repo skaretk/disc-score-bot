@@ -64,7 +64,7 @@ class Discs(commands.Cog):
         return None
 
     def get_disc_flight_embed(self, disc_flight_scraper):
-        if (len(self.discs) == 1):
+        if len(self.discs) == 1:
             disc = self.discs[0]
             if (disc.manufacturer == "Other"):
                 embed = nextcord.Embed(title=f'{disc.name}', color=0x004899)
@@ -77,9 +77,7 @@ class Discs(commands.Cog):
             # Validate and return embed
             if validate_embed(embed):
                 return embed
-            return None
-        else:
-            return None
+        return None
 
     @commands.command(aliases=['Disc', 'disk', 'Disk', 'd'], brief='%disc disc1, disc2, etc', description='Search for disc in norwegian sites')
     async def disc(self, ctx, *args, sep=" "):
@@ -205,7 +203,7 @@ class Discs(commands.Cog):
 
     # Slash commands
     @nextcord.slash_command(name="disc", description="Discs commands", guild_ids=[])
-    async def disc_slash_command(self):
+    async def disc_slash_command(self, interaction: nextcord.Interaction):
         pass
 
     @disc_slash_command.subcommand(name="search", description="Search for discs in stores!")

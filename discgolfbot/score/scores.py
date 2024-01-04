@@ -72,7 +72,7 @@ class Scores(commands.Cog):
 
     # Slash commands
     @nextcord.slash_command(name="scores", description="Score commands", guild_ids=[])
-    async def scores(self):
+    async def scores(self, interaction: nextcord.Interaction):
         """/scores"""
 
     @scores.subcommand(name="print", description="Print stored scores!")
