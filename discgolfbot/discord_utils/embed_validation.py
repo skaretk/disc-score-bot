@@ -38,7 +38,7 @@ def validate_embed_total_length(embed:nextcord.Embed):
 
 def validate_embed_title(title:nextcord.Embed.title):
     """Validate the embed title"""
-    if str(title) != 'Embed.Empty':
+    if title is not None:
         if len(title) > 256:
             print(f'title too long: {len(title)}')
             return False
@@ -46,7 +46,7 @@ def validate_embed_title(title:nextcord.Embed.title):
 
 def validate_embed_description(description:nextcord.Embed.description):
     """Validate the embed description"""
-    if str(description) != 'Embed.Empty':
+    if description is not None:
         if len(description) > 4096:
             print(f'description too long: {len(description)}')
             return False
