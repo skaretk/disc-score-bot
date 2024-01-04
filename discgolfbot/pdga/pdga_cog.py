@@ -9,7 +9,7 @@ from typing import Optional
 from .pdgaPlayer import PdgaPlayer
 from .pdgaPlayerNumberRelations import *
 import re
-from scrapers.pdga import PlayerScraper, PdgaPlayerData
+from scrapers.pdga import PlayerProfileScraper, PdgaPlayerData
 
 class PdgaPlayerStat(commands.Cog): 
     def __init__(self, discord_bot):
@@ -28,11 +28,12 @@ class PdgaPlayerStat(commands.Cog):
     async def set_pdga_number_slash_command(
         self,
         interaction: Interaction,
-        pdga_number: int = SlashOption(name="setpdganumber", description="associate a pdga number with your discord-user", required=True),
+        pdga_number: int = SlashOption(name="setpdganumber", description="associate a pdga number with your discord-user", required=True, min_value=1, max_value=500000),
     ):
 
         if interaction.user.id in self.relations_handler.pdga_players:
-            player_obj = self.relations_handler.pdga_players[interaction.user.id]
+            player_obj = self.relations_handler.player_objects[interaction.user.id]
+
             if pdga_number != player_obj.pdga_number:
                 player_obj.pdga_number = pdga_number
                 title = 'PDGA-number updated'
@@ -127,25 +128,26 @@ class PdgaPlayerStat(commands.Cog):
     ):
         try:
             # construct the www.pdga.com/player/pdga_number scraper and start the scraping
-            pdga_player_scraper = PlayerScraper(pdga_number=f"{pdga_player_number}")
-            pdga_player_data = pdga_player_scraper.scrape()
+            pdga_player_scraper = PlayerProfileScraper(pdga_number=f"{pdga_player_number}")
+            pdga_player_scraper.scrape()
 
-            if isinstance(pdga_player_data.player_name, str) and len(pdga_player_data.player_name) >= 3:
-                embed_title = "www.pdga.com - {}".format(pdga_player_data.player_name)
+            if isinstance(pdga_player_scraper.player_data.player_name, str) and len(pdga_player_scraper.player_data.player_name) >= 3:
+                embed_title = f"www.pdga.com - {pdga_player_scraper.player_data.player_name}"
             else:
-                embed_title = "www.pdga.com player information"
+                embed_title = f"Displaying '{pdga_player_scraper.scrape_url}'"
                 
             embed = nextcord.Embed(title=embed_title, color=0x004899)
-            if isinstance(pdga_player_data.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_data.portrait_url):
-                embed.set_thumbnail(url=pdga_player_data.portrait_url)
+            if isinstance(pdga_player_scraper.player_data.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_scraper.player_data.portrait_url):
+                embed.set_thumbnail(url=pdga_player_scraper.player_data.portrait_url)
 
-            # call the scrapers generate_dict method, creates custom headers 
-            data_dict = pdga_player_data.generate_dict()
+            # call the PlayerDataObject's generate_dict method, creates custom headers 
+            data_dict = pdga_player_scraper.player_data.generate_dict()
+
             # pass the data to the __process_embed_description_data method
             desc_contents = self.__process_embed_description_data__(pdga_player_data_dict=data_dict)
             embed.description = desc_contents
 
-            # filter out the upcoming events, alternatively "N/A" in case there are none # FIXME: need to write logic to limit / trim / split upcoming events data if there are too many
+            # filter out the upcoming events, alternatively "N/A" in case there are none # TODO: need to write logic to limit / trim / split upcoming events data if there are too many
             upcoming_events_data = self.__process_upcoming_events_data__(pdga_player_data_dict=data_dict)
             embed.add_field(name="Upcoming events:", value=upcoming_events_data, inline=True)
         except:

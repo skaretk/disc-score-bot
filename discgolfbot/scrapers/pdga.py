@@ -68,17 +68,20 @@ class PdgaPlayerData():
             "Ratings Change": self.rating_change,
             "Upcoming Events": self.upcoming_events,
         }
-    
-class PlayerScraper(Pdga):
+
+
+class PlayerProfileScraper(Pdga):
     def __init__(self, pdga_number):
         super().__init__()
-        self.name = "www.pdga.com player information"
+        self.name = "PDGA Player Profile"
         self.scrape_url = 'https://www.pdga.com/player/' + pdga_number
         self.pdga_number = pdga_number
-        self.player_data = PdgaPlayerData(pdga_number=pdga_number)
+        self.player_data = PdgaPlayerData(pdga_number=self.pdga_number)
+        self.player_data_dict = {}
 
     def scrape(self):
         start_time = time.time()
+        
         # headers
         headers = {
             "Host": "www.pdga.com",
@@ -88,9 +91,6 @@ class PlayerScraper(Pdga):
             "Accept-Encoding": "*",
         }
         self.soup = self.urllib_header_get_beatifulsoup(headers=headers)
-        
-
-        # set up soup-objects for parsing/verification
         
         # find the location data of the player
         loc_obj = self.soup.find_all('li', 'location')       
@@ -124,13 +124,12 @@ class PlayerScraper(Pdga):
         self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
         self.player_data.location = loc_obj[0].a.text
         
-
         # print the chore
         self.scraper_time = time.time() - start_time
         print(f'PDGA scraper: {self.scraper_time}')
         
-        #return player_data
-        return self.player_data
+        # set player data dict - so we have something to test
+        self.player_data_dict = self.player_data.generate_dict()
     
 
     def find_player_name(self, tag="meta", tag_property="og:title"):
@@ -139,7 +138,7 @@ class PlayerScraper(Pdga):
         if 'content' in player_name_metadata.attrs:
             player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
         self.player_data.player_name = player_name
-        #return player_name
+
     
     def find_current_rating(self):
         current_rating_data = None
@@ -149,15 +148,15 @@ class PlayerScraper(Pdga):
             return
         self.player_data.current_rating = current_rating_data.text.split(": ")[-1].lstrip().rstrip()
 
-        #####
-    def find_rating_difference_gain(self):
 
+    def find_rating_difference_gain(self):
         rating_diff_data = self.soup.find_all(name='a', property='rating-difference gain')
         if len(rating_diff_data) == 0:
             self.player_data.rating_change = 'n/a'
-        else:
-            rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
-            self.player_data.rating_change = rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
+            return
+        rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
+        self.player_data.rating_change = rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
+
 
     def get_player_portrait_data(self):
         try:
@@ -178,7 +177,7 @@ class PlayerScraper(Pdga):
     
     def get_player_upcoming_events_data(self):
         try:
-                    # find all upcoming events
+            # find all upcoming events
             upcoming_events_obj = self.soup.find_all("li", "upcoming-events")
             if len(upcoming_events_obj) == 0:
                 # if no upcoming events, player might have 0 or just 1 upcoming event, aka next-event
@@ -191,13 +190,13 @@ class PlayerScraper(Pdga):
             else:
                 player_upcoming_events += 'No upcoming events found'
             player_upcoming_events +="\n```"
-        # assign player data to player_data attrs
         except:
             player_upcoming_events = "```yaml\nFailed to retrieve upcoming events\n```"
+        # assign player data to player_data attrs
         self.player_data.upcoming_events = player_upcoming_events
 
-    def find_official_data(self):
 
+    def find_official_data(self):
         official_obj = self.soup.find_all('li', 'official')
         if len(official_obj) >= 1:
             self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
