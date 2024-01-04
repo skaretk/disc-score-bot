@@ -236,7 +236,7 @@ class Discs(commands.Cog):
         self.stores = split_discs_in_stores(self.discs)
         embed = self.get_discs_embed()
         if embed is not None:
-            if self.get_disc_image(embed) == False:
+            if self.get_disc_image(embed) is False:
                 embed.set_thumbnail(url=(interaction.user.display_avatar))
             await interaction.followup.send(f'{interaction.user.mention} - **{search}**', embed=embed)
         else:

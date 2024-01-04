@@ -1,4 +1,4 @@
-from . import aceshop
+#from . import aceshop
 from . import armspeed
 from . import dgshop
 from . import discconnection
@@ -8,28 +8,24 @@ from . import discinstock
 from . import discmania
 from . import discrepublic
 from . import discsport
-from . import frisbeefeber
-from . import fyndisc
-from . import kastmeg
+#from . import frisbeefeber
+#from . import fyndisc
+#from . import kastmeg
 from . import krokholdgs
 from . import latitude64
 from . import rocketdiscs
-from . import starframe
-from . import sunesport
-from . import xxl
+#from . import starframe
+#from . import sunesport
+#from . import xxl
 
 class DiscScrapers():
     def __init__(self, search):
         self.norwegian =     [dgshop.DiscScraper(search),
                               discinstock.DiscScraperApi(search),
-                              frisbeefeber.DiscScraper(search),
-                              kastmeg.DiscScraper(search),
-                              krokholdgs.DiscScraper(search),
-                              sunesport.DiscScraper(search)]
+                              krokholdgs.DiscScraper(search),]
         self.voec =          [discsport.DiscScraper(search),
                               rocketdiscs.DiscScraper(search),
                               discmania.DiscScraper(search),
-                              fyndisc.DiscScraper(search),
                               latitude64.DiscScraper(search),
                               discexpress.DiscScraper(search),
                               discconnection.DiscScraper(search),

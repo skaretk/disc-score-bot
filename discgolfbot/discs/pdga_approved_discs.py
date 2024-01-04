@@ -24,19 +24,19 @@ class PdgaApprovedDiscs(commands.Cog):
                 new_approved_discs.append(disc)
                 pdgaSql.add_approved_disc(disc)
                 print(f'NEW DISC: {disc.name} Stored in sql')
-        
+
         # Any new approved discs?
         if new_approved_discs:
             embed = nextcord.Embed(title="New PDGA Approved Discs", color=0x004899)
             for disc in new_approved_discs:
                 date = parse(disc.approved_date)
-                embed.add_field(name=disc.manufacturer , value=f'[{disc.name}]({disc.url})\nDate: {date.strftime("%d.%m.%Y")}')#\n[Pdga Link]({disc.url})')       
+                embed.add_field(name=disc.manufacturer , value=f'[{disc.name}]({disc.url})\nDate: {date.strftime("%d.%m.%Y")}')#\n[Pdga Link]({disc.url})')
                 embed.set_thumbnail(url=(self.bot.user.avatar.url))
 
             # TODO: Configure channels to send event to
             #channel = self.bot.get_channel(905420670693949470) #Shim: bot
             channel = self.bot.get_channel(885087767292428298) #EDK: Disc Search
-        
+
             await channel.send(embed=embed)
 
     # Wait for the bot to be ready before searching
