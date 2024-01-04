@@ -14,7 +14,7 @@ from . import discsport
 from . import krokholdgs
 from . import latitude64
 from . import rocketdiscs
-#from . import starframe
+from . import starframe
 #from . import sunesport
 #from . import xxl
 

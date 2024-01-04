@@ -90,5 +90,5 @@ class Scraper():
             html_source = sock.read()
         return BeautifulSoup(html_source, "html.parser")
 
-    async def scrape(self):
+    def scrape(self):
         pass

@@ -12,15 +12,15 @@ class DiscFlightScraper(MarshallStreet):
     def __init__(self, search):
         super().__init__()
         self.search = search
-        self.scrape_url = f'https://www.marshallstreetdiscgolf.com/flightguide'
+        self.scrape_url = 'https://www.marshallstreetdiscgolf.com/flightguide'
         self.discs = []
-        self.icon_url= f'https://www.marshallstreetdiscgolf.com/wp-content/uploads/2017/12/cropped-favicon-1-32x32.png'
+        self.icon_url= 'https://www.marshallstreetdiscgolf.com/wp-content/uploads/2017/12/cropped-favicon-1-32x32.png'
 
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
         for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
-            if (disc_item.getText().lower() == self.search.lower()):
+            if disc_item.getText().lower() == self.search.lower():
                 disc = Disc()
                 disc.name = disc_item.getText()
                 disc.manufacturer = disc_item['data-brand']
@@ -34,7 +34,7 @@ class DiscFlightScraper(MarshallStreet):
                 return
         for putter in soup.findAll("div", class_="putter-child pc-entry"):
             putter_name = putter['data-putter']
-            if (putter_name.lower() == self.search.lower()):
+            if putter_name.lower() == self.search.lower():
                 disc = Disc()
                 disc.name = putter_name
                 disc.manufacturer = putter['data-brand']

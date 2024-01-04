@@ -66,7 +66,7 @@ class Discs(commands.Cog):
     def get_disc_flight_embed(self, disc_flight_scraper):
         if len(self.discs) == 1:
             disc = self.discs[0]
-            if (disc.manufacturer == "Other"):
+            if disc.manufacturer == "Other":
                 embed = nextcord.Embed(title=f'{disc.name}', color=0x004899)
             else:
                 embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}', color=0x004899)

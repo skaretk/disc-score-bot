@@ -1,9 +1,8 @@
-from bs4 import BeautifulSoup
 import time
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 from discs.disc import Disc
 from .scraper import Scraper
-from bs4 import BeautifulSoup
-from urllib.request import urlopen
 
 class RocketDiscs(Scraper):
     def __init__(self):
