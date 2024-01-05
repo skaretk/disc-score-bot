@@ -2,17 +2,17 @@ import time
 from discs.disc import Disc
 from .scraper import Scraper
 
-class GuruDiscgolf(Scraper):
+class WeAreDiscgolf(Scraper):
     def __init__(self):
         super().__init__()
-        self.name = 'gurudiscgolf.no'
-        self.url = 'https://gurudiscgolf.no/'
+        self.name = 'wearediscgolf.no'
+        self.url = 'https://wearediscgolf.no/'
 
-class DiscScraper(GuruDiscgolf):
+class DiscScraper(WeAreDiscgolf):
     def __init__(self, search):
         super().__init__()
         self.search = search
-        self.scrape_url = f'https://gurudiscgolf.no/?s={search}&post_type=product&_product_categories=golfdiscer'
+        self.scrape_url = f'https://wearediscgolf.no/?s={search}&post_type=product&_product_categories=golfdiscer'
         self.discs = []
 
     def scrape(self):

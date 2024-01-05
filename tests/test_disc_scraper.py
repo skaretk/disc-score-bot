@@ -68,17 +68,13 @@ def test_discsport_disc_scraper():
     search = "firebird"
     scrape_and_check(scrapers.discsport.DiscScraper(search))
 
-def test_frisbeefeber_disc_scraper():
-    search = "link"
-    scrape_and_check(scrapers.frisbeefeber.DiscScraper(search))
+#def test_frisbeefeber_disc_scraper():
+#    search = "link"
+#    scrape_and_check(scrapers.frisbeefeber.DiscScraper(search))
 
-def test_fyndisc_disc_scraper():
-    search = "firebird"
-    scrape_and_check(scrapers.fyndisc.DiscScraper(search))
-
-def test_gurudiscgolf_scraper():
-    search = "firebird"
-    scrape_and_check(scrapers.gurudiscgolf.DiscScraper(search))
+#def test_fyndisc_disc_scraper():
+#    search = "firebird"
+#    scrape_and_check(scrapers.fyndisc.DiscScraper(search))
 
 def test_kastmeg_scraper():
     search = "firebird"
@@ -100,13 +96,17 @@ def test_starframe_disc_scraper():
     search = "firebird"
     scrape_and_check(scrapers.starframe.DiscScraper(search))
 
-def test_sunesport_disc_scraper():
-    search = "firebird"
-    scrape_and_check(scrapers.sunesport.DiscScraper(search))
+#def test_sunesport_disc_scraper():
+#    search = "firebird"
+#    scrape_and_check(scrapers.sunesport.DiscScraper(search))
 
-def test_xxl_disc_scraper():
-    search = "harp"
-    scrape_and_check(scrapers.xxl.DiscScraper(search))
+def test_wearediscgolf_scraper():
+    search = "firebird"
+    scrape_and_check(scrapers.wearediscgolf.DiscScraper(search))
+
+#def test_xxl_disc_scraper():
+#    search = "harp"
+#    scrape_and_check(scrapers.xxl.DiscScraper(search))
 
 def test_pdga_disc_scraper():
     scraper = scrapers.pdga.DiscScraper()

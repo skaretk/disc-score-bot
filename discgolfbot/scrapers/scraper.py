@@ -72,19 +72,23 @@ class Scraper():
         soup = BeautifulSoup(driver.page_source, "html.parser")
         return soup, driver
 
-    def urllib_get_beatifulsoup(self):
+    def urllib_get_beatifulsoup(self, sleep_time = 0):
         with urlopen(self.scrape_url) as sock:
-            htmlSource = sock.read()
-        return BeautifulSoup(htmlSource, "html.parser")
+            if sleep_time:
+                time.sleep(sleep_time)
+            html_source = sock.read()
+        return BeautifulSoup(html_source, "html.parser")
 
-    def urllib_header_get_beatifulsoup(self, headers={}):
-        default_headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'}
+    def urllib_header_get_beatifulsoup(self, sleep_time = 0, headers={}):
+        default_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
         req_headers = dict(default_headers)
         req_headers.update(headers)
         req = Request(self.scrape_url, headers=req_headers)
         with urlopen(req) as sock:
-            htmlSource = sock.read()
-        return BeautifulSoup(htmlSource, "html.parser")
+            if sleep_time:
+                time.sleep(sleep_time)
+            html_source = sock.read()
+        return BeautifulSoup(html_source, "html.parser")
 
-    async def scrape(self):
+    def scrape(self):
         pass

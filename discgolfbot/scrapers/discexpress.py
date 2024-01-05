@@ -20,7 +20,7 @@ class DiscScraper(DiscExpress):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK'})
 
-        for product_item in soup.findAll("div", class_="product-item product-item--vertical 1/3--tablet 1/4--lap-and-up"):
+        for product_item in soup.findAll("div", {"class" : ["product-item", "product-item--vertical", "thisone"]} ):
             a = product_item.find('a', class_='product-item__title')
             name = a.getText()
 
@@ -30,10 +30,10 @@ class DiscScraper(DiscExpress):
             disc.name = name
             disc.url = f'{self.url}{a["href"]}'
             img = product_item.find('img', src=True) # find the non-JS image tag
-            if (img is not None):
+            if img is not None:
                 img_url = f'https:{img["src"]}'
                 disc.img = img_url
-            
+
             disc.price = ''.join(product_item.find('span', class_='price').findAll(text=True, recursive=False)).strip()
             disc.store = self.name
             self.discs.append(disc)

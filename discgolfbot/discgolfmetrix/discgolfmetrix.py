@@ -18,7 +18,7 @@ class DiscgolfMetrix(commands.Cog):
         self.bot = bot
 
     @nextcord.slash_command(name="discgolfmetrix", description="Discgolfmetrix commands", guild_ids=[])
-    async def discgolfmetrix_slash_command(self):
+    async def discgolfmetrix_slash_command(self, interaction: nextcord.Interaction):
         """/discgolfmetrix"""
 
     @discgolfmetrix_slash_command.subcommand(name="add_player_code", description="Add your discgolfmetrix player code")

@@ -17,22 +17,21 @@ class DiscScraper(Starframe):
 
     def scrape(self):
         start_time = time.time()
-        soup = self.urllib_get_beatifulsoup()
+        soup = self.selenium_get_beatifulsoup(sleep_time=1)
 
-        for product in soup.findAll("div", class_="product"):
-            disc_name = product.find("a", class_="title").getText()
-            if (self.search.lower() not in disc_name.lower()):
+        for product in soup.find_all("div", {"class": "crall-product-item"}):
+            disc_name = product.find("div", {"class": "crall-product-name"}).getText()
+            if self.search.lower() not in disc_name.lower():
                 continue
 
-            a_product_url = product.find("a", class_="__product_url")
-            img_fluid = a_product_url.find("img", class_="img-fluid")
-            p_manufacturer = product.find("p", class_="manufacturers")
-            div_price = product.find("div", class_="price")
+            product_image = product.find("div", {"class": "crall-product-image"})
+            img_fluid = product.find("img", {"class": "img-fluid"})
+            div_price = product.find("div", {"class": "crall-price"})
+            url = product_image.find('a', href=True)
 
             disc = Disc()
-            disc.name = disc_name
-            disc.manufacturer = p_manufacturer["data-manufacturer"]
-            disc.url = a_product_url["href"]
+            disc.name = disc_name.strip()
+            disc.url = url["href"]
             disc.price = div_price.getText().strip()
             disc.img = img_fluid["src"]
             disc.store = self.name

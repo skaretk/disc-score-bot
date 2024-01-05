@@ -38,7 +38,7 @@ def validate_embed_total_length(embed:nextcord.Embed):
 
 def validate_embed_title(title:nextcord.Embed.title):
     """Validate the embed title"""
-    if str(title) != 'Embed.Empty':
+    if title is not None:
         if len(title) > 256:
             print(f'title too long: {len(title)}')
             return False
@@ -46,7 +46,7 @@ def validate_embed_title(title:nextcord.Embed.title):
 
 def validate_embed_description(description:nextcord.Embed.description):
     """Validate the embed description"""
-    if str(description) != 'Embed.Empty':
+    if description is not None:
         if len(description) > 4096:
             print(f'description too long: {len(description)}')
             return False
@@ -92,16 +92,18 @@ def validate_embed_field_value(fields:nextcord.Embed.fields):
 
 def validate_embed_footer(footer:nextcord.Embed.footer):
     """Validate the embed footer"""
-    if str(footer.text) != 'Embed.Empty':
-        if len(footer.text) > 2048:
-            print(f'footer.text too long: {len(footer.text)}')
-            return False
+    if footer.text is not None:
+        if str(footer.text) != 'Embed.Empty':
+            if len(footer.text) > 2048:
+                print(f'footer.text too long: {len(footer.text)}')
+                return False
     return True
 
 def validate_embed_author(author:nextcord.Embed.author):
     """Validate the embed author"""
-    if str(author.name) != 'Embed.Empty':
-        if len(author.name) > 256:
-            print(f'author.name too long: {len(author.name)}')
-            return False
+    if author.name is not None:
+        if str(author.name) != 'Embed.Empty':
+            if len(author.name) > 256:
+                print(f'author.name too long: {len(author.name)}')
+                return False
     return True

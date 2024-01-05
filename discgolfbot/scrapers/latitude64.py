@@ -5,7 +5,6 @@ import re
 import requests
 import json
 
-
 class Latitude64(Scraper):
     def __init__(self):
         super().__init__()
@@ -63,10 +62,8 @@ class DiscScraper(Latitude64):
             'callback': f'jQuery36008546270804256082_{int(start_time)}',
             '_': f'{int(start_time)}',
         }
-        response = requests.get(
-            'https://searchserverapi.com/getresults', params=params, headers=headers)
-        data = json.loads(
-            response.text[response.text.find('{'):response.text.rfind('}')+1])
+        response = requests.get('https://searchserverapi.com/getresults', params=params, headers=headers, timeout=10)
+        data = json.loads(response.text[response.text.find('{'):response.text.rfind('}')+1])
         for item in data['items']:
             disc = Disc()
             disc.name = item['title']
