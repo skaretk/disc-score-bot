@@ -1,46 +1,39 @@
 FROM python:3.12.1
 
-# Install Google Chrome #
+# Check chromedriver versions here:
+# https://googlechromelabs.github.io/chrome-for-testing/
+ENV CHROMEDRIVER_VERSION=120.0.6099.109
 
-# 1. Adding trusting keys to apt for repositories
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+### Install Google Chrome
+RUN apt-get update && apt-get install -y wget && \
+    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+	apt-get install -y ./google-chrome-stable_current_amd64.deb && \
+	rm -rf ./google-chrome-stable_current_amd64.deb
 
-# 2. Adding Google Chrome to the repositories
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-
-# 3. Updating apt to see and install Google Chrome
-RUN apt-get -y update
-
-# 4. Install google-chrome-stable
-RUN apt-get install -y google-chrome-stable
-
-# Install Chrome Driver #
-
-# 1. Installing Unzip
-RUN apt-get install -yqq unzip
-
-# 2. Download the Chrome Driver, unzip and remove the .zip from the image
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip && \
-    unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ && \
+# Install Chrome Driver
+RUN apt-get install -y unzip && \
+	wget -O /tmp/chromedriver.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip && \
+    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
 	rm -rf /tmp/chromedriver.zip && \
 	apt-get remove -yqq unzip
 
-# 3. Set display port as an environment variable
+# Set display port as an environment variable
 ENV DISPLAY=:99
 
 RUN pip install --no-cache-dir --upgrade pip
 
-# Install discbot and dependencies #
-
+# Set Working directory
 RUN mkdir /src
 WORKDIR /src
 
+# Set Configuration Volume
 RUN mkdir /src/cfg
 VOLUME /src/cfg
 
-COPY requirements.txt /src/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
+# Copy the source
 COPY . /src
+
+# Install requirements
+RUN pip install --no-cache-dir -r requirements.txt
 
 CMD [ "python", "discgolfbot" ]
