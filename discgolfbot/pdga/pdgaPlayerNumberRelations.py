@@ -30,6 +30,9 @@ class PdgaPlayerNumberRelations:
             self.db_file = Path(self.db_file)
         return self.db_file.exists()
     
+    def __db_file_validate_relative_path__(self):
+        return self.db_file.is_relative_to(Path.cwd())
+           
     def __init_db_file__(self):
         self.save_relations()
         

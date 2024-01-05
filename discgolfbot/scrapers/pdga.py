@@ -93,7 +93,8 @@ class PlayerProfileScraper(Pdga):
         self.soup = self.urllib_header_get_beatifulsoup(headers=headers)
         
         # find the location data of the player
-        loc_obj = self.soup.find_all('li', 'location')       
+        loc_obj = self.soup.find_all('li', 'location')    
+        self.player_data.location = loc_obj[0].a.text   
         # find the membership status of the player
         membership_obj = self.soup.find_all('li', 'membership-status')
         self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
@@ -120,9 +121,7 @@ class PlayerProfileScraper(Pdga):
         self.get_player_upcoming_events_data()
 
         # find the past events data
-        singles_events_obj = self.soup.find_all('li', 'career-events disclaimer')
-        self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
-        self.player_data.location = loc_obj[0].a.text
+        self.get_singles_event_history()
         
         # print the chore
         self.scraper_time = time.time() - start_time
@@ -138,7 +137,6 @@ class PlayerProfileScraper(Pdga):
         if 'content' in player_name_metadata.attrs:
             player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
         self.player_data.player_name = player_name
-
     
     def find_current_rating(self):
         current_rating_data = None
@@ -157,6 +155,12 @@ class PlayerProfileScraper(Pdga):
         rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
         self.player_data.rating_change = rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
 
+    def get_singles_event_history(self):
+        singles_events_obj = self.soup.find_all('li', 'career-events disclaimer')
+        if len(singles_events_obj) == 0:
+            self.player_data.career_events = '0'
+            return
+        self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
 
     def get_player_portrait_data(self):
         try:

@@ -9,6 +9,7 @@ from typing import Optional
 from .pdgaPlayer import PdgaPlayer
 from .pdgaPlayerNumberRelations import *
 import re
+from pathlib import Path
 from scrapers.pdga import PlayerProfileScraper, PdgaPlayerData
 
 class PdgaPlayerStat(commands.Cog): 
@@ -16,7 +17,7 @@ class PdgaPlayerStat(commands.Cog):
         self.bot = discord_bot
         self.config = {
             "pdga_player_uri": "https://www.pdga.com/player/",
-            "db_file" : Path.joinpath(Path.cwd().parent, f'cfg/pdga_players.json') 
+            "db_file" : Path.cwd().joinpath('cfg/pdga_players.json')
         }
         self.relations_handler = PdgaPlayerNumberRelations(db_file=self.config['db_file'])
         
@@ -139,7 +140,10 @@ class PdgaPlayerStat(commands.Cog):
             embed = nextcord.Embed(title=embed_title, color=0x004899)
             if isinstance(pdga_player_scraper.player_data.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_scraper.player_data.portrait_url):
                 embed.set_thumbnail(url=pdga_player_scraper.player_data.portrait_url)
-
+            else:
+                # 1192804555579195492
+                # https://discord.com/channels/1048885791704752158/1048885791704752161/1192806026634862642
+                embed.set_image(url='https://discord.com/assets/ee9c489e574f6ecb1d3c.svg')  # 🥏
             # call the PlayerDataObject's generate_dict method, creates custom headers 
             data_dict = pdga_player_scraper.player_data.generate_dict()
 

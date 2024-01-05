@@ -36,8 +36,10 @@ def test_pdga_player_profile_active_expired_membership_scraper():
     search = "1" # Steady Ed 
     scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=search))
 
-def test_pdga_player_profile_active_current_membership_scraper():
-    search = "211433" # Eva T
+def test_pdga_player_profile_random_membership_scraper():
+    import random
+    search = f"{random.randrange(25000,250000)}"
+    print(f"random pdga number: {search}")
     scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=search))
 
 def test_pdga_player_profile_active_current_membership_mpo_no_1_scraper():
