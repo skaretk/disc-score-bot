@@ -206,3 +206,30 @@ class PlayerProfileScraper(Pdga):
             self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
             return
         self.player_data.offical_status = 'n/a'
+
+    # commit to move over to work lap..
+    def __get_player_upcoming_events_data(self):
+        try:
+            # find all upcoming events
+            upcoming_events_obj = self.soup.find_all("li", "upcoming-events")
+            if len(upcoming_events_obj) == 0:
+                # if no upcoming events, player might have 0 or just 1 upcoming event, aka next-event
+                upcoming_events_obj = self.soup.find_all("li", "next-event")
+                player_upcoming_events = "```yaml\n"
+            if len(upcoming_events_obj) >= 1:
+                events_list = []
+                for events_data in upcoming_events_obj: #[0].find_all('a'):
+                    events = events_data.find_all('li')
+                    events_list.extend(events)
+                for event in events_list:
+                    event.text
+                    date, evt_name = event.text.split(": ") #event['title'].split(", ")
+                    #event_and_date = event['title'].split(",  on")
+                    player_upcoming_events += "\n - " + event_and_date[0].replace("-",",") .lstrip().rstrip() + " " + event_and_date[1].replace("-", " ").lstrip().rstrip() #event['title'] + " \n"
+            else:
+                player_upcoming_events += 'No upcoming events found'
+            player_upcoming_events +="\n```"
+        except:
+            player_upcoming_events = "```yaml\nFailed to retrieve upcoming events\n```"
+        # assign player data to player_data attrs
+        self.player_data.upcoming_events = player_upcoming_events
