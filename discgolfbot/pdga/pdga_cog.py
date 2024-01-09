@@ -152,8 +152,10 @@ class PdgaPlayerStat(commands.Cog):
             embed.description = desc_contents
 
             # filter out the upcoming events, alternatively "N/A" in case there are none # TODO: need to write logic to limit / trim / split upcoming events data if there are too many
-            upcoming_events_data = self.__process_upcoming_events_data__(pdga_player_data_dict=data_dict)
-            embed.add_field(name="Upcoming events:", value=upcoming_events_data, inline=True)
+            upcoming_events_strings = self.__process_upcoming_events_data__(player_scraper_events=pdga_player_scraper.player_data.upcoming_events)
+            
+            for event_string in upcoming_events_strings:
+                embed.add_field(name="Upcoming events:", value=event_string, inline=True)
         except:
             if not 'embed' in locals():
                 embed_title = "Sorry, I couldn't find the embed I was attempting to work on :("
@@ -164,14 +166,20 @@ class PdgaPlayerStat(commands.Cog):
         finally:
             return embed
         
-    def __process_upcoming_events_data__(self, pdga_player_data_dict:dict):
-            if 'Upcoming Events' in pdga_player_data_dict and isinstance(pdga_player_data_dict, dict):
-                if len(pdga_player_data_dict["Upcoming Events"]) >= 1:
-                    return pdga_player_data_dict['Upcoming Events']
-                else:
-                    return "N/A"
-                    # FIXME: Validate upcoming events content length 
-                    pass
+    def __process_upcoming_events_data__(self, player_scraper_events:list):
+
+            upcoming_events_fields_values = []
+            upcoming_events_string = ''
+            for event in player_scraper_events:
+                if len(upcoming_events_string) + len(f"{event}") > 1024:
+                    upcoming_events_fields_values.append(upcoming_events_string)
+                    upcoming_events_string = ''
+                upcoming_events_string += f'\n- {event}'
+            if len(upcoming_events_string) >=1:
+                upcoming_events_fields_values.append(upcoming_events_string)
+            return upcoming_events_fields_values
+
+            
         
     def __process_embed_description_data__(self, pdga_player_data_dict:dict, key_long=17, value_long=55, total=62):
             desc_contents = ""
@@ -191,6 +199,5 @@ class PdgaPlayerStat(commands.Cog):
                         insert_key_spaces = " "*add_key_spaces
                     if len(insert) < value_long:
                         insert_value_spaces = " "*add_value_spaces
-                # embed_contents
                 desc_contents += f"\n`{key}{insert_key_spaces}:{insert_value_spaces}{insert}`"
             return desc_contents
