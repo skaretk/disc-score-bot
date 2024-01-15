@@ -59,9 +59,9 @@ class PdgaPlayerStat(commands.Cog):
         discord_user: Optional[nextcord.Member] = SlashOption(name="user", description="name of discord-user to check", required=False),
     ):
         try:
-            if discord_user == None:
+            if discord_user is None:
                 discord_user = interaction.user 
-            if None == discord_user.nick:
+            if discord_user.nick is None:
                 displayname = discord_user.name
             else:
                 displayname = discord_user.nick
@@ -75,7 +75,7 @@ class PdgaPlayerStat(commands.Cog):
                 embed = nextcord.Embed(title=f"Uhm.. :thinking:", description=f"'{displayname}' hasn't told me their pdga-number yet", color=0x004899)
                 await interaction.send(embed=embed,content=f"Sorry, I can't help you with this, {interaction.user.mention}")
         except:
-            pass #FIXME: Do something
+            pass
         finally:
             if validate_embed(embed=embed):
                 await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
@@ -113,7 +113,7 @@ class PdgaPlayerStat(commands.Cog):
             else:
                 displayname = discord_user.name
             if discord_user.id in self.relations_handler.player_objects:
-                pdga_player = self.relations_handler.player_objects[discord_user.id] #pdga_players[discord_user.id]
+                pdga_player = self.relations_handler.player_objects[discord_user.id]
                 embed = self.get_www_pdga_com_user_data(pdga_player_number=pdga_player.pdga_number)
             else:
                 embed = nextcord.Embed(title=f"Hmmmmf.. :confused:", description=f"I must have misplaced the pdga-number for {displayname}", color=0x004899)
@@ -141,9 +141,10 @@ class PdgaPlayerStat(commands.Cog):
             if isinstance(pdga_player_scraper.player_data.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_scraper.player_data.portrait_url):
                 embed.set_thumbnail(url=pdga_player_scraper.player_data.portrait_url)
             else:
-                # 1192804555579195492
-                # https://discord.com/channels/1048885791704752158/1048885791704752161/1192806026634862642
                 embed.set_image(url='https://discord.com/assets/ee9c489e574f6ecb1d3c.svg')  # 🥏
+            # add a field containing the link the the www.pdga.com player profile page
+            self.add_profile_link_field(embed=embed, pdga_player_scraper=pdga_player_scraper)
+            
             # call the PlayerDataObject's generate_dict method, creates custom headers 
             data_dict = pdga_player_scraper.player_data.generate_dict()
 
@@ -151,11 +152,11 @@ class PdgaPlayerStat(commands.Cog):
             desc_contents = self.__process_embed_description_data__(pdga_player_data_dict=data_dict)
             embed.description = desc_contents
 
-            # filter out the upcoming events, alternatively "N/A" in case there are none # TODO: need to write logic to limit / trim / split upcoming events data if there are too many
+            # filter out the upcoming events, alternatively "N/A" in case there are none
             upcoming_events_strings = self.__process_upcoming_events_data__(player_scraper_events=pdga_player_scraper.player_data.upcoming_events)
             
             for event_string in upcoming_events_strings:
-                embed.add_field(name="Upcoming events:", value=event_string, inline=True)
+                embed.add_field(name="Upcoming events:", value=event_string, inline=False)
         except:
             if not 'embed' in locals():
                 embed_title = "Sorry, I couldn't find the embed I was attempting to work on :("
@@ -179,7 +180,9 @@ class PdgaPlayerStat(commands.Cog):
                 upcoming_events_fields_values.append(upcoming_events_string)
             return upcoming_events_fields_values
 
-            
+    def add_profile_link_field(self, embed:nextcord.Embed, pdga_player_scraper:PlayerProfileScraper):
+        url_title_string = "[" + pdga_player_scraper.player_data.player_name + "](" + pdga_player_scraper.scrape_url + ")"
+        embed.add_field(name="Link:", value=url_title_string, inline=True)
         
     def __process_embed_description_data__(self, pdga_player_data_dict:dict, key_long=17, value_long=55, total=62):
             desc_contents = ""
