@@ -18,6 +18,8 @@ class PdgaPlayerNumberRelations:
         if not self.__db_file_exists__():
             self.__init_db_file__()
         relations = self.__load_json__()
+        if relations is None:
+            relations = []
         if len(relations) >=1:
             # loop through they pdga_players.json keys(discord_id)
             for discord_id_key in relations: 
@@ -38,7 +40,7 @@ class PdgaPlayerNumberRelations:
         
     def __validate_json__(self):
         try:
-            with open(self.db_file.as_posix(), "r") as rf:
+            with open(self.db_file.as_posix(), "r", encoding="utf-8") as rf:
                 json.load(rf)
         except:
             return False
@@ -46,7 +48,7 @@ class PdgaPlayerNumberRelations:
         
     def __load_json__(self):
         if self.__validate_json__():
-            with open(self.db_file.as_posix(), "r") as readf:
+            with open(self.db_file.as_posix(), "r", encoding="utf-8") as readf:
                 relations = json.load(readf)
                 return relations
         else:
@@ -55,6 +57,7 @@ class PdgaPlayerNumberRelations:
                 if isinstance(jres, dict) and len(jres) ==0:
                     print(f"Database file is empty: '{ self.db_file.as_posix() }'")
                     return jres
+
     def save_relations(self):
-        with open(self.db_file.as_posix(), "w") as writef:
+        with open(self.db_file.as_posix(), "w", encoding="utf-8") as writef:
             json.dump(obj=self.pdga_players,fp=writef, indent=6)
