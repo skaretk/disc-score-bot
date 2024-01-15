@@ -187,12 +187,12 @@ class PdgaPlayerStat(commands.Cog):
     def __process_embed_description_data__(self, pdga_player_data_dict:dict, key_long=17, value_long=55, total=62):
             desc_contents = ""
             for key in pdga_player_data_dict:
-                if None == pdga_player_data_dict[key]:
+                if pdga_player_data_dict[key] is None:
                     continue
                 if key == 'Upcoming Events':
                     continue
-                insert = f"{pdga_player_data_dict[key].lstrip().rstrip()}"
-                wordlength = len(f"{key}:{pdga_player_data_dict[key].lstrip().rstrip()}")
+                insert = f"{pdga_player_data_dict[key].strip()}"
+                wordlength = len(f"{key}:{pdga_player_data_dict[key].strip()}")
                 add_value_spaces = value_long - wordlength
                 add_key_spaces = key_long-len(key)
                 insert_key_spaces = ""
