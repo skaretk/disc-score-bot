@@ -11,6 +11,7 @@ from emoji import Emojis
 from discs import Discs, PdgaApprovedDiscs
 from bag import Bag
 from discgolfmetrix import DiscgolfMetrix
+from pdga.pdga_cog import PdgaPlayerStat
 
 # discord client
 def main():
@@ -39,8 +40,9 @@ def main():
     bot.add_cog(Bag(bot))
     bot.add_cog(PdgaApprovedDiscs(bot))
     bot.add_cog(DiscgolfMetrix(bot))
-
+    bot.add_cog(PdgaPlayerStat(bot))
     bot.run(token)
+    
 
 if __name__ == '__main__':
     main()
