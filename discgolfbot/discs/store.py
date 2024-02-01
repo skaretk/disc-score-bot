@@ -4,12 +4,12 @@ class Store():
         self.discs = []
 
     def __eq__(self, storeName):
-        if (storeName == self.store):
+        if storeName == self.store:
             return True
         else:
             return False
 
-def split_discs_in_stores(discs, max_no_discs = None):
+def split_discs_in_stores(discs, max_no_discs=None):
     stores = []
 
     for disc in discs:

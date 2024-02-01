@@ -2,7 +2,6 @@ import nextcord
 from nextcord.ext import tasks, commands
 from dateutil.parser import parse
 import scrapers.pdga
-from discord_utils.embed_validation import validate_embed
 from .pdga_sql import PdgaSql
 
 class PdgaApprovedDiscs(commands.Cog):
@@ -15,14 +14,14 @@ class PdgaApprovedDiscs(commands.Cog):
         new_approved_discs = []
         pdga_scraper = scrapers.pdga.DiscScraper()
         pdga_scraper.scrape()
-        pdgaSql = PdgaSql()
-        pdgaSql.create_table()
-        storedDiscs = pdgaSql.get_discs()
+        pdga_sql = PdgaSql()
+        pdga_sql.create_table()
+        storedDiscs = pdga_sql.get_discs()
 
         for disc in pdga_scraper.discs:
-            if (disc not in storedDiscs):
+            if disc not in storedDiscs:
                 new_approved_discs.append(disc)
-                pdgaSql.add_approved_disc(disc)
+                pdga_sql.add_approved_disc(disc)
                 print(f'NEW DISC: {disc.name} Stored in sql')
 
         # Any new approved discs?
@@ -34,7 +33,6 @@ class PdgaApprovedDiscs(commands.Cog):
                 embed.set_thumbnail(url=(self.bot.user.avatar.url))
 
             # TODO: Configure channels to send event to
-            #channel = self.bot.get_channel(905420670693949470) #Shim: bot
             channel = self.bot.get_channel(885087767292428298) #EDK: Disc Search
 
             await channel.send(embed=embed)
