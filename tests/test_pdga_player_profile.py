@@ -1,5 +1,6 @@
 import os
 import sys
+import random
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.getcwd())))
 from context import scrapers
 
@@ -28,24 +29,18 @@ def check_player_profile_data(player_data):
 
 def scrape_and_check(scraper):
     scraper.scrape()
-    assert check_player_profile_data(scraper.player_data) == True
-    assert len(scraper.player_data_dict) != 0
+    assert check_player_profile_data(scraper.player_data) is True
+    assert len(scraper.player_data.dictionary) != 0
 
 
 def test_pdga_player_profile_active_expired_membership_scraper():
-    search = "1" # Steady Ed 
-    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=search))
+    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number="1")) # Steady Ed
 
 def test_pdga_player_profile_random_membership_scraper():
-    import random
-    search = f"{random.randrange(25000,250000)}"
-    print(f"random pdga number: {search}")
-    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=search))
+    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=f"{random.randrange(25000,250000)}"))
 
 def test_pdga_player_profile_active_current_membership_mpo_no_1_scraper():
-    search = "45971" # Calvin Heimburg
-    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=search))
+    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number="45971")) # Calvin Heimburg
 
 def test_pdga_player_profile_active_current_membership_fpo_no_1_scraper():
-    search = "73986" # Kristin Tattar
-    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number=search))
+    scrape_and_check(scrapers.pdga.PlayerProfileScraper(pdga_number="73986")) # Kristin Tattar

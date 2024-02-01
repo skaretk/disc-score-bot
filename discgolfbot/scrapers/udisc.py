@@ -1,7 +1,7 @@
 import time
 from score.scorecard_udisc_competition import ScorecardUdiscCompetition
 from score.player import Player
-from score.name import Name
+from score.playeralias import PlayerAlias
 from .scraper import Scraper
 
 class Udisc(Scraper):
@@ -51,7 +51,7 @@ class LeagueScraper(Udisc):
         if date is None:
             return
         # Date, varies between two formats ("September 12th 2021, or "Sept 12")
-        date = date.getText().split("·")[1].rstrip().lstrip()
+        date = date.getText().split("·")[1].strip()
         self.scorecard.date_time = date
 
         divisions_list = []
@@ -70,7 +70,7 @@ class LeagueScraper(Udisc):
         division_scores = soup.findAll("div", {"class" : "jss113"} )
         for i, division_score in enumerate(division_scores):
             for player in division_score.find_all("tr", {"class" : ["jss126", "false"]}):
-                player_name = Name("")
+                player_name = PlayerAlias("")
                 score = ""
                 scores = []
                 total = 0

@@ -1,12 +1,13 @@
-from collections import OrderedDict
+from abc import abstractmethod
 import json
 from pathlib import Path
 
 class Config:
-    """Cfg class, handle the bot configuration"""
-    def __init__(self, server, file=''):
+    """Cfg class, handle bot configuration"""
+    def __init__(self, server, module_name=None, file=None):
         self.server = server
-        self.file = file
+        self.file = "config.json" if file is None else file
+        self.module_name = module_name
 
     @property
     def path(self):
@@ -15,7 +16,7 @@ class Config:
 
     @property
     def config(self):
-        """Get the config file"""
+        """Get the config filename"""
         return self.path / self.file
 
     def path_exists(self):
@@ -34,23 +35,55 @@ class Config:
 
         return True
 
-    def read(self):
-        """Returns the Config file as a json object"""
-        try:
-            with open(self.config, encoding='UTF-8', newline='') as json_file:
-                cfg = json.load(json_file, object_pairs_hook=OrderedDict)
-            return cfg
-        except IOError:
-            return None
+    def module_exists(self):
+        """Check if the config contain module configuration"""
+        if self.config_exists() is False:
+            return False
+        if self.module_name is not None:
+            if self.read(self.module_name) is not None:
+                return True
+        return False
 
-    def write(self, json_object):
-        """Writes the Config file as a json object, returns True on success"""
+    def create(self):
+        """Create the json file"""
         if self.path_exists() is False:
             self.path.mkdir()
         try:
             with open(self.config, 'w', encoding='UTF-8', newline='') as json_file:
-                json.dump(json_object, json_file, indent=4, sort_keys=False)
+                json.dump({}, json_file)
                 return True
         except IOError:
-            print("Could not store the json")
             return False
+
+    @abstractmethod
+    def create_module(self):
+        """Override in child class"""
+
+    def read(self, module_name=None):
+        """Returns the Config file as a json object"""
+        try:
+            with open(self.config, 'r', encoding='UTF-8', newline='') as json_file:
+                cfg = json.load(json_file)
+                if module_name is None:
+                    return cfg
+                return cfg[module_name] if module_name in cfg else None
+        except IOError:
+            return None
+
+    def write(self, json_object, module_name=None):
+        """Writes the Config file as a json object, returns True on success"""
+        if self.path_exists() is False:
+            self.path.mkdir()
+        if self.config_exists() is False:
+            self.create()
+
+        data = self.read()
+        if data is not None:
+            try:
+                with open(self.config, 'w', encoding='UTF-8', newline='') as json_file:
+                    data[module_name] = json_object
+                    json.dump(data, json_file, indent=4, sort_keys=False)
+                    return True
+            except IOError:
+                print("Could not store the json")
+        return False
