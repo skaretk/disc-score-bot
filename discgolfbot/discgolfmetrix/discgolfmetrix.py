@@ -11,6 +11,7 @@ from .discgolfmetrixcompetition import DiscgolfmetrixCompetition
 from .discgolfmetrixcompetitions import DiscgolfmetrixCompetitions
 from .discgolfmetrixcourse import DiscgolfmetrixCourse, DiscgolfmetrixCourseSource
 from .discgolfmetrixcourses import DiscgolfmetrixCourses
+from .discgolfmetrixuser import DiscgolfmetrixUser
 
 class DiscgolfMetrix(commands.Cog):
     """Discgolfmetrix Cog"""
@@ -21,26 +22,28 @@ class DiscgolfMetrix(commands.Cog):
     async def discgolfmetrix_slash_command(self, interaction: nextcord.Interaction):
         """/discgolfmetrix"""
 
-    @discgolfmetrix_slash_command.subcommand(name="add_player_code", description="Add your discgolfmetrix player code")
-    async def add_player_code(
+    @discgolfmetrix_slash_command.subcommand(name="add_user_code", description="Add your discgolfmetrix player code")
+    async def add_user_code(
         self,
         interaction:Interaction,
-        player_code:str = SlashOption(name="code", description="Player code from discgolfmetrix", required=True)
+        user_code:str = SlashOption(name="code", description="Player code from discgolfmetrix", required=True)
     ):
-        """/discgolfmetrix add_player_code"""
+        """/discgolfmetrix add_user_code"""
         user = interaction.user
         cfg = DiscgolfmetrixConfig(interaction.guild.name)
-        modified = cfg.add_code(user.id, player_code)
-        if modified:
+        written, modified = cfg.add_user(DiscgolfmetrixUser(user.id, user_code))
+        if written and modified:
             await interaction.response.send_message(f'Modified your discgolfmetrix player code {user.mention}')
-        else:
+        elif written:
             await interaction.response.send_message(f'Added your discgolfmetrix player code {user.mention}')
+        else:
+            await interaction.response.send_message(f'Failed to add your discgolfmetrix player code {user.mention}')
 
-    @discgolfmetrix_slash_command.subcommand(name="competitions", description="Lists your competitions, or for a given player")
+    @discgolfmetrix_slash_command.subcommand(name="competitions", description="Lists your competitions, or for a given user")
     async def competitions(
         self,
         interaction:Interaction,
-        user: Optional[nextcord.Member] = SlashOption(name="player", description="Player name", required=False)
+        user: Optional[nextcord.Member] = SlashOption(name="user", description="Discord user", required=False)
     ):
         """/discgolfmetrix competitions"""
         await interaction.response.defer()

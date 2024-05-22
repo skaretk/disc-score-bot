@@ -46,7 +46,7 @@ class Bag(commands.Cog):
         """/bag add url"""
         user = interaction.user
         cfg = BagConfig(interaction.guild.name)
-        modified = cfg.add_bag(user.id, bag_url)
+        modified = cfg.add_user(user.id, bag_url)
         if modified:
             await interaction.response.send_message(f'Modified your bag {user.mention}')
         else:
@@ -55,7 +55,7 @@ class Bag(commands.Cog):
     def scrape_bag(self, guild_name, user):
         """Scrape user bag from discgolfbagbuilder.com"""
         cfg = BagConfig(guild_name)
-        bag = cfg.get_bag(user)
+        bag = cfg.get_url(user)
         if bag is not None:
             bag_scraper = DiscgolfBagBuilder(bag)
             bag_scraper.scrape_discs()

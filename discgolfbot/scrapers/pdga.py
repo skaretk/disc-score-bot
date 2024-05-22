@@ -13,9 +13,9 @@ class Pdga(Scraper):
 class DiscScraper(Pdga):
     def __init__(self):
         super().__init__()
-        self.scrape_url = f'https://www.pdga.com/technical-standards/equipment-certification/discs'
+        self.scrape_url = f'{self.url}technical-standards/equipment-certification/discs'
         self.discs = []
-    
+
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup()
@@ -28,15 +28,15 @@ class DiscScraper(Pdga):
             approved_disc = PdgaApprovedDisc()
             # Fetch Manufacturer
             manufacturer = manufacturers[idx].getText()
-            approved_disc.manufacturer = manufacturer.replace("\n", "").lstrip().rstrip()
+            approved_disc.manufacturer = manufacturer.replace("\n", "").strip()
             # Fetch Disc Model
-            disc_model = disc_models[idx].getText()
-            approved_disc.name = disc_model.replace("\n", "").lstrip().rstrip()
+            disc_name = disc_model.getText()
+            approved_disc.name = disc_name.replace("\n", "").strip()
             # Fetch Approved Date
             approved_date = approved_dates[idx].getText()
-            approved_disc.approved_date = approved_date.replace("\n", "").lstrip().rstrip()
+            approved_disc.approved_date = approved_date.replace("\n", "").strip()
             # Fetch link
-            a = disc_models[idx].find('a', href=True)
+            a = disc_model.find('a', href=True)
             url = f'{self.url}{a["href"]}'
             approved_disc.url = url
             # Append
@@ -53,12 +53,14 @@ class PdgaPlayerData():
         self.location = ''
         self.membership_status = ''
         self.offical_status = ''
-        self.career_events = 0 
+        self.career_events = 0
         self.upcoming_events = []
         self.portrait_url = ''
         self.player_name = ''
 
-    def generate_dict(self): # finnes det noen bedre måter å gjøre dette på?
+    @property
+    def dictionary(self):
+        """Returns a dictionary"""
         return {
             "Current Rating": self.current_rating,
             "Career Events": self.career_events,
@@ -69,7 +71,7 @@ class PdgaPlayerData():
             "Ratings Change": self.rating_change,
             "Upcoming Events": self.upcoming_events,
         }
-        
+
 class PdgaEvent():
     def __init__(self, url_host:str, url_path:str, title:str, date_start:str, date_from_to:str) -> None:
         # day, month(str3) month-day(int1-2), year(int4)
@@ -79,14 +81,14 @@ class PdgaEvent():
         self.date_start = date_start
         self.date_from_to = date_from_to
         self.__on_init__()
-        
+
     def __on_init__(self):
         day_in_month = self._rexpression.findall(string=self.date_start)
         if len(day_in_month) == 1:
             if len(day_in_month[0]) == 1:
                 replace_day_in_month = "0" + day_in_month[0]
                 self.date_start = self.date_start.replace(day_in_month[0], replace_day_in_month, 1)
-        
+
     def __repr__(self) -> str:
         return f'{self.date_start}: [{self.title}]({self.event_url})'
 
@@ -94,14 +96,13 @@ class PlayerProfileScraper(Pdga):
     def __init__(self, pdga_number):
         super().__init__()
         self.name = "PDGA Player Profile"
-        self.scrape_url = 'https://www.pdga.com/player/' + pdga_number
+        self.scrape_url = f'{self.url}player/{pdga_number}'
         self.pdga_number = pdga_number
-        self.player_data = PdgaPlayerData(pdga_number=self.pdga_number)
-        self.player_data_dict = {}
+        self.player_data = PdgaPlayerData(pdga_number)
 
     def scrape(self):
         start_time = time.time()
-        
+
         # headers
         headers = {
             "Host": "www.pdga.com",
@@ -111,16 +112,16 @@ class PlayerProfileScraper(Pdga):
             "Accept-Encoding": "*",
         }
         self.soup = self.urllib_header_get_beatifulsoup(headers=headers)
-        
+
         # find the location data of the player
-        loc_obj = self.soup.find_all('li', 'location')    
-        self.player_data.location = loc_obj[0].a.text   
+        loc_obj = self.soup.find_all('li', 'location')
+        self.player_data.location = loc_obj[0].a.text
         # find the membership status of the player
         membership_obj = self.soup.find_all('li', 'membership-status')
-        self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].lstrip().rstrip()
+        self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].strip()
         # find the rules official status of the player
         self.find_official_data()
-        
+
         # retrieve the player current rating
         self.find_current_rating()
 
@@ -132,26 +133,22 @@ class PlayerProfileScraper(Pdga):
 
         if player_portrait_data:
             # assign the player name from the portrait data
-            self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].lstrip().rstrip() 
+            self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].strip()
         else:
             # assign the player name from the meta tag
             self.find_player_name(tag="meta", tag_property="og:title")
             if self.player_data.portrait_url is None and self.player_data.player_name:
-                self.get_player_portrait_data(search_key="'s picture")#)self.player_data.player_name.replace(" ","."))
+                self.get_player_portrait_data(search_key="'s picture")
 
         # parse players upcoming event and assemble a string worthy of discord-embeds :)
         self.get_player_upcoming_events_data()
 
         # find the past events data
         self.get_singles_event_history()
-        
+
         # print the chore
         self.scraper_time = time.time() - start_time
         print(f'PDGA scraper: {self.scraper_time}')
-        
-        # set player data dict - so we have something to test
-        self.player_data_dict = self.player_data.generate_dict()
-    
 
     def find_player_name(self, tag="meta", tag_property="og:title"):
         player_name = '-'
@@ -159,14 +156,13 @@ class PlayerProfileScraper(Pdga):
         if 'content' in player_name_metadata.attrs:
             player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
         self.player_data.player_name = player_name
-    
+
     def find_current_rating(self):
-        current_rating_data = None
         current_rating_data = self.soup.find('li', 'current-rating')
-        if None == current_rating_data:
+        if current_rating_data is None:
             self.player_data.current_rating = 'n/a'
             return
-        self.player_data.current_rating = current_rating_data.text.split(": ")[-1].lstrip().rstrip()
+        self.player_data.current_rating = current_rating_data.text.split(": ")[-1].strip()
 
 
     def find_rating_difference_gain(self):
@@ -174,7 +170,6 @@ class PlayerProfileScraper(Pdga):
         if len(rating_diff_data) == 0:
             self.player_data.rating_change = 'n/a'
             return
-        rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
         self.player_data.rating_change = rating_diff_data[0].find_all(name='a', property='rating-difference gain')[0].text
 
     def get_singles_event_history(self):
@@ -201,13 +196,12 @@ class PlayerProfileScraper(Pdga):
         except:
             self.player_data.portrait_url = None
             return None
-        # return player_portrait_data
         return player_portrait_data
 
     def find_official_data(self):
         official_obj = self.soup.find_all('li', 'official')
         if len(official_obj) >= 1:
-            self.player_data.offical_status = official_obj[0].text.split(": ")[-1].lstrip().rstrip()
+            self.player_data.offical_status = official_obj[0].text.split(": ")[-1].strip()
             return
         self.player_data.offical_status = 'n/a'
 
@@ -232,15 +226,15 @@ class PlayerProfileScraper(Pdga):
                     if len(events) == 0:
                         # next-event
                         events = events_data.find_all('a')
-                        
+
                     events_data_list.extend(events)
                 for event in events_data_list:
                     # try to find the events start date and name
-                    
-                    date_start, evt_name = event.text.split(": ") 
+
+                    date_start, evt_name = event.text.split(": ")
                     # find the events dates (from to)
                     evt_date_from_to = event.contents[1]['title'].split(" on ")[-1]
-                    # find the events href 
+                    # find the events href
                     href = event.contents[1]['href']
                     event_obj = PdgaEvent(url_host=self.url, url_path=href, title=evt_name, date_start=date_start, date_from_to=evt_date_from_to)
                     self.player_data.upcoming_events.append(event_obj)
@@ -283,4 +277,3 @@ class PlayerProfileScraper(Pdga):
         event_obj = PdgaEvent(url_host=self.url, url_path=href, title=title, date_start=date_start, date_from_to=date_from_to)
         return event_obj
         # if date_from_to is None:
-                

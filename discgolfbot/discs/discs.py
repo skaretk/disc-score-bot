@@ -99,7 +99,7 @@ class Discs(commands.Cog):
 
             embed = self.get_discs_embed()
             if embed is not None:
-                if self.get_disc_image(embed) == False:
+                if self.get_disc_image(embed) is False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
                 await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
             else:
@@ -132,7 +132,7 @@ class Discs(commands.Cog):
 
             embed = self.get_discs_embed()
             if embed is not None:
-                if self.get_disc_image(embed) == False:
+                if self.get_disc_image(embed) is False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
                 await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
             else:
@@ -165,7 +165,7 @@ class Discs(commands.Cog):
 
             embed = self.get_discs_embed()
             if embed is not None:
-                if self.get_disc_image(embed) == False:
+                if self.get_disc_image(embed) is False:
                     embed.set_thumbnail(url=(ctx.author.avatar.url))
                 await ctx.send(f'{ctx.author.mention} - **{search_item}**', embed=embed)
             else:
@@ -281,7 +281,7 @@ class Discs(commands.Cog):
 
         start_time = time.time()
         self.discs.clear()
-        if days is not  None:
+        if days is not None:
             disc_scrapers = DiscNewsScrapers(days)
         else:
             disc_scrapers = DiscNewsScrapers(7)
@@ -300,7 +300,7 @@ class Discs(commands.Cog):
         self.stores = split_discs_in_stores(self.discs, 5)
         embed = self.get_discs_embed()
         if embed is not None:
-            if self.get_disc_image(embed) == False:
+            if self.get_disc_image(embed) is False:
                 embed.set_thumbnail(url=(interaction.user.display_avatar))
             await interaction.followup.send(f'{interaction.user.mention} - **NEWS**', embed=embed)
         else:

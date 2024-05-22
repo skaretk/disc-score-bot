@@ -9,5 +9,6 @@ import config
 import discgolfmetrix
 import discs
 import discord_utils
+import pdga
 import score
 import scrapers

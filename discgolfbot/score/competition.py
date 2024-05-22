@@ -1,6 +1,6 @@
 from datetime import datetime
-import nextcord
 from pathlib import Path
+import nextcord
 from discord_utils.embed_validation import validate_embed
 from .statistics import Statistics
 from .alias import Alias

@@ -1,10 +1,10 @@
 from .statistics import Statistics
-from .name import Name
+from .playeralias import PlayerAlias
 
 class Player:
     """Player Class"""
     def __init__(self, name, total, score):
-        self.name = Name(name)
+        self.name = PlayerAlias(name)
         self.total = int(total)
         self._score = int(score)
         self.holes = []
@@ -24,7 +24,7 @@ class Player:
 
     def __add__(self, other):
         player = Player(self.name.name, self.total + other.total, self._score + other._score)
-        player.name.alias = self.name.alias
+        player.name.aliases = self.name.aliases
         player.score_cards = self.score_cards + 1
         player.score_cards_position = self.score_cards_position + other.score_cards_position
         player.player_stats = self.player_stats + other.player_stats

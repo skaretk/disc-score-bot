@@ -1,6 +1,6 @@
 import openpyxl
 import os
-from score.name import Name
+from score.playeralias import PlayerAlias
 
 class ExcelFile:
     def __init__(self):
@@ -27,11 +27,11 @@ class Members:
 
         # Fetch header
         for cell in sheet[1]:
-            if (cell.value == self.excel_file.first_name):
+            if cell.value == self.excel_file.first_name:
                 self.excel_file.first_name_column = cell.column
-            elif (cell.value == self.excel_file.surname):
+            elif cell.value == self.excel_file.surname:
                 self.excel_file.surname_column = cell.column
-            elif (cell.value == self.excel_file.contingent):
+            elif cell.value == self.excel_file.contingent:
                 self.excel_file.contingent_column = cell.column
 
         # Fetch all members
@@ -40,14 +40,14 @@ class Members:
             surname = ''
             member = False
             for cell in row:
-                if (cell.column == self.excel_file.first_name_column):
+                if cell.column == self.excel_file.first_name_column:
                     first_name = cell.value
-                elif (cell.column == self.excel_file.surname_column):
+                elif cell.column == self.excel_file.surname_column:
                     surname = cell.value
-                elif (cell.column == self.excel_file.contingent_column):
-                    if (cell.value == self.is_member):
+                elif cell.column == self.excel_file.contingent_column:
+                    if cell.value == self.is_member:
                         member = True
             # Paid ?
-            if (member == True):
-                self.member_list.append(Name(f'{first_name} {surname}'))
+            if member is True:
+                self.member_list.append(PlayerAlias(f'{first_name} {surname}'))
         wb.close()

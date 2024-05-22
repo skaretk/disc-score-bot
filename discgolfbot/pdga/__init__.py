@@ -1,1 +1,2 @@
-from .pdga_cog import PdgaPlayerStat
+from .pdgaplayerstat import PdgaPlayerStat
+from .pdgaplayer import PdgaPlayer
