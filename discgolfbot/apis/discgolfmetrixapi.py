@@ -84,7 +84,7 @@ class DiscgolfMetrixApi():
         if group is not None:
             params['group'] = group
         response = requests.get(self.api_url, params=params, timeout=10)
-        if response and response.status_code == 200 and response.json().get("Errors") is None:
+        if response and response.status_code == 200 and bool(response.json().get("Errors")) is False:
             return json.loads(html.unescape(response.text))
         return None
 
