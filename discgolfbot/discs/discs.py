@@ -5,6 +5,7 @@ from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 from scrapers.discScrapers import DiscScrapers, DiscNewsScrapers
 from scrapers.marshallstreet import DiscFlightScraper
+from apis.discitapi import DiscitApi
 from .store import Store, split_discs_in_stores
 
 import time
@@ -77,6 +78,28 @@ class Discs(commands.Cog):
             # Validate and return embed
             if validate_embed(embed):
                 return embed
+        return None
+
+    def get_disc_lookup_embed(self, disc):
+        if len(disc) == 1:
+            disc = disc[0]
+            embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}')
+            embed.add_field(name='Flight', value=f'{disc.flight}', inline=True)
+            embed.set_image(url=disc.img)
+            embed.set_footer(text="Discit-api")
+
+            # Validate and return embed
+            if validate_embed(embed):
+                return embed
+        else:
+            embed = nextcord.Embed(title=f'found {len(disc)} discs')
+            disc_text = ''
+            for disc_ in disc:
+                disc_text += f'{disc_.name} {disc_.flight}\n'
+            embed.add_field(name='Discs', value=disc_text)
+            embed.set_footer(text="Discit-api")
+            return embed
+
         return None
 
     @commands.command(aliases=['Disc', 'disk', 'Disk', 'd'], brief='%disc disc1, disc2, etc', description='Search for disc in norwegian sites')
@@ -268,6 +291,63 @@ class Discs(commands.Cog):
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
+
+    @disc_slash_command.subcommand(name="lookup", description="Search for discs with specific characteristics")
+    async def disc_flight_slash_command(
+        self,
+        interaction: Interaction,
+        name: str = SlashOption(
+            name="name",
+            description="Disc name",
+            required=False),
+        brand: str = SlashOption(
+            name="brand",
+            description="Disc brand",
+            required=False),
+        category: str = SlashOption(
+            name="category",
+            description="Category to search for",
+            choices={"Distance Driver": "Distance Driver", "Hybrid Driver": "Hybrid Driver", "Control Driver": "Control Driver", "Midrange": "Midrange", "Putter": "Putter"},
+            required=False),
+        speed: str = SlashOption(
+            name="speed",
+            description="Disc speed",
+            required=False),
+        glide: str = SlashOption(
+            name="glide",
+            description="Disc glide",
+            required=False),
+        turn: str = SlashOption(
+            name="turn",
+            description="Disc turn",
+            required=False),
+        fade: str = SlashOption(
+            name="fade",
+            description="Disc fade to",
+            required=False),
+        stability: str = SlashOption(
+            name="stability",
+            description="Disc stability",
+            choices={"Stable": "Stable", "Overstable": "Overstable", "Very Overstable": "Very Overstable", "Understable": "Understable", "Very Understable": "Very Understable"},
+            required=False)
+    ):
+        self.discs.clear()
+        await interaction.response.defer()
+        await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
+
+        start_time = time.time()
+        api = DiscitApi()
+        disc_list = api.get_disc(name=name,brand=brand,category=category,speed=speed,glide=glide,turn=turn,fade=fade,stability=stability)
+
+        embed = self.get_disc_lookup_embed(disc_list)
+
+        if embed is not None:
+            await interaction.followup.send(interaction.user.mention, embed=embed)
+        else:
+            await interaction.followup.send(f'Could not lookup the the disc(s) {interaction.user.mention}')
+
+        await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
+        print(f'Spent {round(time.time() - start_time, 2)} looking up the disc(s)')
 
     @disc_slash_command.subcommand(name="news", description="Search for last updated discs in stores!")
     async def disc_news_slash_command(
