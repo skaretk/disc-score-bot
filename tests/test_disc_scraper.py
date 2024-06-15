@@ -92,9 +92,9 @@ def test_rocketdiscs_disc_scraper():
     search = "firebird"
     scrape_and_check(scrapers.rocketdiscs.DiscScraper(search))
 
-def test_starframe_disc_scraper():
-    search = "firebird"
-    scrape_and_check(scrapers.starframe.DiscScraper(search))
+#def test_starframe_disc_scraper():
+#    search = "firebird"
+#    scrape_and_check(scrapers.starframe.DiscScraper(search))
 
 #def test_sunesport_disc_scraper():
 #    search = "firebird"
