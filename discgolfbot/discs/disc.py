@@ -1,6 +1,7 @@
 import urllib.parse
 
 class Disc():
+    """Disc class with all properties"""
     def __init__(self):
         self.name = ''
         self.manufacturer = ''
@@ -19,23 +20,14 @@ class Disc():
 
     @property
     def flight(self):
+        """Disc flight characteristics"""
         return f'{self.speed}/{self.glide}/{self.turn}/{self.fade}'
 
     @property
     def img(self):
+        """Disc image"""
         return self._img
 
     @img.setter
     def img(self, i):
         self._img = urllib.parse.quote(i, safe='?:/=&+')
-
-class PdgaApprovedDisc(Disc):
-    def __init__(self):
-        super().__init__()
-        self.manufacturer_url = ''
-        self.approved_date = ''
-
-    def __eq__(self, other):
-        if self.name.lower() == other.name.lower() and self.manufacturer.lower() == other.manufacturer.lower() and self.approved_date.lower() == other.approved_date.lower() and self.url.lower() == other.url.lower():
-            return True
-        return False

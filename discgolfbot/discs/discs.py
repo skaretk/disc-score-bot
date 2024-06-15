@@ -1,4 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
+import time
+from typing import Optional
+
 from discord_utils.embed_validation import validate_embed
 import nextcord
 from nextcord import Interaction, SlashOption
@@ -6,18 +9,17 @@ from nextcord.ext import commands
 from scrapers.discScrapers import DiscScrapers, DiscNewsScrapers
 from scrapers.marshallstreet import DiscFlightScraper
 from apis.discitapi import DiscitApi
-from .store import Store, split_discs_in_stores
-
-import time
-from typing import Optional
+from .store import split_discs_in_stores
 
 class Discs(commands.Cog):
+    """Discs cog"""
     def __init__(self, bot):
         self.bot = bot
         self.discs = []
         self.stores = []
 
     def scrape(self, scraper_list):
+        """Scrape discs from disc scraper_list"""
         start_time = time.time()
         with ThreadPoolExecutor(max_workers=len(scraper_list)) as executor:
             for disc_scraper in scraper_list:
@@ -29,6 +31,7 @@ class Discs(commands.Cog):
             self.discs.extend(disc_scraper.discs)
 
     def get_disc_image(self, embed:nextcord.Embed):
+        """Fetch the image from the first disc in the list"""
         for disc in self.discs:
             # Set image
             if disc.img:
@@ -38,6 +41,7 @@ class Discs(commands.Cog):
         return False
 
     def format_discs_description(self):
+        """Format the discs with stores"""
         text = ''
         for store in self.stores:
             text += f'**{store.store}**' if store == self.stores[0] else f'\n**{store.store}**'
@@ -47,6 +51,7 @@ class Discs(commands.Cog):
         return text
 
     def get_discs_embed(self):
+        """Return discs embed"""
         if len(self.discs) == 0:
             return None
 
@@ -65,6 +70,7 @@ class Discs(commands.Cog):
         return None
 
     def get_disc_flight_embed(self, disc_flight_scraper):
+        """Return disc flight embed"""
         if len(self.discs) == 1:
             disc = self.discs[0]
             if disc.manufacturer == "Other":
@@ -80,24 +86,30 @@ class Discs(commands.Cog):
                 return embed
         return None
 
-    def get_disc_lookup_embed(self, disc):
-        if len(disc) == 1:
-            disc = disc[0]
-            embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}')
-            embed.add_field(name='Flight', value=f'{disc.flight}', inline=True)
+    def get_disc_lookup_embed(self):
+        """Return disc lookup embed"""
+        if len(self.discs) == 1:
+            disc = self.discs[0]
+            embed = nextcord.Embed(title=f'{disc.manufacturer} {disc.name}',
+                                   description=f'**{disc.flight}**',
+                                   color=int(disc.color.lstrip('#'), 16))
             embed.set_image(url=disc.img)
-            embed.set_footer(text="Discit-api")
-
-            # Validate and return embed
-            if validate_embed(embed):
-                return embed
-        else:
-            embed = nextcord.Embed(title=f'found {len(disc)} discs')
+        elif len(self.discs) >= 1:
             disc_text = ''
-            for disc_ in disc:
-                disc_text += f'{disc_.name} {disc_.flight}\n'
-            embed.add_field(name='Discs', value=disc_text)
-            embed.set_footer(text="Discit-api")
+            for disc in self.discs:
+                disc_text += f'* {disc.name} {disc.flight}'
+                if disc != self.discs[-1]:
+                    disc_text += '\n'
+            embed = nextcord.Embed(title=f'Found {len(self.discs)} discs',
+                                   description=f'{disc_text}',
+                                   color=0x004899)
+        else:
+            return None
+
+        embed.set_footer(text="DiscIt")
+
+        # Validate and return embed
+        if validate_embed(embed):
             return embed
 
         return None
@@ -227,6 +239,7 @@ class Discs(commands.Cog):
     # Slash commands
     @nextcord.slash_command(name="disc", description="Discs commands", guild_ids=[])
     async def disc_slash_command(self, interaction: nextcord.Interaction):
+        """/disc slash command. Main command"""
         pass
 
     @disc_slash_command.subcommand(name="search", description="Search for discs in stores!")
@@ -236,6 +249,7 @@ class Discs(commands.Cog):
         search: str = SlashOption(name="disc", description="Disc to search for", required=True),
         where: Optional[int] = SlashOption(name="where", description="Where to search", choices={"Norway": 1, "VOEC": 2, "World": 3}, required=False)
     ):
+        """/disc search subcommand"""
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
@@ -275,6 +289,7 @@ class Discs(commands.Cog):
         interaction: Interaction,
         search: str = SlashOption(name="disc", description="Disc to search for", required=True)
     ):
+        """/disc flight subcommand"""
         self.discs.clear()
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
@@ -293,7 +308,7 @@ class Discs(commands.Cog):
         print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
 
     @disc_slash_command.subcommand(name="lookup", description="Search for discs with specific characteristics")
-    async def disc_flight_slash_command(
+    async def disc_lookup_slash_command(
         self,
         interaction: Interaction,
         name: str = SlashOption(
@@ -306,7 +321,7 @@ class Discs(commands.Cog):
             required=False),
         category: str = SlashOption(
             name="category",
-            description="Category to search for",
+            description="Disc category",
             choices={"Distance Driver": "Distance Driver", "Hybrid Driver": "Hybrid Driver", "Control Driver": "Control Driver", "Midrange": "Midrange", "Putter": "Putter"},
             required=False),
         speed: str = SlashOption(
@@ -323,7 +338,7 @@ class Discs(commands.Cog):
             required=False),
         fade: str = SlashOption(
             name="fade",
-            description="Disc fade to",
+            description="Disc fade",
             required=False),
         stability: str = SlashOption(
             name="stability",
@@ -331,15 +346,24 @@ class Discs(commands.Cog):
             choices={"Stable": "Stable", "Overstable": "Overstable", "Very Overstable": "Very Overstable", "Understable": "Understable", "Very Understable": "Very Understable"},
             required=False)
     ):
+        """/disc lookup subcommand"""
         self.discs.clear()
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for discs online"))
 
         start_time = time.time()
         api = DiscitApi()
-        disc_list = api.get_disc(name=name,brand=brand,category=category,speed=speed,glide=glide,turn=turn,fade=fade,stability=stability)
+        self.discs = api.get_disc(name=name,brand=brand,category=category,speed=speed,glide=glide,turn=turn,fade=fade,stability=stability)
 
-        embed = self.get_disc_lookup_embed(disc_list)
+        # If disc name is provided, fetch only that disc if we have an exact match
+        if name is not None and len(self.discs) > 1:
+            disc_match = next((disc for disc in self.discs if disc.name.lower() == name.lower()), None)
+            if disc_match is not None:
+                self.discs = [disc_match]
+
+        self.discs.sort(key=lambda x: (float(x.speed), float(x.glide), float(x.turn), float(x.fade)))
+
+        embed = self.get_disc_lookup_embed()
 
         if embed is not None:
             await interaction.followup.send(interaction.user.mention, embed=embed)
@@ -356,6 +380,7 @@ class Discs(commands.Cog):
         days: Optional[int] = SlashOption(name="days", description="How long since the discs were added", required=False),
         where: Optional[int] = SlashOption(name="where", description="Where to search", choices={"Norway": 1, "VOEC": 2, "World": 3}, required=False)
     ):
+        """/disc news subcommand"""
         await interaction.response.defer()
         await self.bot.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.watching, name="for new discs online"))
 

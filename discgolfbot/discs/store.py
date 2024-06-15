@@ -1,15 +1,16 @@
 class Store():
+    """Store with discs"""
     def __init__(self, store):
         self.store = store
         self.discs = []
 
-    def __eq__(self, storeName):
-        if storeName == self.store:
+    def __eq__(self, store):
+        if store == self.store:
             return True
-        else:
-            return False
+        return False
 
 def split_discs_in_stores(discs, max_no_discs=None):
+    """Split discs into different stores"""
     stores = []
 
     for disc in discs:

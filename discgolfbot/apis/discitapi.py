@@ -1,7 +1,7 @@
 import html
 import json
 import requests
-from discs import disc
+from discs.discitdisc import DiscitDisc
 
 class DiscitApi():
     """Disc Golf Discs API - https://github.com/cdleveille/discit-api"""
@@ -10,8 +10,34 @@ class DiscitApi():
         self.url = 'https://github.com/cdleveille/discit-api'
         self.api_url = 'https://discit-api.fly.dev/disc?'
 
+    @property
+    def category_list(self):
+        """Accepted categories"""
+        return ["Distance Driver", "Hybrid Driver", "Control Driver", "Midrange", "Putter"]
+
+    @property
+    def stability_list(self):
+        """Accepted stabilities"""
+        return ["Stable", "Overstable", "Very Overstable", "Understable", "Very Understable"]
+
+    def validate_speed(self, speed:str):
+        """Validate accepted speed"""
+        return 1 <= int(speed) <= 15
+
+    def validate_glide(self, glide:str):
+        """Validate accepted glide"""
+        return 1 <= int(glide) <= 7
+
+    def validate_turn(self, turn:str):
+        """Validate accepted turn"""
+        return -5 <= int(turn) <= 1
+
+    def validate_fade(self, fade:str):
+        """Validate accepted fade"""
+        return 0 <= int(fade) <= 5
+
     def get_disc(self, id_=None, name=None, brand=None, category=None, speed=None, glide=None, turn=None, fade=None, stability=None):
-        """Return list of discs. - https://discgolfmetrix.com/?u=rule&ID=49
+        """Return list of discs.
 
         Input parameters:
         1. id - Unique identifier of the disc
@@ -31,17 +57,17 @@ class DiscitApi():
             params["name"] = name
         if brand is not None:
             params['brand'] = brand
-        if category is not None:
+        if category is not None and category in self.category_list:
             params['category'] = category
-        if speed is not None:
+        if speed is not None and self.validate_speed(speed):
             params['speed'] = speed
-        if glide is not None:
+        if glide is not None and self.validate_glide(glide):
             params['glide'] = glide
-        if turn is not None:
+        if turn is not None and self.validate_turn(turn):
             params['turn'] = turn
-        if fade is not None:
+        if fade is not None and self.validate_fade(fade):
             params['fade'] = fade
-        if stability is not None:
+        if stability is not None and stability in self.stability_list:
             params['stability'] = stability
 
         if bool(params) is False:
@@ -55,14 +81,3 @@ class DiscitApi():
                 disc_list.append(DiscitDisc(json.dumps(json_disc)))
             return disc_list
         return None
-
-class DiscitDisc(disc.Disc):
-    def __init__(self, j):
-        super().__init__()
-        self.__dict__ = json.loads(j)
-        if hasattr(self, 'brand'):
-            self.manufacturer = self.brand
-        if hasattr(self, 'link'):
-            self.url = self.link
-        if hasattr(self, 'pic'):
-            self.img = self.pic

@@ -39,30 +39,56 @@ def test_discit_get_disc_category():
 def test_discit_get_disc_speed():
     api = DiscitApi()
     assert api is not None
-    response = api.get_disc(speed='1')
+    response = api.get_disc(speed='0') # too low
+    assert response is None
+    response = api.get_disc(speed='1') # minimum
     assert response is not None
+    response = api.get_disc(speed='15') # max
+    assert response is not None
+    response = api.get_disc(speed='16') # too high
+    assert response is  None
 
 def test_discit_get_disc_glide():
     api = DiscitApi()
     assert api is not None
-    response = api.get_disc(glide='9')
+    response = api.get_disc(glide='0') # too low
+    assert response is None
+    response = api.get_disc(glide='1') # minimum
     assert response is not None
+    response = api.get_disc(glide='7') # max
+    assert response is not None
+    response = api.get_disc(glide='8') # too high
+    assert response is None
 
 def test_discit_get_disc_turn():
     api = DiscitApi()
     assert api is not None
-    response = api.get_disc(turn='-4')
+    response = api.get_disc(turn='-6') # too low
+    assert response is None
+    response = api.get_disc(turn='-5') # minimun
     assert response is not None
+    response = api.get_disc(turn='1') # max
+    assert response is not None
+    response = api.get_disc(turn='2') # too high
+    assert response is None
 
 def test_discit_get_disc_fade():
     api = DiscitApi()
     assert api is not None
-    response = api.get_disc(fade='3')
+    response = api.get_disc(fade='-1') # too low
+    assert response is None
+    response = api.get_disc(fade='0') # minimum
     assert response is not None
+    response = api.get_disc(fade='5') # max
+    assert response is not None
+    response = api.get_disc(fade='6') # too high
+    assert response is None
 
 def test_discit_get_disc_stability():
     api = DiscitApi()
     assert api is not None
+    response = api.get_disc(stability='rofl')
+    assert response is None
     response = api.get_disc(stability='Stable')
     assert response is not None
     response = api.get_disc(stability='Overstable')

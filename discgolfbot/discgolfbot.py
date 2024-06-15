@@ -8,10 +8,10 @@ from nextcord.ext import commands
 # cogs
 from score import Scores
 from emoji import Emojis
-from discs import Discs, PdgaApprovedDiscs
+from discs import Discs
 from bag import Bag
 from discgolfmetrix import DiscgolfMetrix
-from pdga import PdgaPlayerStat
+from pdga import PdgaPlayerStat, PdgaApprovedDiscs
 
 # discord client
 def main():
