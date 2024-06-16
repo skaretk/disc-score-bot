@@ -1,5 +1,5 @@
 import time
-from discs.pdgaapproveddisc import PdgaApprovedDisc
+from disc.pdgaapproveddisc import PdgaApprovedDisc
 from .scraper import Scraper
 import re
 import urllib.parse

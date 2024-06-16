@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from context import discs
+from context import disc
 from pdga.pdgaapproveddiscssql import PdgaSql
 sys.path.insert(0, str(Path().cwd()))
 

@@ -7,6 +7,7 @@ import apis
 import bag
 import config
 import discgolfmetrix
+import disc
 import discs
 import discord_utils
 import pdga

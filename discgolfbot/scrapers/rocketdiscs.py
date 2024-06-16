@@ -1,7 +1,7 @@
 import time
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from discs.disc import Disc
+from disc.disc import Disc
 from .scraper import Scraper
 
 class RocketDiscs(Scraper):

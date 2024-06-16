@@ -1,6 +1,6 @@
 import re
 import time
-from discs.disc import Disc
+from disc.disc import Disc
 from .scraper import Scraper
 
 # Sune Sport does not contain disc manufacturer

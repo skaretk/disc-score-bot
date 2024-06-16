@@ -1,5 +1,5 @@
 import time
-from discs.disc import Disc
+from disc.disc import Disc
 from selenium.webdriver.common.by import By
 from .scraper import Scraper
 

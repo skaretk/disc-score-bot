@@ -1,6 +1,6 @@
 from datetime import datetime
 import time
-from discs.disc import Disc
+from disc.disc import Disc
 from .scraper import Scraper
 from apis.discinstockapi import DiscinstockApi
 

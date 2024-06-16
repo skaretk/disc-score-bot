@@ -1,7 +1,7 @@
 import html
 import json
 import requests
-from discs.discitdisc import DiscitDisc
+from disc.discitdisc import DiscitDisc
 
 class DiscitApi():
     """Disc Golf Discs API - https://github.com/cdleveille/discit-api"""

@@ -1,6 +1,6 @@
 import time
 import re
-from discs.disc import Disc
+from disc.disc import Disc
 from .scraper import Scraper
 
 # Armspeed

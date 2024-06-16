@@ -1,5 +1,5 @@
 import sqlite3
-from discs.pdgaapproveddisc import PdgaApprovedDisc
+from disc.pdgaapproveddisc import PdgaApprovedDisc
 
 class PdgaSql():
     """Pdga SQL database with approved discs"""
