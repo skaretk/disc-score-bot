@@ -1,7 +1,7 @@
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from datetime import datetime
+import datetime
 import nextcord
 from nextcord.ext import commands, application_checks
 from nextcord import Interaction, SlashOption
@@ -9,7 +9,7 @@ import dateutil.parser as dparser
 from scrapers.udisc import LeagueScraper
 import utilities
 import validators
-from .files.udisccsvreader import UdiscCsvReader
+from .udisc.udisc_csv_reader import UdiscCsvReader
 from .files.scorecardwriter import ScorecardWriter
 from .alias import Alias
 from .competition import Competition
@@ -184,13 +184,13 @@ class Scores(commands.Cog):
             try:
                 date = dparser.parse(arg1, dayfirst=True, fuzzy=True)
             except dparser.ParserError:
-                date = datetime.date.today()
+                date = datetime.datetime.today()
 
             if arg2 is not None:
                 try:
                     date_to = dparser.parse(arg2, dayfirst=True, fuzzy=True)
                 except dparser.ParserError:
-                    date_to = datetime.date.today()
+                    date_to = datetime.datetime.today()
             else:
                 date_to = None
             competition = Competition.parse_dates(folder, Alias(interaction.guild.name), date, date_to)

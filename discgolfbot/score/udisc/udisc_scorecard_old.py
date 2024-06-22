@@ -1,11 +1,9 @@
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from .scorecard import Scorecard
+from score.scorecard import Scorecard
 
-class ScorecardUdiscOld(Scorecard):
+class UdiscScoreCardOld(Scorecard):
     """old uDisc Scorecard"""
-    def __init__(self):
-        super().__init__()
 
     def __str__(self):
         return f'{self.date_time} - {self.course.name}: {self.course.layout}'

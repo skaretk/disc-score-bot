@@ -1,5 +1,5 @@
 import time
-from score.scorecard_udisc_competition import ScorecardUdiscCompetition
+from score.udisc.udisc_competition_scorecard import UdiscScoreCardCompetition
 from score.player import Player
 from score.playeralias import PlayerAlias
 from .scraper import Scraper
@@ -16,7 +16,7 @@ class LeagueScraper(Udisc):
     def __init__(self, url):
         super().__init__()
         self.scrape_url = url
-        self.scorecard = ScorecardUdiscCompetition()
+        self.scorecard = UdiscScoreCardCompetition()
 
     def scrape(self):
         """Scrape from uDisc league"""

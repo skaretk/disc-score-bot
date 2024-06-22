@@ -1,8 +1,8 @@
 import dateutil.parser as dparser
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from .course import Course
 from .player import Player
+from .course import Course
 
 class Scorecard:
     """Scorecard class"""

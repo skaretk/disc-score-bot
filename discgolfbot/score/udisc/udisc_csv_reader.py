@@ -1,10 +1,9 @@
 import csv
 import datetime
 from pathlib import Path
-
-from .udiscscorecardreader import UdiscScoreCardReader, udisc_scorecard_header, udisc_scorecard_header_old
-from .udisccompetitionreader import UdiscCompetitionReader, udisc_competition_header
-from .udisccsvtype import UdiscCsvTypes
+from .udisc_scorecard_reader import UdiscScoreCardReader, udisc_scorecard_header, udisc_scorecard_header_old
+from .udisc_competition_reader import UdiscCompetitionReader, udisc_competition_header
+from .udisc_csv_types import UdiscCsvTypes
 
 class UdiscCsvReader:
     """uDisc csv reader, can identify and read the correct type of csv files"""
@@ -16,7 +15,7 @@ class UdiscCsvReader:
         """Identify the given csv input. Possible options is given in UdiscCsvTypes"""
         with open(self.file, encoding='UTF-8', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
-            if udisc_scorecard_header[7] in reader.fieldnames:
+            if udisc_scorecard_header[7] in reader.fieldnames: # Cotain RoundRating - new csv
                 return UdiscCsvTypes.SCORECARD
             if udisc_scorecard_header_old[1] in reader.fieldnames and udisc_scorecard_header_old[2] in reader.fieldnames:
                 return UdiscCsvTypes.SCORECARD_OLD

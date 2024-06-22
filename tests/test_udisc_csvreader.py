@@ -3,11 +3,11 @@ from unittest.mock import mock_open, patch
 import sys
 from pathlib import Path
 from context import score
-from score.files.udisccsvreader import UdiscCsvReader
-from score.files.udisccsvtype import UdiscCsvTypes
-from score.scorecard_udisc import ScorecardUdisc
-from score.scorecard_udisc_old import ScorecardUdiscOld
-from score.scorecard_udisc_competition import ScorecardUdiscCompetition
+from score.udisc.udisc_csv_reader import UdiscCsvReader
+from score.udisc.udisc_csv_types import UdiscCsvTypes
+from score.udisc.udisc_scorecard import UdiscScorecard
+from score.udisc.udisc_scorecard_old import UdiscScoreCardOld
+from score.udisc.udisc_competition_scorecard import UdiscScoreCardCompetition
 sys.path.insert(0, str(Path().cwd()))
 
 mocked_scorecard_old = mock_open(read_data="""PlayerName,CourseName,LayoutName,Date,Total,+/-,Hole1,Hole2,Hole3,Hole4,Hole5,Hole6,Hole7,Hole8,Hole9,Hole10,Hole11,Hole12,Hole13,Hole14,Hole15,Hole16,Hole17,Hole18
@@ -49,7 +49,7 @@ def test_udisc_scorecardreader():
         reader = UdiscCsvReader(mocked_scorecard)
         scorecard = reader.parse()
 
-    assert isinstance(scorecard, ScorecardUdisc)
+    assert isinstance(scorecard, UdiscScorecard)
     assert scorecard.course.name == "Bikkjestykket"
     assert scorecard.course.url == "" # no course_url in the csv
     assert scorecard.course.layout == "Høst 2023"
@@ -70,7 +70,7 @@ def test_udisc_scorecardreader_old():
         reader = UdiscCsvReader(mocked_scorecard_old)
         scorecard = reader.parse()
 
-    assert isinstance(scorecard, ScorecardUdiscOld)
+    assert isinstance(scorecard, UdiscScoreCardOld)
     assert scorecard.course.name == "Krokhol Disc Golf Course"
     assert scorecard.course.url == "" # no course_url in the csv
     assert scorecard.course.layout == "Krokhol Gold Layout 2022"
@@ -90,7 +90,7 @@ def test_udisc_competition_scorecardreader():
         reader.file.name = "test-competition_1999-12-31"
         scorecard = reader.parse()
 
-    assert isinstance(scorecard, ScorecardUdiscCompetition)
+    assert isinstance(scorecard, UdiscScoreCardCompetition)
     assert scorecard.name == "test-competition"
     assert scorecard.date_time == datetime.datetime(1999,12,31)
     assert scorecard.course.name is None # no coursename in the csv

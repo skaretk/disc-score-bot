@@ -10,7 +10,7 @@ class DiscgolfmetrixCompetition:
         self.datetime = self.get_datetime()
 
     def __eq__(self, other):
-         return self.datetime == other.datetime
+        return self.datetime == other.datetime
 
     def __lt__(self, other):
         return self.datetime < other.datetime

@@ -1,9 +1,9 @@
 import dateutil.parser as dparser
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from .scorecard import Scorecard
+from score.scorecard import Scorecard
 
-class ScorecardUdisc(Scorecard):
+class UdiscScorecard(Scorecard):
     """uDisc Scorecard"""
     def __init__(self):
         super().__init__()

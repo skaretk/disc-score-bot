@@ -2,9 +2,9 @@ import csv
 import datetime
 from pathlib import Path
 from score.player import Player
-from score.scorecard_udisc import ScorecardUdisc
-from score.scorecard_udisc_old import ScorecardUdiscOld
-from .udisccsvtype import UdiscCsvTypes
+from .udisc_scorecard import UdiscScorecard
+from .udisc_scorecard_old import UdiscScoreCardOld
+from .udisc_csv_types import UdiscCsvTypes
 
 udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "StartDate", "EndDate", "Total", "+/-", "RoundRating", "Hole"]
 udisc_scorecard_header_old = ["PlayerName", "CourseName", "LayoutName", "Date", "Total", "+/-", "Hole"]
@@ -22,11 +22,11 @@ class UdiscScoreCardReader:
             for row in reader:
                 if reader.line_num == 2:
                     if self.csv_type == UdiscCsvTypes.SCORECARD:
-                        scorecard = ScorecardUdisc()
+                        scorecard = UdiscScorecard()
                         scorecard.date_time = row['StartDate']
                         scorecard.date_time_end = row['EndDate']
                     elif self.csv_type == UdiscCsvTypes.SCORECARD_OLD:
-                        scorecard = ScorecardUdiscOld()
+                        scorecard = UdiscScoreCardOld()
                         scorecard.date_time = row['Date']
                     else:
                         return None
@@ -56,10 +56,8 @@ class UdiscScoreCardReader:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
-                    if course.lower() in row['CourseName'].lower():
-                        add_scorecard = True
-                    else:
-                        add_scorecard = False
+                    add_scorecard = course.lower() in row['CourseName'].lower()
+                    break
 
         if add_scorecard:
             return self.parse()

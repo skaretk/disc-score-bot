@@ -64,6 +64,6 @@ def calculate_scores(positions):
     return points
 
 def calculate_player_score(player, no_scorecards):
-    if (player.league_pts == 0):
+    if player.league_pts == 0:
         player.league_pts = calculate_scores(player.score_cards_position)
         player.calculate_attendence(no_scorecards)

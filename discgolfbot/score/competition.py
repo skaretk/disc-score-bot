@@ -4,7 +4,7 @@ import nextcord
 from discord_utils.embed_validation import validate_embed
 from .statistics import Statistics
 from .alias import Alias
-from .files.udisccsvreader import UdiscCsvReader
+from .udisc.udisc_csv_reader import UdiscCsvReader
 
 class Competition:
     """Competition Class - Collection of scorecards"""
