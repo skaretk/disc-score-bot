@@ -24,6 +24,11 @@ class UdiscScorecard(Scorecard):
         except dparser.ParserError:
             self._date_time_end = None
 
+    @property
+    def round_duration(self):
+        """Scorecard duration - timedelta"""
+        return self._date_time_end - self.date_time
+
     def append_field(self, embed=nextcord.Embed):
         embed.add_field(name=f'{self.course.name} ({self.course.layout}) {self.date_time.date()}', value=f'```{self.get_players()}```', inline=False)
 
@@ -47,7 +52,14 @@ class UdiscScorecard(Scorecard):
         return header, data
 
     def get_embed(self, thumbnail=''):
-        embed = self.get_small_embed(thumbnail)
+        """Get embed, include date start and end"""
+        embed_title = self.course.name if self.course.name is not None else ''
+        embed=nextcord.Embed(title=embed_title, url=self.course.url, description=f'{self.date_time.strftime("%Y.%m.%d %H:%M")} Start\n{self.date_time_end.strftime("%Y.%m.%d %H:%M")} End\nDuration: {self.round_duration}', color=0x004899)
+        for division in self.divisions:
+            embed.add_field(name=f'{division}', value=f'```{self.get_players(division)}```', inline=False)
+        if thumbnail != '':
+            embed.set_thumbnail(url=thumbnail)
+
         if validate_embed(embed):
             return embed
         return None

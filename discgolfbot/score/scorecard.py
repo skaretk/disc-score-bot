@@ -81,7 +81,7 @@ class Scorecard:
 
     def sort_players(self):
         """Sort players based on the score"""
-        self.players.sort(key=lambda x: x.score)
+        self.players.sort(key=lambda p: p.score)
 
     def add_player_position(self):
         """Add the player position in all of the divisions"""
