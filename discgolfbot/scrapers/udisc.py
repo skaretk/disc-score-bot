@@ -1,6 +1,6 @@
 import time
 from score.udisc.udisc_competition_scorecard import UdiscScoreCardCompetition
-from score.player import Player
+from score.udisc.udisc_player import UdiscPlayer
 from score.playeralias import PlayerAlias
 from .scraper import Scraper
 
@@ -89,7 +89,7 @@ class LeagueScraper(Udisc):
                     elif row_no > 3:
                         scores.append(player_row.getText())
 
-                scorecard_player = Player(player_name, total, score)
+                scorecard_player = UdiscPlayer(player_name, total, score)
                 scorecard_player.division = divisions_list[i]
                 for hole_score in scores:
                     scorecard_player.add_hole(hole_score)

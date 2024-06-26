@@ -1,7 +1,7 @@
 import csv
 import datetime
 from pathlib import Path
-from score.player import Player
+from .udisc_player import UdiscPlayer
 from .udisc_scorecard import UdiscScorecard
 from .udisc_scorecard_old import UdiscScoreCardOld
 from .udisc_csv_types import UdiscCsvTypes
@@ -40,7 +40,7 @@ class UdiscScoreCardReader:
                         else:
                             break
                 else:
-                    player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    player = UdiscPlayer(row['PlayerName'], int(row['Total']), int(row['+/-']))
                     if self.csv_type == UdiscCsvTypes.SCORECARD:
                         player.rating = int(row['RoundRating'])
                     for i in range(0, len(scorecard.holes)):
