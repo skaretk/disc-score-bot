@@ -1,8 +1,9 @@
 import dateutil.parser as dparser
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from .course import Course
 from .player import Player
+from .udisc.udisc_player import UdiscPlayer
+from .course import Course
 
 class Scorecard:
     """Scorecard class"""
@@ -64,6 +65,11 @@ class Scorecard:
         for player in self.players:
             if player.division == division:
                 curr_player_str = f'{player.score_cards_position[0]} {self.add_column_offset(str(player.name))} {player.get_score()}'
+                if player.rating is not None:
+                    if isinstance(player, UdiscPlayer):
+                        curr_player_str = f'{curr_player_str} [{str(player.get_pdga_rating())}]'
+                    else:
+                        curr_player_str = f'{curr_player_str} [{str(player.rating)}]'
                 if first_player is True:
                     players += curr_player_str
                     first_player = False
@@ -81,7 +87,7 @@ class Scorecard:
 
     def sort_players(self):
         """Sort players based on the score"""
-        self.players.sort(key=lambda x: x.score)
+        self.players.sort(key=lambda p: p.score)
 
     def add_player_position(self):
         """Add the player position in all of the divisions"""

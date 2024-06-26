@@ -1,9 +1,9 @@
 import csv
 import datetime
-import dateutil.parser as dparser
 from pathlib import Path
-from score.player import Player
-from score.scorecard_udisc_competition import ScorecardUdiscCompetition
+import dateutil.parser as dparser
+from .udisc_player import UdiscPlayer
+from .udisc_competition_scorecard import UdiscScoreCardCompetition
 
 udisc_competition_header = ["division", "position", "name", "relative_score", "total_score", "payout"]
 
@@ -15,7 +15,7 @@ class UdiscCompetitionReader:
     def parse(self):
         """Parse the csv file"""
         date = self.get_date()
-        scorecard = ScorecardUdiscCompetition()
+        scorecard = UdiscScoreCardCompetition()
         scorecard.date_time = date.strftime("%Y-%m-%d %H:%M")
         scorecard.name = self.file.name.split('_')[0]
         with open(self.file, encoding='UTF-8', newline='') as csv_file:
@@ -30,7 +30,7 @@ class UdiscCompetitionReader:
             for row in reader:
                 if "DUP" in row['position']:
                     continue
-                player = Player(row['name'], int(row['total_score']), int(row['relative_score']))
+                player = UdiscPlayer(row['name'], int(row['total_score']), int(row['relative_score']))
                 player.division = row['division']
                 player.score_cards_position.append(row['position'])
                 for i in range(0, len(scorecard.holes)):

@@ -1,15 +1,19 @@
 import csv
 import datetime
 from pathlib import Path
-from score.player import Player
-from score.scorecard_udisc import ScorecardUdisc
+from .udisc_player import UdiscPlayer
+from .udisc_scorecard import UdiscScorecard
+from .udisc_scorecard_old import UdiscScoreCardOld
+from .udisc_csv_types import UdiscCsvTypes
 
-udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "Date", "Total", "+/-", "Hole"]
+udisc_scorecard_header = ["PlayerName", "CourseName", "LayoutName", "StartDate", "EndDate", "Total", "+/-", "RoundRating", "Hole"]
+udisc_scorecard_header_old = ["PlayerName", "CourseName", "LayoutName", "Date", "Total", "+/-", "Hole"]
 
 class UdiscScoreCardReader:
     """uDisc Scorecard reader for uDisc .csv files"""
-    def __init__(self, file:Path):
+    def __init__(self, file:Path, csv_type:UdiscCsvTypes):
         self.file = file
+        self.csv_type = csv_type
 
     def parse(self):
         """Parse and return the Udisc Scorecard"""
@@ -17,10 +21,18 @@ class UdiscScoreCardReader:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
-                    scorecard = ScorecardUdisc()
+                    if self.csv_type == UdiscCsvTypes.SCORECARD:
+                        scorecard = UdiscScorecard()
+                        scorecard.date_time = row['StartDate']
+                        scorecard.date_time_end = row['EndDate']
+                    elif self.csv_type == UdiscCsvTypes.SCORECARD_OLD:
+                        scorecard = UdiscScoreCardOld()
+                        scorecard.date_time = row['Date']
+                    else:
+                        return None
+
                     scorecard.course.name = row['CourseName']
                     scorecard.course.layout = row['LayoutName']
-                    scorecard.date_time = row['Date']
                     scorecard.par = int(row['Total'])
                     for i in range(1, 28):
                         if f'Hole{i}' in row:
@@ -28,13 +40,14 @@ class UdiscScoreCardReader:
                         else:
                             break
                 else:
-                    player = Player(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    player = UdiscPlayer(row['PlayerName'], int(row['Total']), int(row['+/-']))
+                    if self.csv_type == UdiscCsvTypes.SCORECARD:
+                        player.rating = int(row['RoundRating'])
                     for i in range(0, len(scorecard.holes)):
                         score = int(row[f'Hole{i+1}'])
                         player.add_hole(score)
                         player.player_stats.add_score(score, scorecard.holes[i+1])
                     scorecard.add_player(player)
-
         return scorecard
 
     def contain_course(self, course):
@@ -43,10 +56,8 @@ class UdiscScoreCardReader:
             reader = csv.DictReader(csv_file)
             for row in reader:
                 if reader.line_num == 2:
-                    if course.lower() in row['CourseName'].lower():
-                        add_scorecard = True
-                    else:
-                        add_scorecard = False
+                    add_scorecard = course.lower() in row['CourseName'].lower()
+                    break
 
         if add_scorecard:
             return self.parse()

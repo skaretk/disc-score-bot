@@ -12,6 +12,7 @@ class Player:
         self.payout = ""
         self.score_cards = 1
         self.score_cards_position = []
+        self._rating = None
         self.league_pts = 0
         self.league_attendence = 0
         self.player_stats = Statistics()
@@ -39,13 +40,22 @@ class Player:
     def score(self, score:int):
         self._score = score
 
+    @property
+    def rating(self):
+        """The players rating"""
+        return self._rating
+
+    @rating.setter
+    def rating(self, rating:int):
+        self._rating = rating
+
     def get_score(self):
         """Get the score string, append + or set to E if par"""
-        if self._score == 0:
+        if self.score == 0:
             return 'E'
-        if self._score > 0:
-            return f'+{self._score}'
-        return str(self._score)
+        if self.score > 0:
+            return f'+{self.score}'
+        return str(self.score)
 
     def add_hole(self, score):
         """Add a hole to the player"""

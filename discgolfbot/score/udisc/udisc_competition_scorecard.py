@@ -1,8 +1,8 @@
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from .scorecard import Scorecard
+from score.scorecard import Scorecard
 
-class ScorecardUdiscCompetition(Scorecard):
+class UdiscScoreCardCompetition(Scorecard):
     """uDisc Scorecard Competition/League Class"""
     def __init__(self):
         super().__init__()

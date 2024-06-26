@@ -4,7 +4,7 @@ import nextcord
 from discord_utils.embed_validation import validate_embed
 from .statistics import Statistics
 from .alias import Alias
-from .files.udisccsvreader import UdiscCsvReader
+from .udisc.udisc_csv_reader import UdiscCsvReader
 
 class Competition:
     """Competition Class - Collection of scorecards"""
@@ -34,6 +34,7 @@ class Competition:
         """Add Scorecard and its players"""
         self.scorecards.append(scorecard)
         self.add_players(scorecard)
+        self.sort_players()
 
     def add_player(self, new_player):
         """Add a new player"""
@@ -63,15 +64,15 @@ class Competition:
 
     def sort_players(self):
         """Sort players by score"""
-        self.players.sort(key=lambda x: x.score)
+        self.players.sort(key=lambda p: (-p.score_cards, p.score))
 
     def sort_players_points(self):
         """Sort players by league points"""
-        self.players.sort(key=lambda x: x.league_pts, reverse=True)
+        self.players.sort(key=lambda p: p.league_pts, reverse=True)
 
     def sort_players_position(self):
         """Sort Players by average result"""
-        self.players.sort(key=lambda x: x.get_average_result())
+        self.players.sort(key=lambda p: p.get_average_result())
 
     def get_total_throws(self):
         """Get total throws"""

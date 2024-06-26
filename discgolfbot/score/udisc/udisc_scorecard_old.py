@@ -1,11 +1,9 @@
 import nextcord
 from discord_utils.embed_validation import validate_embed
-from .scorecard import Scorecard
+from score.scorecard import Scorecard
 
-class ScorecardUdisc(Scorecard):
-    """uDisc Scorecard"""
-    def __init__(self):
-        super().__init__()
+class UdiscScoreCardOld(Scorecard):
+    """old uDisc Scorecard"""
 
     def __str__(self):
         return f'{self.date_time} - {self.course.name}: {self.course.layout}'
@@ -14,10 +12,9 @@ class ScorecardUdisc(Scorecard):
         embed.add_field(name=f'{self.course.name} ({self.course.layout}) {self.date_time.date()}', value=f'```{self.get_players()}```', inline=False)
 
     def get_csv(self):
-        header = []
+        header = ['PlayerName', 'CourseName', 'LayoutName', 'Date', 'Total', '+/-']
         data = []
         date = self.date_time.strftime('%Y-%m-%d %H:%M')
-        header = ['PlayerName', 'CourseName', 'LayoutName', 'Date', 'Total', '+/-']
         course_header = ['Par', self.course.name, self.course.layout, date, self.par, '']
 
         for hole in self.holes.items():
