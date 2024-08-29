@@ -2,6 +2,7 @@ import dateutil.parser as dparser
 import nextcord
 from discord_utils.embed_validation import validate_embed
 from score.scorecard import Scorecard
+from .udisc import LOGO_URL
 
 class UdiscScorecard(Scorecard):
     """uDisc Scorecard"""
@@ -51,10 +52,10 @@ class UdiscScorecard(Scorecard):
             data.append(player_csv)
         return header, data
 
-    def get_embed(self, thumbnail=''):
+    def get_embed(self, thumbnail=LOGO_URL):
         """Get embed, include date start and end"""
         embed_title = self.course.name if self.course.name is not None else ''
-        embed=nextcord.Embed(title=embed_title, url=self.course.url, description=f'{self.date_time.strftime("%Y.%m.%d %H:%M")} Start\n{self.date_time_end.strftime("%Y.%m.%d %H:%M")} End\nDuration: {self.round_duration}', color=0x004899)
+        embed=nextcord.Embed(title=embed_title, url=self.course.url, description=f'{self.date_time.strftime("%Y.%m.%d %H:%M")} Start\n{self.date_time_end.strftime("%Y.%m.%d %H:%M")} End\nDuration: {self.round_duration}', color=0xF17125)
         for division in self.divisions:
             embed.add_field(name=f'{division}', value=f'```{self.get_players(division)}```', inline=False)
         if thumbnail != '':

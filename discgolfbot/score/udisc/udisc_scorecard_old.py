@@ -1,6 +1,7 @@
 import nextcord
 from discord_utils.embed_validation import validate_embed
 from score.scorecard import Scorecard
+from .udisc import LOGO_URL
 
 class UdiscScoreCardOld(Scorecard):
     """old uDisc Scorecard"""
@@ -29,8 +30,9 @@ class UdiscScoreCardOld(Scorecard):
             data.append(player_csv)
         return header, data
 
-    def get_embed(self, thumbnail=''):
+    def get_embed(self, thumbnail=LOGO_URL):
         embed = self.get_small_embed(thumbnail)
+        embed.color = 0xf17125
         if validate_embed(embed):
             return embed
         return None

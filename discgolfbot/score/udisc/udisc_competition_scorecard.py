@@ -1,6 +1,7 @@
 import nextcord
 from discord_utils.embed_validation import validate_embed
 from score.scorecard import Scorecard
+from .udisc import LOGO_URL
 
 class UdiscScoreCardCompetition(Scorecard):
     """uDisc Scorecard Competition/League Class"""
@@ -23,8 +24,8 @@ class UdiscScoreCardCompetition(Scorecard):
     def append_field(self, embed=nextcord.Embed):
         embed.add_field(name=f'{self.date_time.date()} {self.name}', value=f'```{self.get_players_str()}```', inline=False)
 
-    def get_small_embed(self, thumbnail=''):
-        embed=nextcord.Embed(title=self.name, description=f'{self.date_time}', color=0x004899)
+    def get_small_embed(self, thumbnail=LOGO_URL):
+        embed=nextcord.Embed(title=self.name, description=f'{self.date_time}', color=0xf17125)
         for division in self.divisions:
             embed.add_field(name=f'{division}', value=f'```{self.get_players(division)}```', inline=False)
         if thumbnail != '':
@@ -46,7 +47,7 @@ class UdiscScoreCardCompetition(Scorecard):
             data.append(player_csv)
         return header, data
 
-    def get_embed(self, thumbnail=''):
+    def get_embed(self, thumbnail=LOGO_URL):
         embed = self.get_small_embed(thumbnail)
         if validate_embed(embed):
             return embed
