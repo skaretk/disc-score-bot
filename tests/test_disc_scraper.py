@@ -22,7 +22,7 @@ def scrape_and_check(scraper):
     scraper.scrape()
     assert len(scraper.discs) != 0
     for disc in scraper.discs:
-        assert check_disc(disc) == True
+        assert check_disc(disc) is True
 
 def test_aceshop_disc_scraper():
     search = "firebird"
