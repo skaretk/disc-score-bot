@@ -2,31 +2,26 @@ import sys
 from pathlib import Path
 from context import config
 from config.config import Config
-from testhelpers import prepare_test_server, cleanup_test_server
+from tests.fixtures.helpers import prepare_test_config, clean_test_config
+from fixtures.config import example_cfg, new_cfg
 sys.path.insert(0, str(Path().cwd()))
 
-def test_valid_config():
+def test_valid_config(example_cfg):
     """Valid Config"""
-    cfg = Config("server_example")
-    assert cfg.path_exists() is True
-    assert cfg.config_exists() is True
-    assert cfg.read() is not None
+    assert example_cfg.path_exists() is True
+    assert example_cfg.config_exists() is True
+    assert example_cfg.read() is not None
 
-def test_invalid_config():
+def test_invalid_config(new_cfg):
     """Invalid Config"""
-    cfg = Config("wrong_server")
-    assert cfg.path_exists() is False
-    assert cfg.config_exists() is False
-    assert cfg.read() is None
+    assert new_cfg.path_exists() is False
+    assert new_cfg.config_exists() is False
+    assert new_cfg.read() is None
 
-def test_config_module_exist():
+def test_config_module_exist(example_cfg):
     """Check module exist"""
-    cfg = Config("server_example")
-    assert cfg.module_exists() is False
+    assert example_cfg.module_exists() is False
 
-def test_config_create():
+def test_config_create(new_cfg):
     """Create config"""
-    cfg = Config("new_server")
-    prepare_test_server(cfg)
-    assert cfg.create() is True
-    cleanup_test_server(cfg)
+    assert new_cfg.create() is True

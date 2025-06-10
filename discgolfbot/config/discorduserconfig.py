@@ -1,9 +1,10 @@
+from pathlib import Path
 from . import Config
 
 class DiscordUserConfig(Config):
     """DiscordUserConfig class, inherit to include discorduser configuration"""
-    def __init__(self, server, module_name, file=None):
-        super().__init__(server, module_name, file)
+    def __init__(self, server, path:Path=None, module_name=None, file=None):
+        super().__init__(server, path, module_name, file)
 
     def create_module(self):
         """Create array configuration for the module"""

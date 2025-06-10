@@ -4,15 +4,23 @@ from pathlib import Path
 
 class Config:
     """Cfg class, handle bot configuration"""
-    def __init__(self, server, module_name=None, file=None):
+    def __init__(self, server, path:Path=None, module_name=None, file=None):
+        self._path = Path.cwd() if path is None else path
         self.server = server
         self.file = "config.json" if file is None else file
         self.module_name = module_name
 
     @property
+    def cfg_path(self):
+        """Config Folder"""
+        return self._path / "cfg"
+
+    @property
     def path(self):
         """Get the config path"""
-        return Path.cwd() / "cfg" / self.server
+        if self.cfg_path.exists() is False:
+            self.cfg_path.mkdir()
+        return self.cfg_path / self.server
 
     @property
     def config(self):

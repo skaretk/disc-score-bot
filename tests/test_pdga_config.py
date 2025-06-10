@@ -3,15 +3,15 @@ from pathlib import Path
 from context import pdga
 from pdga.pdgaplayerconfig import PdgaPlayerConfig
 from pdga.pdgaplayer import PdgaPlayer
-from testhelpers import prepare_test_server, cleanup_test_server
+from fixtures.pdga import new_cfg, example_cfg
+from tests.fixtures.helpers import prepare_test_config
 sys.path.insert(0, str(Path().cwd()))
 
-def test_pdga_valid_config():
+def test_pdga_valid_config(example_cfg):
     """Check and read a valid configuration"""
-    cfg = PdgaPlayerConfig("server_example")
-    assert cfg.module_exists() is True
-    assert cfg.read(PdgaPlayerConfig.__name__) is not None
-    assert cfg.get_pdga_number(123456789012345678) == 12345
+    assert example_cfg.module_exists() is True
+    assert example_cfg.read(PdgaPlayerConfig.__name__) is not None
+    assert example_cfg.get_pdga_number(123456789012345678) == 12345
 
 def test_pdga_invalid_config():
     """Check if unknown configuration"""
@@ -20,42 +20,33 @@ def test_pdga_invalid_config():
     assert cfg.read(PdgaPlayerConfig.__name__) is None
     assert cfg.get_pdga_number(123456789012345678) is None
 
-def test_pdga_config_add_modify_remove_player():
+def test_pdga_config_add_modify_remove_player(example_cfg):
     """Add, modify and remove a pdga number"""
-    cfg = PdgaPlayerConfig("server_example")
-    assert cfg.get_pdga_number(876543210987654321) is None
-    assert cfg.remove_user(876543210987654321) is False
-    assert cfg.add_user(PdgaPlayer(876543210987654321, 87654)) == (True, False)
-    assert cfg.get_pdga_number(876543210987654321) == 87654
-    assert cfg.add_user(PdgaPlayer(876543210987654321, 23456)) == (True, True)
-    assert cfg.get_pdga_number(876543210987654321) == 23456
-    assert cfg.remove_user(876543210987654321) is True
-    assert cfg.get_pdga_number(876543210987654321) is None
+    assert example_cfg.get_pdga_number(876543210987654321) is None
+    assert example_cfg.remove_user(876543210987654321) is False
+    assert example_cfg.add_user(PdgaPlayer(876543210987654321, 87654)) == (True, False)
+    assert example_cfg.get_pdga_number(876543210987654321) == 87654
+    assert example_cfg.add_user(PdgaPlayer(876543210987654321, 23456)) == (True, True)
+    assert example_cfg.get_pdga_number(876543210987654321) == 23456
+    assert example_cfg.remove_user(876543210987654321) is True
+    assert example_cfg.get_pdga_number(876543210987654321) is None
 
-def test_pdga_config_create_module():
+def test_pdga_config_create_module(new_cfg):
     """Add a new module to a server"""
-    cfg = PdgaPlayerConfig("new_server")
-    prepare_test_server(cfg)
-    assert cfg.module_exists() is False
-    assert cfg.create_module() is True
-    assert cfg.module_exists() is True
-    # Cleanup
-    cleanup_test_server(cfg)
+    assert new_cfg.module_exists() is False
+    assert new_cfg.create_module() is True
+    assert new_cfg.module_exists() is True
 
-def test_pdga_config_create():
+def test_pdga_config_create(new_cfg):
     """Add a new server, add a user"""
-    cfg = PdgaPlayerConfig("new_server")
-    prepare_test_server(cfg)
-    assert cfg.get_pdga_number(123456789012345678) is None
-    assert cfg.remove_user(123456789012345678) is False
-    assert cfg.add_user(PdgaPlayer(123456789012345678, 12345)) == (True, False)
-    assert cfg.get_pdga_number(123456789012345678) == 12345
-    assert cfg.add_user(PdgaPlayer(123456789012345678, 23456)) == (True, True)
-    assert cfg.add_user(PdgaPlayer(876543210987654321, 87654)) == (True, False)
-    assert cfg.get_pdga_number(123456789012345678) == 23456
-    assert cfg.get_pdga_number(876543210987654321) == 87654
-    assert cfg.remove_user(123456789012345678) is True
-    assert cfg.remove_user(876543210987654321) is True
-    assert cfg.get_pdga_number(123456789012345678) is None
-    # Cleanup
-    cleanup_test_server(cfg)
+    assert new_cfg.get_pdga_number(123456789012345678) is None
+    assert new_cfg.remove_user(123456789012345678) is False
+    assert new_cfg.add_user(PdgaPlayer(123456789012345678, 12345)) == (True, False)
+    assert new_cfg.get_pdga_number(123456789012345678) == 12345
+    assert new_cfg.add_user(PdgaPlayer(123456789012345678, 23456)) == (True, True)
+    assert new_cfg.add_user(PdgaPlayer(876543210987654321, 87654)) == (True, False)
+    assert new_cfg.get_pdga_number(123456789012345678) == 23456
+    assert new_cfg.get_pdga_number(876543210987654321) == 87654
+    assert new_cfg.remove_user(123456789012345678) is True
+    assert new_cfg.remove_user(876543210987654321) is True
+    assert new_cfg.get_pdga_number(123456789012345678) is None

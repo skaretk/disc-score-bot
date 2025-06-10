@@ -1,11 +1,12 @@
+from pathlib import Path
 import json
 from score.playeralias import PlayerAlias
 from config import Config
 
 class AliasConfig(Config):
     """Alias Config"""
-    def __init__(self, server):
-        super().__init__(server, module_name=__class__.__name__)
+    def __init__(self, server, path:Path=None):
+        super().__init__(server, path, module_name=__class__.__name__)
 
     def create_module(self):
         """Create configuration for bag configuration"""
