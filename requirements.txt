@@ -31,7 +31,7 @@ soupsieve==2.6
 trio==0.26.2
 trio-websocket==0.11.1
 typing_extensions==4.12.2
-urllib3==2.2.2
+urllib3==2.5.0
 validators==0.33.0
 websocket-client==1.8.0
 wsproto==1.2.0
