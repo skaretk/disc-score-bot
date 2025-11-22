@@ -1,7 +1,25 @@
-import sys
 from pathlib import Path
-from context import scrapers
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.scrapers import aceshop
+from disc_score_bot.scrapers import armspeed
+from disc_score_bot.scrapers import dgshop
+from disc_score_bot.scrapers import discconnection
+from disc_score_bot.scrapers import discexpress
+from disc_score_bot.scrapers import discimport
+from disc_score_bot.scrapers import discinstock
+from disc_score_bot.scrapers import discmania
+from disc_score_bot.scrapers import discrepublic
+from disc_score_bot.scrapers import discsport
+#from disc_score_bot.scrapers import frisbeefeber
+from disc_score_bot.scrapers import kastmeg
+from disc_score_bot.scrapers import krokholdgs
+from disc_score_bot.scrapers import latitude64
+from disc_score_bot.scrapers import rocketdiscs
+#from disc_score_bot.scrapers import starframe
+#from disc_score_bot.scrapers import sunesport
+from disc_score_bot.scrapers import wearediscgolf
+#from disc_score_bot.scrapers import xxl
+from disc_score_bot.scrapers import pdga
+from disc_score_bot.scrapers import rocketdiscs
 
 def check_disc(disc):
     if not disc.name:
@@ -26,47 +44,47 @@ def scrape_and_check(scraper):
 
 def test_aceshop_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.aceshop.DiscScraper(search))
+    scrape_and_check(aceshop.DiscScraper(search))
 
 def test_armspeed_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.armspeed.DiscScraper(search))
+    scrape_and_check(armspeed.DiscScraper(search))
 
 def test_dgshop_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.dgshop.DiscScraper(search))
+    scrape_and_check(dgshop.DiscScraper(search))
 
 def test_discconnection_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.discconnection.DiscScraper(search))
+    scrape_and_check(discconnection.DiscScraper(search))
 
 def test_discexpress_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.discexpress.DiscScraper(search))
+    scrape_and_check(discexpress.DiscScraper(search))
 
 def test_discimport_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.discimport.DiscScraper(search))
+    scrape_and_check(discimport.DiscScraper(search))
 
 def test_discinstock_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.discinstock.DiscScraper(search))
+    scrape_and_check(discinstock.DiscScraper(search))
 
 def test_discinstock_disc_scraper_api():
     search = "firebird"
-    scrape_and_check(scrapers.discinstock.DiscScraperApi(search))
+    scrape_and_check(discinstock.DiscScraperApi(search))
 
 def test_discmania_disc_scraper():
     search = "tactic"
-    scrape_and_check(scrapers.discmania.DiscScraper(search))
+    scrape_and_check(discmania.DiscScraper(search))
 
 def test_discrepublic_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.discrepublic.DiscScraper(search))
+    scrape_and_check(discrepublic.DiscScraper(search))
 
 def test_discsport_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.discsport.DiscScraper(search))
+    scrape_and_check(discsport.DiscScraper(search))
 
 #def test_frisbeefeber_disc_scraper():
 #    search = "link"
@@ -78,37 +96,37 @@ def test_discsport_disc_scraper():
 
 def test_kastmeg_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.kastmeg.DiscScraper(search))
+    scrape_and_check(kastmeg.DiscScraper(search))
 
 def test_krokholdgs_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.krokholdgs.DiscScraper(search))
+    scrape_and_check(krokholdgs.DiscScraper(search))
 
 def test_latitude64_disc_scraper():
     search = "grace"
-    scrape_and_check(scrapers.latitude64.DiscScraper(search))
+    scrape_and_check(latitude64.DiscScraper(search))
 
 def test_rocketdiscs_disc_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.rocketdiscs.DiscScraper(search))
+    scrape_and_check(rocketdiscs.DiscScraper(search))
 
 #def test_starframe_disc_scraper():
 #    search = "firebird"
-#    scrape_and_check(scrapers.starframe.DiscScraper(search))
+#    scrape_and_check(starframe.DiscScraper(search))
 
 #def test_sunesport_disc_scraper():
 #    search = "firebird"
-#    scrape_and_check(scrapers.sunesport.DiscScraper(search))
+#    scrape_and_check(sunesport.DiscScraper(search))
 
 def test_wearediscgolf_scraper():
     search = "firebird"
-    scrape_and_check(scrapers.wearediscgolf.DiscScraper(search))
+    scrape_and_check(wearediscgolf.DiscScraper(search))
 
 #def test_xxl_disc_scraper():
 #    search = "harp"
-#    scrape_and_check(scrapers.xxl.DiscScraper(search))
+#    scrape_and_check(xxl.DiscScraper(search))
 
 def test_pdga_disc_scraper():
-    scraper = scrapers.pdga.DiscScraper()
+    scraper = pdga.DiscScraper()
     scraper.scrape()
     assert len(scraper.discs) != 0

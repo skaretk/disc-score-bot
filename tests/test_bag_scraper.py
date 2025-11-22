@@ -1,8 +1,5 @@
-import sys
 from pathlib import Path
-from context import scrapers
-from scrapers.discgolfbagbuilder import DiscgolfBagBuilder
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.scrapers.discgolfbagbuilder import DiscgolfBagBuilder
 
 def test_discgolfbagbuilder_bag_scraper():
     search = "https://www.discgolfbagbuilder.com/bags/oyv10ykqvre0jibt"

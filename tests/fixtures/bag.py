@@ -1,6 +1,5 @@
 import pytest
-from bag.bagconfig import BagConfig
-from tests.fixtures.helpers import prepare_test_config, clean_test_config
+from disc_score_bot.bag import BagConfig
 
 @pytest.fixture
 def example_cfg():

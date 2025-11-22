@@ -1,8 +1,5 @@
-import sys
 from pathlib import Path
-from context import apis
-from apis.discitapi import DiscitApi
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.apis.discitapi import DiscitApi
 
 def test_discit_get_disc_id():
     api = DiscitApi()

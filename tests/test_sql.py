@@ -1,8 +1,5 @@
-import sys
 from pathlib import Path
-from context import disc
-from pdga.pdgaapproveddiscssql import PdgaSql
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.pdga.pdgaapproveddiscssql import PdgaSql
 
 def test_pdga_sql_get_discs():
     pdga_sql = PdgaSql()

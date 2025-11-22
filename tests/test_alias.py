@@ -1,10 +1,6 @@
 import json
-import sys
-from pathlib import Path
-from context import score
-from score.playeralias import PlayerAlias
-from score.alias import Alias
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.score.playeralias import PlayerAlias
+from disc_score_bot.score.alias import Alias
 
 def test_alias_list():
     """Test alias list"""

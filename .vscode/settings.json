@@ -1,10 +1,9 @@
 {
-    "python.testing.pytestArgs": [
-        "tests/"
-    ],
-    "python.testing.unittestEnabled": false,
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    "python.terminal.activateEnvironment": true,
     "python.testing.pytestEnabled": true,
-    "python.analysis.extraPaths": [
-        "./discgolfbot"
-    ]
+    "python.testing.pytestArgs": ["tests"],
+    "python.testing.cwd": "${workspaceFolder}",
+    "python.testing.unittestEnabled": false,
+    "python.analysis.extraPaths": ["src"],
 }

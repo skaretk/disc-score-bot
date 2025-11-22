@@ -1,8 +1,5 @@
-import sys
 from pathlib import Path
-from context import apis
-from apis.discinstockapi import DiscinstockApi
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.apis.discinstockapi import DiscinstockApi
 
 def test_discinstock_discs_list():
     api = DiscinstockApi()

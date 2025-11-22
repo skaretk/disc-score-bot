@@ -1,10 +1,4 @@
-import sys
 from pathlib import Path
-from context import config
-from config.config import Config
-from tests.fixtures.helpers import prepare_test_config, clean_test_config
-from fixtures.config import example_cfg, new_cfg
-sys.path.insert(0, str(Path().cwd()))
 
 def test_valid_config(example_cfg):
     """Valid Config"""

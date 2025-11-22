@@ -1,14 +1,11 @@
 import datetime
 import pytest
-import sys
 from pathlib import Path
-from context import score
-from score.udisc.udisc_csv_reader import UdiscCsvReader
-from score.udisc.udisc_csv_types import UdiscCsvTypes
-from score.udisc.udisc_scorecard import UdiscScorecard
-from score.udisc.udisc_scorecard_old import UdiscScoreCardOld
-from score.udisc.udisc_competition_scorecard import UdiscScoreCardCompetition
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.score.udisc.udisc_csv_reader import UdiscCsvReader
+from disc_score_bot.score.udisc.udisc_csv_types import UdiscCsvTypes
+from disc_score_bot.score.udisc.udisc_scorecard import UdiscScorecard
+from disc_score_bot.score.udisc.udisc_scorecard_old import UdiscScoreCardOld
+from disc_score_bot.score.udisc.udisc_competition_scorecard import UdiscScoreCardCompetition
 
 SCORECARD_OLD_DATA = """PlayerName,CourseName,LayoutName,Date,Total,+/-,Hole1,Hole2,Hole3,Hole4,Hole5,Hole6,Hole7,Hole8,Hole9,Hole10,Hole11,Hole12,Hole13,Hole14,Hole15,Hole16,Hole17,Hole18
 Par,Krokhol Disc Golf Course,Krokhol Gold Layout 2022,2022-01-01 23:59,60,,3,3,3,3,3,4,3,3,4,4,3,4,3,3,4,3,4,3

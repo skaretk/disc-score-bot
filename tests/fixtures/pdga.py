@@ -1,6 +1,5 @@
 import pytest
-from pdga.pdgaplayerconfig import PdgaPlayerConfig
-from tests.fixtures.helpers import prepare_test_config, clean_test_config
+from disc_score_bot.pdga.pdgaplayerconfig import PdgaPlayerConfig
 
 @pytest.fixture
 def example_cfg():

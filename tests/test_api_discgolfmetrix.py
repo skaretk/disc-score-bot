@@ -1,8 +1,5 @@
-import sys
 from pathlib import Path
-from context import apis
-from apis.discgolfmetrixapi import DiscgolfMetrixApi
-sys.path.insert(0, str(Path().cwd()))
+from disc_score_bot.apis.discgolfmetrixapi import DiscgolfMetrixApi
 
 def test_discgolfmetrix_courses_list():
     api = DiscgolfMetrixApi()

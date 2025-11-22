@@ -1,6 +1,5 @@
 import pytest
-from discgolfmetrix.discgolfmetrixconfig import DiscgolfmetrixConfig
-from tests.fixtures.helpers import prepare_test_config, clean_test_config
+from disc_score_bot.discgolfmetrix import DiscgolfmetrixConfig
 
 @pytest.fixture
 def example_cfg():
