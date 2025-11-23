@@ -30,7 +30,7 @@ class DiscScraper(RocketDiscs):
             print(f'RocketDiscs scraper: {self.scraper_time}')
             return
 
-        for product in soup_search.findAll("div", class_="list-group-item padding0"):
+        for product in soup_search.find_all("div", class_="list-group-item padding0"):
             name = product.find("h4", class_="media-heading").getText()
             if self.search.lower() not in name.lower(): # Gives some false products
                 continue

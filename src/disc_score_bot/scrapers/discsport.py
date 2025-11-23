@@ -19,7 +19,7 @@ class DiscScraper(Discsport):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
 
-        for product in soup.findAll("div", class_="position-relative mb-1 mx-auto text-center"):
+        for product in soup.find_all("div", class_="position-relative mb-1 mx-auto text-center"):
             disc = Disc()
             a = product.find("h2", class_="h5 fw-bold mb-1").find('a', href=True)
             disc.name = a.getText().replace("\n", " ").replace("\t", " ").strip()

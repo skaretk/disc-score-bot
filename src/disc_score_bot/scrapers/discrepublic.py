@@ -20,7 +20,7 @@ class DiscScraper(Discrepublic):
         soup = self.urllib_header_get_beatifulsoup(headers={'Cookie': 'cart_currency=NOK; localization=NO'})
 
         # Check if the disc is sold out
-        for product in soup.findAll("div", class_="product-item-wrapper col-sm-2"):
+        for product in soup.find_all("div", class_="product-item-wrapper col-sm-2"):
             if product.find("span", class_="sold_out"):
                 continue
 

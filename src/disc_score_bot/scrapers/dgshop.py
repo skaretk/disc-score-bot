@@ -19,7 +19,7 @@ class DiscScraper(DgShop):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup()
 
-        for product in soup.findAll("div", class_="product-item-info"):
+        for product in soup.find_all("div", class_="product-item-info"):
             product_item_name = product.find("strong", class_="product name product-item-name")
             if product_item_name is None:
                 continue

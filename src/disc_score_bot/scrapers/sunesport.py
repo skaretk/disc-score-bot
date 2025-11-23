@@ -21,7 +21,7 @@ class DiscScraper(SuneSport):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
 
-        for product in soup.findAll("div", class_="product-thumb"):
+        for product in soup.find_all("div", class_="product-thumb"):
             if (product.find("span", class_="stock-status").getText() == "Utsolgt"):
                 continue
             div_caption = product.find("div", class_="caption")

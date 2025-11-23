@@ -19,7 +19,7 @@ class DiscFlightScraper(MarshallStreet):
     def scrape(self):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
-        for disc_item in soup.findAll("div", class_="flex-grid-item disc-item"):
+        for disc_item in soup.find_all("div", class_="flex-grid-item disc-item"):
             if disc_item.getText().lower() == self.search.lower():
                 disc = Disc()
                 disc.name = disc_item.getText()
@@ -32,7 +32,7 @@ class DiscFlightScraper(MarshallStreet):
                 self.discs.append(disc)
                 print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
                 return
-        for putter in soup.findAll("div", class_="putter-child pc-entry"):
+        for putter in soup.find_all("div", class_="putter-child pc-entry"):
             putter_name = putter['data-putter']
             if putter_name.lower() == self.search.lower():
                 disc = Disc()

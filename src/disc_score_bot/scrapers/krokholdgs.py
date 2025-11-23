@@ -19,7 +19,7 @@ class DiscScraper(Krokholdgs):
         start_time = time.time()
         soup = self.selenium_get_beatifulsoup(2)
 
-        for product in soup.findAll("div", {"class" : ["crall-product-item", "crall-in-stock"]}):
+        for product in soup.find_all("div", {"class" : ["crall-product-item", "crall-in-stock"]}):
             product_meta = product.find("div", class_="crall-product-name")
             a = product_meta.find('a', href=True)
             product_name = a.getText()

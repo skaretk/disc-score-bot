@@ -20,14 +20,14 @@ class DiscScraper(DiscImport):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup()
 
-        for product_li in soup.findAll('li', class_='product'):
+        for product_li in soup.find_all('li', class_='product'):
             if 'outofstock' in product_li['class']:
                 continue
             title = product_li.find('h2', class_='woocommerce-loop-product__title').getText()
             if self.search.lower() not in title.lower(): # check false results
                 continue
             a = product_li.find('a', href=True)
-            price, currency = product_li.find('span', class_='woocommerce-Price-amount').findAll(text=True)
+            price, currency = product_li.find('span', class_='woocommerce-Price-amount').find_all(text=True)
             price = price.strip()
             img_url = product_li.find('img', src=True)['src'] # TODO: this will return a 324px image, get higher res?
             # TODO: scrape flight numbers?

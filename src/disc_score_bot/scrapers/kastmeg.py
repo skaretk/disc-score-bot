@@ -21,7 +21,7 @@ class DiscScraper(Kastmeg):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
 
-        for product in soup.findAll("li", {"class" : "grid__item"}):
+        for product in soup.find_all("li", {"class" : "grid__item"}):
             card_heading = product.find("h3", {"class" : "card__heading"})
             name = card_heading.getText().strip()
             if self.search.lower() not in name.lower():

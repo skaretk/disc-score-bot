@@ -25,8 +25,8 @@ class DiscScraper(Discconnection):
         prices = []
         images = []
 
-        categories = soup.findAll("div", class_="bigText")
-        product_list = soup.findAll("table", class_="productlist")
+        categories = soup.find_all("div", class_="bigText")
+        product_list = soup.find_all("table", class_="productlist")
 
         for idx, category in enumerate(categories):
             valid = any(category.getText() in string for string in self.valid_categories)
@@ -34,14 +34,14 @@ class DiscScraper(Discconnection):
                 continue
 
             # Contains: "Innova Firebird  •  Plastic: Champion  •  Driver"
-            for prodHeader in product_list[idx].findAll("td", class_="prodHeader"):
+            for prodHeader in product_list[idx].find_all("td", class_="prodHeader"):
                 text = prodHeader.getText().replace("\xa0", "").split("•")
                 manufacturer = text[0].split()[0]
                 manufacturers.append(manufacturer)
                 names.append(f'{text[0]} - {text[1].replace("Plastic: ", "")}')
 
             # Contains: Pris inkl. moms: 120,00 DKK
-            for prodPriceWeight in product_list[idx].findAll("td", class_="prodPriceWeight"):
+            for prodPriceWeight in product_list[idx].find_all("td", class_="prodPriceWeight"):
                 if prodPriceWeight.has_attr("align"):
                     continue
                 b = prodPriceWeight.find("b")
@@ -54,7 +54,7 @@ class DiscScraper(Discconnection):
                         price = discount.getText().split()
                         prices.append(f'{price[1]} DKK')
 
-            for discImage in product_list[idx].findAll("img"):
+            for discImage in product_list[idx].find_all("img"):
                 images.append(discImage["src"])
 
 

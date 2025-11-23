@@ -19,7 +19,7 @@ class DiscScraper(Discmania):
         start_time = time.time()
         soup = self.urllib_get_beatifulsoup()
 
-        for product in soup.findAll("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
+        for product in soup.find_all("div", class_="o-layout__item u-1/1 u-1/2@phab u-1/4@tab"):
             name = product.find("h3", class_= "product__title h4").getText()
 
             if self.search.lower() not in name.lower(): # Gives some false products

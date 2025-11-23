@@ -67,7 +67,7 @@ class LeagueScraper(Udisc):
             else:
                 self.scorecard.add_hole(i+1, int(par.getText()))
 
-        division_scores = soup.findAll("div", {"class" : "jss113"} )
+        division_scores = soup.find_all("div", {"class" : "jss113"} )
         for i, division_score in enumerate(division_scores):
             for player in division_score.find_all("tr", {"class" : ["jss126", "false"]}):
                 player_name = PlayerAlias("")

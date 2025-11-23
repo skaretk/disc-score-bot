@@ -23,7 +23,7 @@ class DiscScraper(ArmSpeed):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup()
 
-        for product in soup.findAll("div", class_="col-md-4 col-6 product"):
+        for product in soup.find_all("div", class_="col-md-4 col-6 product"):
             # Check if product is in stock
             text = product.find('a', class_="color-text-base")
             product_text = re.split(r'(^[^\d]+)', text.getText())[1:][0].rstrip(" ")

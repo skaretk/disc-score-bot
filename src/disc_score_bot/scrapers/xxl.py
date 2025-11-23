@@ -21,7 +21,7 @@ class DiscScraper(Xxl):
 
         contain_discs = False
 
-        for filter in soup.findAll("div", class_="MuiAccordionSummary-content jss11 Mui-expanded jss12"):
+        for filter in soup.find_all("div", class_="MuiAccordionSummary-content jss11 Mui-expanded jss12"):
             if "Frisbeegolf" in filter.getText():
                 contain_discs = True
 
@@ -29,7 +29,7 @@ class DiscScraper(Xxl):
             return
 
         product_list = soup.find("ul", class_="product-list product-list--multiline")
-        for product in product_list.findAll("li"):
+        for product in product_list.find_all("li"):
             product_info = product.find("div", class_="product-card__info-wrapper")
             name = product_info.find("p").getText().split(", ")[0]
             if self.search.lower() not in name.lower(): # Gives some false products

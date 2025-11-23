@@ -39,6 +39,10 @@ def new_cfg(cfg_factory):
     return cfg_factory(Config)
 
 @pytest.fixture
+def example_cfg():
+    return Config("server_example")
+
+@pytest.fixture
 def new_bag_cfg(cfg_factory):
     return cfg_factory(BagConfig)
 

@@ -19,7 +19,7 @@ class DiscScraper(DiscInStock):
         start_time = time.time()
         soup = self.selenium_get_beatifulsoup(1)
 
-        for a in soup.findAll("div", class_="col"):
+        for a in soup.find_all("div", class_="col"):
             disc = Disc()
             disc.manufacturer = a.find("h6", class_="text-muted font-monospace h-100").getText()
             disc.name = a.find("span", class_="fs-5").getText()

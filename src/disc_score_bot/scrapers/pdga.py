@@ -20,9 +20,9 @@ class DiscScraper(Pdga):
         start_time = time.time()
         soup = self.urllib_header_get_beatifulsoup()
 
-        manufacturers = soup.findAll("td", class_="views-field views-field-field-equipment-manuf-ref")
-        disc_models = soup.findAll("td", class_="views-field views-field-title")
-        approved_dates = soup.findAll("td", class_="views-field views-field-field-equipment-approve-date")
+        manufacturers = soup.find_all("td", class_="views-field views-field-field-equipment-manuf-ref")
+        disc_models = soup.find_all("td", class_="views-field views-field-title")
+        approved_dates = soup.find_all("td", class_="views-field views-field-field-equipment-approve-date")
 
         for idx, disc_model in enumerate(disc_models):
             approved_disc = PdgaApprovedDisc()
@@ -83,7 +83,7 @@ class PdgaEvent():
         self.__on_init__()
 
     def __on_init__(self):
-        day_in_month = self._rexpression.findall(string=self.date_start)
+        day_in_month = self._rexpression.find_all(string=self.date_start)
         if len(day_in_month) == 1:
             if len(day_in_month[0]) == 1:
                 replace_day_in_month = "0" + day_in_month[0]
