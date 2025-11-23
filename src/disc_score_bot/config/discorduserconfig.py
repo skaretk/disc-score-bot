@@ -1,5 +1,8 @@
 from pathlib import Path
+import logging
 from .config import Config
+
+logger = logging.getLogger(__name__)
 
 class DiscordUserConfig(Config):
     """DiscordUserConfig class, inherit to include discorduser configuration"""
@@ -20,7 +23,7 @@ class DiscordUserConfig(Config):
             object: discord_user or None if not found
         """
         if self.module_exists() is False:
-            print(f'No Config stored for {self.module_name} for this server: {self.server}')
+            logger.warning('No Config stored for %s for this server: %s', self.module_name, self.server)
             return None
 
         json_object = self.read(self.module_name)
@@ -64,7 +67,7 @@ class DiscordUserConfig(Config):
             Bool: True if removed, else False
         """
         if self.module_exists() is False:
-            print(f'No Config stored for {self.module_name} for this server: {self.server}')
+            logger.warning('No Config stored for %s for this server: %s', self.module_name, self.server)
             return False
 
         cfg = self.read(self.module_name)

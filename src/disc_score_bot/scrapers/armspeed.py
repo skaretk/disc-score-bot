@@ -1,17 +1,22 @@
 import time
 import re
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
 
-# Armspeed
+logger = logging.getLogger(__name__)
+
 class ArmSpeed(Scraper):
+    """Armspeed Scraper"""
     def __init__(self):
         super().__init__()
         self.name = 'armspeed.se'
         self.url = 'https://armspeed.se'
 
-# Armspeed does not contain manufacturer
 class DiscScraper(ArmSpeed):
+    """Armspeed Disc scraper
+    - Does not contain manufacturer
+    """
     def __init__(self, search):
         super().__init__()
         self.search = search
@@ -43,4 +48,4 @@ class DiscScraper(ArmSpeed):
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'Armspeed scraper: {self.scraper_time}')
+        logger.info('Armspeed scraper: %s', self.scraper_time)

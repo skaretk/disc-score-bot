@@ -1,6 +1,9 @@
 import openpyxl
 import os
-from score.playeralias import PlayerAlias
+import logging
+from disc_score_bot.score.playeralias import PlayerAlias
+
+logger = logging.getLogger(__name__)
 
 class ExcelFile:
     def __init__(self):
@@ -23,7 +26,7 @@ class Members:
     def parse(self):
         wb = openpyxl.load_workbook(filename=f'{self.path}/{self.file}', read_only=True)
         sheet = wb.active
-        print(sheet.title)
+        logger.info("%s", sheet.title)
 
         # Fetch header
         for cell in sheet[1]:

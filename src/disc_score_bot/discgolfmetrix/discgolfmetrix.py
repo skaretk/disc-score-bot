@@ -1,6 +1,7 @@
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+import logging
 from typing import Optional
 
 import nextcord
@@ -17,6 +18,7 @@ from .discgolfmetrixcourse import (DiscgolfmetrixCourse,
 from .discgolfmetrixcourses import DiscgolfmetrixCourses
 from .discgolfmetrixuser import DiscgolfmetrixUser
 
+logger = logging.getLogger(__name__)
 
 class DiscgolfMetrix(commands.Cog):
     """Discgolfmetrix Cog"""
@@ -66,7 +68,7 @@ class DiscgolfMetrix(commands.Cog):
             competition_list = []
             for competition in json.get("my_competitions"):
                 competition_list.append(competition)
-            print(f'Found {len(competition_list)} competitions')
+            logger.info('Found %s competitions', len(competition_list))
 
             future_list = []
             with ThreadPoolExecutor(max_workers=len(competition_list)) as executor:
@@ -86,7 +88,7 @@ class DiscgolfMetrix(commands.Cog):
         else:
             await interaction.followup.send(f'Could not find your player code {user.mention}, please add it by using [/metrix add_player_code]')
 
-        print(f'competitions: {round(time.time() - start_time, 2)}')
+        logger.info('competitions: %s', round(time.time() - start_time, 2))
 
     @discgolfmetrix_slash_command.subcommand(name='search_course_id', description='Search for course on discgolfmetrix by ID')
     async def search_course_id(

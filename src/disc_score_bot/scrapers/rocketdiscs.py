@@ -1,8 +1,11 @@
 import time
+import logging
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class RocketDiscs(Scraper):
     def __init__(self):
@@ -27,7 +30,7 @@ class DiscScraper(RocketDiscs):
         soup_search = self.urllib_get_beatifulsoup()
         if self.any_products(soup_search) == False:
             self.scraper_time = time.time() - start_time
-            print(f'RocketDiscs scraper: {self.scraper_time}')
+            logger.info('RocketDiscs scraper: %s', self.scraper_time)
             return
 
         for product in soup_search.find_all("div", class_="list-group-item padding0"):
@@ -62,4 +65,4 @@ class DiscScraper(RocketDiscs):
             break
 
         self.scraper_time = time.time() - start_time
-        print(f'RocketDiscs scraper: {self.scraper_time}')
+        logger.info('RocketDiscs scraper: %s', self.scraper_time)

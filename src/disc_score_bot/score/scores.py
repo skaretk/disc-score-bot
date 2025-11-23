@@ -2,6 +2,7 @@ import datetime
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+import logging
 
 import dateutil.parser as dparser
 import nextcord
@@ -17,6 +18,7 @@ from .competition import Competition
 from .files.scorecardwriter import ScorecardWriter
 from .udisc.udisc_csv_reader import UdiscCsvReader
 
+logger = logging.getLogger(__name__)
 
 # Application checks
 def has_scorecards():
@@ -41,7 +43,7 @@ class Scores(commands.Cog):
             for scraper in scraper_list:
                 future = executor.submit(scraper.scrape)
 
-        print(f'Spent {round(time.time() - start_time, 2)} scraping')
+        logger.info('Spent %s scraping', round(time.time() - start_time, 2))
 
     def folder_path(self, interaction:Interaction):
         """Returns the folder to the guild and channel"""
@@ -58,7 +60,7 @@ class Scores(commands.Cog):
                         folder.mkdir()
                     file = folder / attachment.filename
                     await attachment.save(fp=file) # saves the file in a guild/channel folder
-                    print(f'csv attached and stored in {file}!')
+                    logger.info('csv attached and stored in %s!', file)
 
                     reader = UdiscCsvReader(file)
                     scorecard = reader.parse()
@@ -95,7 +97,7 @@ class Scores(commands.Cog):
             if embed is not None:
                 await interaction.send(embed=embed)
             else:
-                print("Embed not OK")
+                logger.warning("Embed not OK, storing in %s", folder / "scores.txt" )
                 competition.save_scorecards_text(folder / "scores.txt")
                 await interaction.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await interaction.send(f'WOW {interaction.user.mention}, thats a lot of scores!)')
@@ -115,7 +117,7 @@ class Scores(commands.Cog):
         for file in list(folder.iterdir()):
             if file.suffix == ".csv":
                 file_count += 1
-                print(folder / file)
+                logger.info(folder / file)
                 scorecards += f'\n{file.name}'
 
         msg = f'No of files: {file_count}\n{scorecards}'
@@ -206,7 +208,7 @@ class Scores(commands.Cog):
             if embed is not None:
                 await interaction.send(embed=embed)
             else:
-                print("Embed not OK")
+                logger.warning("Embed not OK, storing in %s", f'{folder}/scores.txt')
                 competition.save_scorecards_text(f'{folder}/scores.txt')
                 await interaction.send('https://giphy.com/embed/32mC2kXYWCsg0')
                 await interaction.send(f'WOW {interaction.user.mention}, thats a lot of scores!)')

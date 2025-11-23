@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
+import logging
 
 from disc_score_bot.config import Config
 
 from .playeralias import PlayerAlias
 
+logger = logging.getLogger(__name__)
 
 class AliasConfig(Config):
     """Alias Config"""
@@ -18,7 +20,7 @@ class AliasConfig(Config):
     def get_user_alias(self, user_name):
         """Return the json object from the alias list, or None if player has no aliases stored"""
         if self.module_exists() is False:
-            print(f'No Config stored for {self.server}')
+            logger.warning('No Config stored for %s', self.server)
             return None
 
         json_object = self.read(self.module_name)
@@ -72,7 +74,7 @@ class AliasConfig(Config):
         Return True if removed, False othervise
         """
         if self.module_exists() is False:
-            print(f'No Alias Config stored for {self.server}')
+            logger.warning('No Alias Config stored for %s', self.server)
             return False
 
         cfg = self.read(self.module_name)

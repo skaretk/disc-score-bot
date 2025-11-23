@@ -1,12 +1,14 @@
 import json
 import re
 import time
-
+import logging
 import requests
 
 from disc_score_bot.disc import Disc
 
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class Latitude64(Scraper):
     def __init__(self):
@@ -80,4 +82,4 @@ class DiscScraper(Latitude64):
             self.discs.append(disc)
 
         self.scraper_time = time.time() - start_time
-        print(f'Latitude64 scraper: {self.scraper_time}')
+        logger.info('Latitude64 scraper: %s', self.scraper_time)

@@ -1,6 +1,9 @@
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class Xxl(Scraper):
     def __init__(self):
@@ -44,4 +47,4 @@ class DiscScraper(Xxl):
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'XXL scraper: {self.scraper_time}')
+        logger.info('XXL scraper: %s', self.scraper_time)

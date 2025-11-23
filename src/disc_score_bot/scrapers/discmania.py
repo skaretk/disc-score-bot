@@ -1,6 +1,9 @@
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class Discmania(Scraper):
     def __init__(self):
@@ -41,4 +44,4 @@ class DiscScraper(Discmania):
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'Discmania scraper: {self.scraper_time}')
+        logger.info('Discmania scraper: %s', self.scraper_time)

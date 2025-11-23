@@ -1,4 +1,5 @@
 import time
+import logging
 
 from selenium.webdriver.common.by import By
 
@@ -6,6 +7,7 @@ from disc_score_bot.disc import Disc
 
 from .scraper import Scraper
 
+logger = logging.getLogger(__name__)
 
 # DiscgolfBagBuilder does not contain disc manufacturer
 class DiscgolfBagBuilder(Scraper):
@@ -92,7 +94,7 @@ class DiscgolfBagBuilder(Scraper):
             elif category.getText() == "Putt Approach":
                 self.putt_approach = discs_list
             else:
-                print(f'Unknown category {category.getText()}')
+                logger.warning('Unknown category %s', category.getText())
 
         self.scraper_time = time.time() - start_time
-        print(f'DiscgolfBagBuilder scraper: {self.scraper_time}')
+        logger.info('DiscgolfBagBuilder scraper: %s', self.scraper_time)

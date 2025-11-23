@@ -1,6 +1,9 @@
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class Fyndisc(Scraper):
     def __init__(self):
@@ -46,4 +49,4 @@ class DiscScraper(Fyndisc):
                 disc.store = self.name
                 self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'Fyndisc scraper: {self.scraper_time}')
+        logger.info('Fyndisc scraper: %s', self.scraper_time)

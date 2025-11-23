@@ -1,7 +1,10 @@
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
 # This site has been added into DiscInStock site
+
+logger = logging.getLogger(__name__)
 
 class FrisbeeFeber(Scraper):
     def __init__(self):
@@ -44,4 +47,4 @@ class DiscScraper(FrisbeeFeber):
             disc.url = a_url['href']
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'FrisbeeFeber scraper: {self.scraper_time}')
+        logger.info('FrisbeeFeber scraper: %s', self.scraper_time)

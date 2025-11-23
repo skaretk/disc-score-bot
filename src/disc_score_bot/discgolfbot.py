@@ -1,20 +1,25 @@
+
+import logging
 from os import getenv
-from dotenv import load_dotenv, find_dotenv # Fetch python bot token
 
 # nextcord
 import nextcord
+from dotenv import find_dotenv, load_dotenv  # Fetch python bot token
 from nextcord.ext import commands
 
 # cogs
-from .score import Scores
-from .emoji import Emojis
-from .discs import Discs
 from .bag import Bag
 from .discgolfmetrix import DiscgolfMetrix
-from .pdga import PdgaPlayerStat, PdgaApprovedDiscs
+from .discs import Discs
+from .emoji import Emojis
+from .logging_config import configure_logging
+from .pdga import PdgaApprovedDiscs, PdgaPlayerStat
+from .score import Scores
 
-# discord client
 def main():
+    """main() entrypoint - discord client """
+    configure_logging()
+    logger = logging.getLogger(__name__)
     load_dotenv(find_dotenv('cfg/token.env'))
     token = getenv("TOKEN")
 
@@ -27,7 +32,7 @@ def main():
 
     @bot.event
     async def on_ready():
-        print(f'We have logged in as {bot.user} - {nextcord.__version__}')
+        logger.info('We have logged in as %s - %s', bot.user, nextcord.__version__)
         await bot.change_presence(activity=nextcord.Game(name="Disc golf"))
 
     @bot.event
@@ -42,7 +47,6 @@ def main():
     bot.add_cog(DiscgolfMetrix(bot))
     bot.add_cog(PdgaPlayerStat(bot))
     bot.run(token)
-
 
 if __name__ == '__main__':
     main()

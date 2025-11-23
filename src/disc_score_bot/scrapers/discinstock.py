@@ -1,8 +1,11 @@
 from datetime import datetime
+import logging
 import time
 from disc_score_bot.apis import DiscinstockApi
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class DiscInStock(Scraper):
     def __init__(self):
@@ -32,7 +35,7 @@ class DiscScraper(DiscInStock):
 
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'DiscInStock scraper: {self.scraper_time}')
+        logger.info('DiscInStock scraper: %s', self.scraper_time)
 
 class DiscScraperApi(DiscInStock):
     def __init__(self, search):
@@ -55,7 +58,7 @@ class DiscScraperApi(DiscInStock):
                 disc.store = disc_json["retailer"]
                 self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'DiscInStockApi scraper: {self.scraper_time}')
+        logger.info('DiscInStockApi scraper: %s', self.scraper_time)
 
 class DiscNewsScraperApi(DiscInStock):
     def __init__(self, no_days):
@@ -89,4 +92,4 @@ class DiscNewsScraperApi(DiscInStock):
         self.sort_discs()
 
         self.scraper_time = time.time() - start_time
-        print(f'DiscScraperNewsApi scraper: {self.scraper_time}')
+        logger.info('DiscScraperNewsApi scraper: %s', self.scraper_time)

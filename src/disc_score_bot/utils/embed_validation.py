@@ -1,4 +1,7 @@
+import logging
 import nextcord
+
+logger = logging.getLogger(__name__)
 
 # +-------------+------------------------+
 # |    Field    |         Limit          |
@@ -32,7 +35,7 @@ def validate_embed(embed:nextcord.Embed):
 def validate_embed_total_length(embed:nextcord.Embed):
     """Validate the total length of the embed"""
     if len(embed) > 6000:
-        print(f'Embed size too long: {len(embed)}')
+        logger.error('Embed size too long: %s', len(embed))
         return False
     return True
 
@@ -40,7 +43,7 @@ def validate_embed_title(title:nextcord.Embed.title):
     """Validate the embed title"""
     if title is not None:
         if len(title) > 256:
-            print(f'title too long: {len(title)}')
+            logger.error('title too long: %s', len(title))
             return False
     return True
 
@@ -48,7 +51,7 @@ def validate_embed_description(description:nextcord.Embed.description):
     """Validate the embed description"""
     if description is not None:
         if len(description) > 4096:
-            print(f'description too long: {len(description)}')
+            logger.error('description too long: %s', len(description))
             return False
     return True
 
@@ -66,7 +69,7 @@ def validate_embed_fields(fields:nextcord.Embed.fields):
 def validate_embed_no_of_fields(fields:nextcord.Embed.fields):
     """Validate the number of fields"""
     if len(fields) > 25:
-        print(f'too many fields!: {len(fields)}')
+        logger.error('too many fields!: %s', len(fields))
         return False
     return True
 
@@ -76,7 +79,7 @@ def validate_embed_field_names(fields:nextcord.Embed.fields):
     fields_name.extend([field.name for field in fields])
     for name in fields_name:
         if len(name) > 256:
-            print(f'field.name too long: {len(name)}')
+            logger.error('field.name too long: %s', len(name))
             return False
     return True
 
@@ -86,7 +89,7 @@ def validate_embed_field_value(fields:nextcord.Embed.fields):
     fields_value.extend([field.value for field in fields])
     for value in fields_value:
         if len(value) > 1024:
-            print(f'field.value too long: {len(value)}')
+            logger.error('field.value too long: %s', len(value))
             return False
     return True
 
@@ -95,7 +98,7 @@ def validate_embed_footer(footer:nextcord.Embed.footer):
     if footer.text is not None:
         if str(footer.text) != 'Embed.Empty':
             if len(footer.text) > 2048:
-                print(f'footer.text too long: {len(footer.text)}')
+                logger.error('footer.text too long: %s', len(footer.text))
                 return False
     return True
 
@@ -104,6 +107,6 @@ def validate_embed_author(author:nextcord.Embed.author):
     if author.name is not None:
         if str(author.name) != 'Embed.Empty':
             if len(author.name) > 256:
-                print(f'author.name too long: {len(author.name)}')
+                logger.error('author.name too long: %s', len(author.name))
                 return False
     return True

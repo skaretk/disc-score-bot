@@ -1,8 +1,11 @@
 import nextcord
 from nextcord.ext import tasks, commands
 from dateutil.parser import parse
+import logging
 from disc_score_bot.scrapers import pdga
 from .pdgaapproveddiscssql import PdgaSql
+
+logger = logging.getLogger(__name__)
 
 class PdgaApprovedDiscs(commands.Cog):
     """PdgaApprovedDiscs Cog"""
@@ -24,7 +27,7 @@ class PdgaApprovedDiscs(commands.Cog):
             if disc not in stored_discs:
                 new_approved_discs.append(disc)
                 pdga_sql.add_approved_disc(disc)
-                print(f'NEW DISC: {disc.name} Stored in sql')
+                logger.info('NEW DISC: %s Stored in sql', disc.name)
 
         # Any new approved discs?
         if new_approved_discs:

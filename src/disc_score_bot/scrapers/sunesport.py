@@ -1,7 +1,10 @@
 import re
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 # Sune Sport does not contain disc manufacturer
 class SuneSport(Scraper):
@@ -36,4 +39,4 @@ class DiscScraper(SuneSport):
             disc.store = self.name
             self.discs.append(disc)
         self.scraper_time = time.time() - start_time
-        print(f'SuneSport scraper: {self.scraper_time}')
+        logger.info('SuneSport scraper: %s', self.scraper_time)

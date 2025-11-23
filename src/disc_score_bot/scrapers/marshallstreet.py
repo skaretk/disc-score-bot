@@ -1,6 +1,9 @@
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class MarshallStreet(Scraper):
     def __init__(self):
@@ -30,7 +33,7 @@ class DiscFlightScraper(MarshallStreet):
                 disc.turn = disc_item['data-turn']
                 disc.fade = disc_item['data-fade']
                 self.discs.append(disc)
-                print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
+                logger.info('MarshallStreetFlight scraper: %s', time.time() - start_time)
                 return
         for putter in soup.find_all("div", class_="putter-child pc-entry"):
             putter_name = putter['data-putter']
@@ -44,7 +47,7 @@ class DiscFlightScraper(MarshallStreet):
                 disc.turn = putter['data-turn']
                 disc.fade = putter['data-fade']
                 self.discs.append(disc)
-                print(f'MarshallStreetFlight scraper: {time.time() - start_time}')
+                logger.info('MarshallStreetFlight scraper: %s', time.time() - start_time)
                 return
         self.scraper_time = time.time() - start_time
-        print(f'MarshallStreetFlight scraper: {self.scraper_time}')
+        logger.info('MarshallStreetFlight scraper: %s', self.scraper_time)

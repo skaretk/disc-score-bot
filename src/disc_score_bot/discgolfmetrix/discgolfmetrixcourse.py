@@ -1,6 +1,9 @@
 from enum import Enum
+import logging
 import nextcord
 from disc_score_bot.apis.discgolfmetrixapi import metrix_favicon
+
+logger = logging.getLogger(__name__)
 
 class DiscgolfmetrixCourseSource(Enum):
     """Discgolfmetric course source"""
@@ -85,7 +88,7 @@ class DiscgolfmetrixCourse:
         try:
             description_text = f'Baskets: {self.no_of_baskets or "Unknown"} Par: {self.par or "0"} Length: {self.total_length or "0"}m PAR Rating: {self.calculate_rating() or "0"}'
         except:
-            print("Could not fetch description for course")
+            logger.warning("Could not fetch description for course")
         embed=nextcord.Embed(title=self.course_name, url=f'{self.course_url}', description=description_text, color=0x004899)
         embed.set_footer(text="discgolfmetrix", icon_url=metrix_favicon())
         return embed

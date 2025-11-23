@@ -1,6 +1,9 @@
 from abc import abstractmethod
 import json
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 class Config:
     """Cfg class, handle bot configuration"""
@@ -30,7 +33,7 @@ class Config:
     def path_exists(self):
         """Check if the config folder exists for the server"""
         if not self.path.exists():
-            print(f'No Config folder for {self.server}')
+            logger.warning('No Config folder for %s', self.server)
             return False
 
         return True
@@ -38,7 +41,7 @@ class Config:
     def config_exists(self):
         """Check if the config file exists for the server"""
         if not self.config.is_file():
-            print(f'No {self.file} stored for {self.server}')
+            logger.warning('No %s stored for %s', self.file, self.server)
             return False
 
         return True
@@ -93,5 +96,5 @@ class Config:
                 json.dump(data, json_file, indent=4, sort_keys=False)
                 return True
         except IOError:
-            print("Could not store the json")
+            logger.exception("Could not store the json")
             return False

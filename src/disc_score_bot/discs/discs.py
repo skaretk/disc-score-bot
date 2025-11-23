@@ -1,15 +1,20 @@
-from concurrent.futures import ThreadPoolExecutor
 import time
+from concurrent.futures import ThreadPoolExecutor
+import logging
 from typing import Optional
 
-from disc_score_bot.utils.embed_validation import validate_embed
 import nextcord
 from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
-from disc_score_bot.scrapers.discScrapers import DiscScrapers, DiscNewsScrapers
-from disc_score_bot.scrapers.marshallstreet import DiscFlightScraper
+
 from disc_score_bot.apis import DiscitApi
+from disc_score_bot.scrapers.discScrapers import DiscNewsScrapers, DiscScrapers
+from disc_score_bot.scrapers.marshallstreet import DiscFlightScraper
+from disc_score_bot.utils.embed_validation import validate_embed
+
 from .store import split_discs_in_stores
+
+logger = logging.getLogger(__name__)
 
 class Discs(commands.Cog):
     """Discs cog"""
@@ -25,7 +30,7 @@ class Discs(commands.Cog):
             for disc_scraper in scraper_list:
                 future = executor.submit(disc_scraper.scrape)
 
-        print(f'Spent {round(time.time() - start_time, 2)} scraping')
+        logger.info('Spent %s scraping', round(time.time() - start_time, 2))
 
         for disc_scraper in scraper_list:
             self.discs.extend(disc_scraper.discs)
@@ -145,7 +150,7 @@ class Discs(commands.Cog):
                     await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+        logger.info('TOTAL %s scraping', round(time.time() - start_time, 2))
 
     @commands.command(aliases=['Disc_voec', 'disk_voec', 'Disk_voec'], brief='%disc_voec disc1, disc2, etc', description='Search for disc in norwegian and VOEC approved sites')
     async def disc_voec(self, ctx, *args, sep=" "):
@@ -178,7 +183,7 @@ class Discs(commands.Cog):
                     await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+        logger.info('TOTAL %s scraping', round(time.time() - start_time, 2))
 
     @commands.command(aliases=['disk_all', 'd_a'], brief='%disc_all disc1, disc2, etc', description='Lists all discs in store for all sites added')
     async def disc_all(self, ctx, *args, sep=" "):
@@ -211,7 +216,7 @@ class Discs(commands.Cog):
                     await ctx.send("https://giphy.com/embed/32mC2kXYWCsg0")
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+        logger.info('TOTAL %s scraping', round(time.time() - start_time, 2))
 
     @commands.command(aliases=['Disc_flight', 'disk_flight', 'Disk_flight'], brief='%disc_flight disc', description='Get the flightpath of the given disc')
     async def disc_flight(self, ctx, *args, sep=" "):
@@ -234,7 +239,7 @@ class Discs(commands.Cog):
             await ctx.send(f'Could not find flight path for {search} {ctx.author.mention}')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
+        logger.info('TOTAL %s scraping for disc flightpath', round(time.time() - start_time, 2))
 
     # Slash commands
     @nextcord.slash_command(name="disc", description="Discs commands", guild_ids=[])
@@ -281,7 +286,7 @@ class Discs(commands.Cog):
                 await interaction.followup.send(f'{interaction.user.mention}, WOW thats a lot of **{search}** discs! ({len(self.discs)}!)\nTIP: Include plastic type to reduce number of results https://giphy.com/embed/32mC2kXYWCsg0')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+        logger.info('TOTAL %s scraping', round(time.time() - start_time, 2))
 
     @disc_slash_command.subcommand(name="flight", description="Search for disc flight-path")
     async def disc_flight_slash_command(
@@ -305,7 +310,7 @@ class Discs(commands.Cog):
             await interaction.followup.send(f'Could not find flight path for {search} {interaction.user.mention}')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping for disc flightpath')
+        logger.info('TOTAL %s scraping for disc flightpath', round(time.time() - start_time, 2))
 
     @disc_slash_command.subcommand(name="lookup", description="Search for discs with specific characteristics")
     async def disc_lookup_slash_command(
@@ -371,7 +376,7 @@ class Discs(commands.Cog):
             await interaction.followup.send(f'Could not lookup the the disc(s) {interaction.user.mention}')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'Spent {round(time.time() - start_time, 2)} looking up the disc(s)')
+        logger.info('Spent %s looking up the disc(s)', round(time.time() - start_time, 2))
 
     @disc_slash_command.subcommand(name="news", description="Search for last updated discs in stores!")
     async def disc_news_slash_command(
@@ -415,4 +420,4 @@ class Discs(commands.Cog):
                 await interaction.followup.send(f'{interaction.user.mention}, WOW thats a lot of **NEW** discs! ({len(self.discs)}!)\n https://giphy.com/embed/32mC2kXYWCsg0')
 
         await self.bot.change_presence(activity=nextcord.Game(name="Disc golf"))
-        print(f'TOTAL {round(time.time() - start_time, 2)} scraping')
+        logger.info('TOTAL %s scraping', round(time.time() - start_time, 2))

@@ -1,6 +1,9 @@
 import time
+import logging
 from disc_score_bot.disc import Disc
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class Kastmeg(Scraper):
     """kastmeg.no scraper"""
@@ -57,4 +60,4 @@ class DiscScraper(Kastmeg):
             self.discs.append(disc)
 
         self.scraper_time = time.time() - start_time
-        print(f'Kastmeg scraper: {self.scraper_time}')
+        logger.info('Kastmeg scraper: %s', self.scraper_time)

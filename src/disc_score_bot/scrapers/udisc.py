@@ -1,8 +1,11 @@
 import time
+import logging
 from disc_score_bot.score.udisc.udisc_competition_scorecard import UdiscScoreCardCompetition
 from disc_score_bot.score.udisc.udisc_player import UdiscPlayer
 from disc_score_bot.score.playeralias import PlayerAlias
 from .scraper import Scraper
+
+logger = logging.getLogger(__name__)
 
 class Udisc(Scraper):
     """uDisc scraper base class"""
@@ -96,4 +99,4 @@ class LeagueScraper(Udisc):
                 self.scorecard.add_player(scorecard_player)
 
         self.scraper_time = time.time() - start_time
-        print(f'UdiscLeague scraper: {self.scraper_time}')
+        logger.info('UdiscLeague scraper: %s', self.scraper_time)

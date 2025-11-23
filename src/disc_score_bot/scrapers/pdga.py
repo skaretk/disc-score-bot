@@ -1,8 +1,11 @@
 import time
+import logging
 from disc_score_bot.disc.pdgaapproveddisc import PdgaApprovedDisc
 from .scraper import Scraper
 import re
 import urllib.parse
+
+logger = logging.getLogger(__name__)
 
 class Pdga(Scraper):
     def __init__(self):
@@ -43,7 +46,7 @@ class DiscScraper(Pdga):
             self.discs.append(approved_disc)
 
         self.scraper_time = time.time() - start_time
-        print(f'PDGA scraper: {self.scraper_time}')
+        logger.info('PDGA scraper: %s', self.scraper_time)
 
 class PdgaPlayerData():
     def __init__(self, pdga_number):
@@ -148,7 +151,7 @@ class PlayerProfileScraper(Pdga):
 
         # print the chore
         self.scraper_time = time.time() - start_time
-        print(f'PDGA scraper: {self.scraper_time}')
+        logger.info('PDGA scraper: %s', self.scraper_time)
 
     def find_player_name(self, tag="meta", tag_property="og:title"):
         player_name = '-'

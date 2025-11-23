@@ -1,5 +1,8 @@
 from pathlib import Path
+import logging
 from .config import Config
+
+logger = logging.getLogger(__name__)
 
 class ClubPlayerConfig(Config):
     """Handle ClubPlayerConfig section of the JSON config"""
@@ -21,7 +24,7 @@ class ClubPlayerConfig(Config):
             player_obj: object with .discord_id, .name, .pdga_number, .discgolfmetrix_id or None
         """
         if not self.module_exists():
-            print(f"No Config stored for {self.module_name} for this server: {self.server}")
+            logger.warning("No Config stored for %s for this server: %s", self.module_name, self.server)
             return None
 
         json_object = self.read(self.module_name)
@@ -63,7 +66,7 @@ class ClubPlayerConfig(Config):
     def remove_player(self, discord_id: int):
         """Remove a player by discord_id"""
         if not self.module_exists():
-            print(f"No Config stored for {self.module_name} for this server: {self.server}")
+            logger.warning("No Config stored for %s for this server: %s", self.module_name, self.server)
             return False
 
         cfg = self.read(self.module_name)
