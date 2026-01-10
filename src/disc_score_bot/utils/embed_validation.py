@@ -15,56 +15,45 @@ logger = logging.getLogger(__name__)
 # | footer.text | 2048 characters        |
 # | author.name | 256 characters         |
 # +-------------+------------------------+
-def validate_embed(embed:nextcord.Embed):
+def validate_embed(embed:nextcord.Embed) -> bool:
     """Validate the embed"""
-    embed_ok = True
-    if validate_embed_total_length(embed) is False:
-        embed_ok = False
-    if validate_embed_title(embed.title) is False:
-        embed_ok = False
-    if validate_embed_description(embed.description) is False:
-        embed_ok = False
-    if validate_embed_fields(embed.fields) is False:
-        embed_ok = False
-    if validate_embed_footer(embed.footer) is False:
-        embed_ok = False
-    if validate_embed_author(embed.author) is False:
-        embed_ok = False
-    return embed_ok
+    return all([
+        validate_embed_total_length(embed),
+        validate_embed_title(embed.title),
+        validate_embed_description(embed.description),
+        validate_embed_fields(embed.fields),
+        validate_embed_footer(embed.footer),
+        validate_embed_author(embed.author),
+    ])
 
-def validate_embed_total_length(embed:nextcord.Embed):
+def validate_embed_total_length(embed: nextcord.Embed) -> bool:
     """Validate the total length of the embed"""
     if len(embed) > 6000:
         logger.error('Embed size too long: %s', len(embed))
         return False
     return True
 
-def validate_embed_title(title:nextcord.Embed.title):
+def validate_embed_title(title: str | None) -> bool:
     """Validate the embed title"""
-    if title is not None:
-        if len(title) > 256:
-            logger.error('title too long: %s', len(title))
-            return False
+    if title is not None and len(title) > 256:
+        logger.error('title too long: %s', len(title))
+        return False
     return True
 
-def validate_embed_description(description:nextcord.Embed.description):
+def validate_embed_description(description: str | None) -> bool:
     """Validate the embed description"""
-    if description is not None:
-        if len(description) > 4096:
-            logger.error('description too long: %s', len(description))
-            return False
+    if description is not None and len(description) > 4096:
+        logger.error('description too long: %s', len(description))
+        return False
     return True
 
 def validate_embed_fields(fields:nextcord.Embed.fields):
     """Validate the embed fields"""
-    fields_ok = True
-    if validate_embed_no_of_fields(fields) is False:
-        fields_ok = False
-    if validate_embed_field_names(fields) is False:
-        fields_ok = False
-    if validate_embed_field_value(fields) is False:
-        fields_ok = False
-    return fields_ok
+    return all([
+        validate_embed_no_of_fields(fields),
+        validate_embed_field_names(fields),
+        validate_embed_field_value(fields),
+    ])
 
 def validate_embed_no_of_fields(fields:nextcord.Embed.fields):
     """Validate the number of fields"""
