@@ -3,27 +3,20 @@ import random
 from disc_score_bot.scrapers import pdga
 
 
-def check_player_profile_data(player_data):
-    if not player_data.pdga_number:
-        return False
-    if not player_data.player_name:
-        return False
-    if not player_data.current_rating:
-        return False
-    if not player_data.rating_change:
-        return False
-    if not player_data.location:
-        return False
-    if not player_data.membership_status:
-        return False
-    if not player_data.offical_status:
-        return False
-    if not player_data.career_events:
-        return False
-    if not player_data.upcoming_events:
-        return False
-    # portrait_url is not included because it's not always present
-    return True
+def check_player_profile_data(player_data) -> bool:
+    required = (
+        player_data.pdga_number,
+        player_data.player_name,
+        player_data.current_rating,
+        player_data.rating_change,
+        player_data.location,
+        player_data.membership_status,
+        player_data.official_status,
+        player_data.career_events,
+        player_data.upcoming_events,
+        # portrait_url is not included because it's not always present
+    )
+    return all(required)
 
 def scrape_and_check(scraper):
     scraper.scrape()

@@ -55,7 +55,7 @@ class PdgaPlayerData():
         self.rating_change = 0
         self.location = ''
         self.membership_status = ''
-        self.offical_status = ''
+        self.official_status = ''
         self.career_events = 0
         self.upcoming_events = []
         self.portrait_url = ''
@@ -69,7 +69,7 @@ class PdgaPlayerData():
             "Career Events": self.career_events,
             "Location": self.location,
             "Membership Status": self.membership_status,
-            "Official Status": self.offical_status,
+            "Official Status": self.official_status,
             "PDGA Number": self.pdga_number,
             "Ratings Change": self.rating_change,
             "Upcoming Events": self.upcoming_events,
@@ -78,7 +78,7 @@ class PdgaPlayerData():
 class PdgaEvent():
     def __init__(self, url_host:str, url_path:str, title:str, date_start:str, date_from_to:str) -> None:
         # day, month(str3) month-day(int1-2), year(int4)
-        self._rexpression = re.compile(pattern='\w{3},\s\w{3}\s(?:(\d)),\s\d{4}', flags=re.IGNORECASE)
+        self._rexpression = re.compile(pattern=r'\w{3},\s\w{3}\s(?:(\d)),\s\d{4}', flags=re.IGNORECASE)
         self.event_url = urllib.parse.urljoin(base=url_host, url=url_path)
         self.title = title
         self.date_start = date_start
@@ -86,7 +86,7 @@ class PdgaEvent():
         self.__on_init__()
 
     def __on_init__(self):
-        day_in_month = self._rexpression.find_all(string=self.date_start)
+        day_in_month = self._rexpression.findall(string=self.date_start)
         if len(day_in_month) == 1:
             if len(day_in_month[0]) == 1:
                 replace_day_in_month = "0" + day_in_month[0]
@@ -139,7 +139,7 @@ class PlayerProfileScraper(Pdga):
             self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].strip()
         else:
             # assign the player name from the meta tag
-            self.find_player_name(tag="meta", tag_property="og:title")
+            self.find_player_name()
             if self.player_data.portrait_url is None and self.player_data.player_name:
                 self.get_player_portrait_data(search_key="'s picture")
 
@@ -151,14 +151,12 @@ class PlayerProfileScraper(Pdga):
 
         # print the chore
         self.scraper_time = time.time() - start_time
-        logger.info('PDGA scraper: %s', self.scraper_time)
+        logger.info('PDGA PlayerProfileScraper scraper: %s', self.scraper_time)
 
-    def find_player_name(self, tag="meta", tag_property="og:title"):
-        player_name = '-'
-        player_name_metadata = self.soup.find(name=tag, property=tag_property)
+    def find_player_name(self):
+        player_name_metadata = self.soup.find(name="meta", property="og:title")
         if 'content' in player_name_metadata.attrs:
-            player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
-        self.player_data.player_name = player_name
+            self.player_data.player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
 
     def find_current_rating(self):
         current_rating_data = self.soup.find('li', 'current-rating')
@@ -187,7 +185,8 @@ class PlayerProfileScraper(Pdga):
             if search_key is not None:
                 reg_pat = search_key
             else:
-                reg_pat = "\w+\s" +f"{self.player_data.pdga_number}"
+                reg_pat = r"\w+\s" +f"{self.player_data.pdga_number}"
+
             player_portrait_data = None
             regex_compile = re.compile(pattern=reg_pat, flags=re.IGNORECASE)
             port_data = self.soup.find_all('img')
@@ -204,9 +203,9 @@ class PlayerProfileScraper(Pdga):
     def find_official_data(self):
         official_obj = self.soup.find_all('li', 'official')
         if len(official_obj) >= 1:
-            self.player_data.offical_status = official_obj[0].text.split(": ")[-1].strip()
+            self.player_data.official_status = official_obj[0].text.split(": ")[-1].strip()
             return
-        self.player_data.offical_status = 'n/a'
+        self.player_data.official_status = 'n/a'
 
     # commit to move over to work lap..
     def get_player_upcoming_events_data(self):
@@ -269,6 +268,7 @@ class PlayerProfileScraper(Pdga):
                     if str.isalpha(part.replace(" ","")):
                         continue
                     if str.isalnum(part.replace(" ","").replace("-","")):
+                        year = ""
                         if part.rfind("-") >= 0:
                             year = part.split("-")[-1]
                         date_parts = part.split(" to ")
