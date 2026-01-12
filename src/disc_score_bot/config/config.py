@@ -55,6 +55,13 @@ class Config:
                 return True
         return False
 
+    def read_module(self):
+        """Return module data if it exists, else None"""
+        if not self.module_exists():
+            logger.warning("No Config stored for %s for this server: %s", self.module_name, self.server)
+            return None
+        return self.read(self.module_name) or []
+
     def create(self):
         """Create the json file"""
         if not self.path_exists() :

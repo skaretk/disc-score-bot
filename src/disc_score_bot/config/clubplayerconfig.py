@@ -1,12 +1,21 @@
+from dataclasses import dataclass, asdict
 from pathlib import Path
+from typing import Optional
 import logging
 from .config import Config
 
 logger = logging.getLogger(__name__)
 
+@dataclass
+class Player:
+    """Player Config for Club"""
+    pdga_number: int
+    name: str
+    discord_id: Optional[int] = None
+    discgolfmetrix_id: Optional[int] = None
+
 class ClubPlayerConfig(Config):
     """Handle ClubPlayerConfig section of the JSON config"""
-
     def __init__(self, server, path: Path = None, module_name="ClubPlayerConfig", file=None):
         super().__init__(server, path, module_name, file)
 
@@ -14,64 +23,61 @@ class ClubPlayerConfig(Config):
         """Create empty array for ClubPlayerConfig"""
         return self.write([], self.module_name)
 
-    def get_player(self, discord_id: int = 0, name: str = None, pdga_number: int = 0, discgolfmetrix_id: int = 0):
-        """Lookup a clubpPlayer.
-
-        Args:
-            discord_id, name, pdga_number, discgolfmetrix_id
-
-        Returns:
-            player_obj: object with .discord_id, .name, .pdga_number, .discgolfmetrix_id or None
-        """
-        if not self.module_exists():
-            logger.warning("No Config stored for %s for this server: %s", self.module_name, self.server)
+    def get_player_by_pdga_number(self, pdga_number: int) -> dict | None:
+        """Lookup club_player by pdg number"""
+        data = self.read_module()
+        if data is None:
             return None
+        return next((p for p in data if p.get("pdga_number") == pdga_number), None)
 
-        json_object = self.read(self.module_name)
-        if discord_id:
-            return next((p for p in json_object if p["discord_id"] == discord_id), None)
-        if name is not None:
-            return next((p for p in json_object if p["name"] == name), None)
-        if pdga_number:
-            return next((p for p in json_object if p["pdga_number"] == pdga_number), None)
-        if discgolfmetrix_id:
-            return next((p for p in json_object if p["discgolfmetrix_id"] == discgolfmetrix_id), None)
+    def get_player_by_name(self, name: str) -> dict | None:
+        """Lookup club_player by name"""
+        data = self.read_module()
+        if data is None:
+            return None
+        return next((p for p in data if p.get("name") == name), None)
 
-    def add_player(self, player_obj):
-        """Add or edit a player.
+    def get_player_by_discord_id(self, discord_id: int) -> dict | None:
+        """Lookup club_player by discord id [Optional]"""
+        data = self.read_module()
+        if data is None:
+            return None
+        return next((p for p in data if p.get("discord_id") == discord_id), None)
 
-        Args:
-            player_obj: object with .discord_id, .name, .pdga_number, .discgolfmetrix_id
+    def get_player_by_discgolfmetrix_id(self, discgolfmetrix_id: int) -> dict | None:
+        """Lookup club_player by discgolfmetrix id [Optional]"""
+        data = self.read_module()
+        if data is None:
+            return None
+        return next((p for p in data if p.get("discgolfmetrix_id") == discgolfmetrix_id), None)
 
-        Returns:
-            (written: bool, modified: bool)
-        """
-        if not hasattr(player_obj, "discord_id"):
-            return False, False
+    def add_player(self, player: Player) -> tuple[bool, bool]:
+        """Add or edit a player"""
+        json_object = self.read_module()
+        if json_object is None:
+            json_object = []
 
-        json_object = self.read(self.module_name) or []
-
+        player_dict = asdict(player)
         modified = False
         for p in json_object:
-            if p["discord_id"] == player_obj.discord_id:
-                p.update(player_obj.__dict__)
+            if p["pdga_number"] == player.pdga_number:
+                p.update(player_dict)
                 modified = True
                 break
 
         if not modified:
-            json_object.append(player_obj.__dict__)
+            json_object.append(player_dict)
 
         return self.write(json_object, self.module_name), modified
 
-    def remove_player(self, discord_id: int):
+    def remove_player(self, pdga_number: int):
         """Remove a player by discord_id"""
-        if not self.module_exists():
-            logger.warning("No Config stored for %s for this server: %s", self.module_name, self.server)
+        cfg = self.read_module()
+        if cfg is None:
             return False
 
-        cfg = self.read(self.module_name)
         for i, p in enumerate(cfg):
-            if p["discord_id"] == discord_id:
+            if p["pdga_number"] == pdga_number:
                 del cfg[i]
                 return self.write(cfg, self.module_name)
 

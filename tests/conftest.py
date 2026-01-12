@@ -36,56 +36,70 @@ def cfg_factory(tmp_path):
 
 @pytest.fixture
 def new_cfg(cfg_factory):
+    """New Config"""
     return cfg_factory(Config)
 
 @pytest.fixture
 def example_cfg():
+    """Fetch server_example Config"""
     return Config("server_example")
 
 @pytest.fixture
 def new_bag_cfg(cfg_factory):
+    """New Bag Config"""
     return cfg_factory(BagConfig)
 
 @pytest.fixture
 def example_bag_cfg():
+    """Fetch server_example Bag Config"""
     return BagConfig("server_example")
 
 @pytest.fixture
 def new_club_player_cfg(cfg_factory):
+    """New Club Player Config"""
     return cfg_factory(ClubPlayerConfig)
 
 @pytest.fixture
 def example_club_player_cfg():
+    """Fetch server_example Club Player Config"""
     return ClubPlayerConfig("server_example")
 
 @pytest.fixture
 def new_alias_cfg(cfg_factory):
+    """New Alias Config"""
     return cfg_factory(AliasConfig)
 
 @pytest.fixture
 def example_alias_cfg():
+    """Fetch server_example Club Alias Config"""
     return AliasConfig("server_example")
 
 @pytest.fixture
 def new_discord_user_cfg(cfg_factory):
+    """New Discord User Config"""
     return cfg_factory(DiscordUserConfig)
 
 @pytest.fixture
 def example_discord_user_cfg():
+    """Fetch server_example Club discord user Config"""
     return DiscordUserConfig("server_example")
 
 @pytest.fixture
 def new_discgolfmetrix_cfg(cfg_factory):
+    """New Discgolfmetrix Config"""
     return cfg_factory(DiscgolfmetrixConfig)
 
 @pytest.fixture
 def example_discgolfmetrix_cfg():
+    """Fetch server_example discgolfmetrix Config"""
     return DiscgolfmetrixConfig("server_example")
 
 @pytest.fixture
 def new_pdga_player_cfg(cfg_factory):
+    """New PDGA Config"""
     return cfg_factory(PdgaPlayerConfig)
 
 @pytest.fixture
 def example_pdga_player_cfg():
+    """Fetch server_example PDGA Config"""
     return PdgaPlayerConfig("server_example")

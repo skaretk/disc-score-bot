@@ -4,7 +4,7 @@ from .config import Config
 from .clubplayerconfig import ClubPlayerConfig
 
 class ClubConfig(Config):
-    """DiscordUserConfig class, inherit to include discorduser configuration"""
+    """ClubConfig class, inherit to include discorduser configuration"""
     def __init__(self, server, discgolfmetrix_id:int, path:Path=None, module_name=None, file=None):
         super().__init__(server, path, module_name, file)
         self.discgolfmetrix_id:int = discgolfmetrix_id
