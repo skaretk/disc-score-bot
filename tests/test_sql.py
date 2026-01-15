@@ -1,4 +1,3 @@
-from pathlib import Path
 from disc_score_bot.pdga.pdgaapproveddiscssql import PdgaSql
 
 def test_pdga_sql_get_discs():

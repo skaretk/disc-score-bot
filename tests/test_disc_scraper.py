@@ -20,22 +20,9 @@ from disc_score_bot.scrapers import sunesport
 from disc_score_bot.scrapers import wearediscgolf
 from disc_score_bot.scrapers import xxl
 from disc_score_bot.scrapers import pdga
-from disc_score_bot.scrapers import rocketdiscs
 
 def check_disc(disc):
-    if not disc.name:
-        return False
-    if not disc.price:
-        return False
-    if not disc.price:
-        return False
-    if not disc.store:
-        return False
-    if not disc.url:
-        return False
-    if not disc.img:
-        return False
-    return True
+    return all([disc.name, disc.price, disc.store, disc.url, disc.img])
 
 def scrape_and_check(scraper):
     scraper.scrape()

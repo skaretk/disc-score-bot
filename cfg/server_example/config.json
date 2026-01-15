@@ -15,30 +15,20 @@
             ]
         }
     ],
-    "BagConfig": [
-        {
-            "discord_id": 1,
-            "url": "https://www.discgolfbagbuilder.com/bags/testbag"
-        }
-    ],
-    "DiscgolfmetrixConfig": [
-        {
-            "discord_id": 1,
-            "code": "metrix_code"
-        }
-    ],
-    "PdgaPlayerConfig": [
+    "UserConfig": [
         {
             "discord_id": 123456789012345678,
-            "pdga_number": 12345
+            "pdga_number": 12345,
+            "discgolfmetrix_code": "metrix_code",
+            "bag_url": "https://www.discgolfbagbuilder.com/bags/testbag"
         }
     ],
     "ClubPlayerConfig": [
         {
-            "discord_id": 123456789012345678,
             "name": "Ola Nordmann",
+            "discord_id": 123456789012345678,
             "pdga_number": 12345,
-            "discgolfmetrix_id": 123456789012345678
+            "discgolfmetrix_code": "metrix_code"
         }
     ]
 }

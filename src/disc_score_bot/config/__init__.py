@@ -1,5 +1,5 @@
 from .config import Config
-from .discorduserconfig import DiscordUserConfig
 from .clubplayerconfig import ClubPlayerConfig
+from .userconfig import UserConfig, User
 
-__all__ = ["ClubPlayerConfig", "Config", "DiscordUserConfig"]
+__all__ = ["ClubPlayerConfig", "Config", "UserConfig"]

@@ -3,7 +3,7 @@ from nextcord import Interaction, SlashOption
 from nextcord.ext import commands
 from disc_score_bot.utils.embed_validation import validate_embed
 from disc_score_bot.scrapers.discgolfbagbuilder import DiscgolfBagBuilder
-from .bagconfig import BagConfig
+from disc_score_bot.config import UserConfig, User
 
 class Bag(commands.Cog):
     """Bag Class Cog"""
@@ -45,21 +45,27 @@ class Bag(commands.Cog):
         ):
         """/bag add url"""
         user = interaction.user
-        cfg = BagConfig(interaction.guild.name)
-        modified = cfg.add_user(user.id, bag_url)
+        cfg = UserConfig(interaction.guild.name)
+        user_config = cfg.get_user(user.id)
+        if user_config is not None:
+            user_config.bag_url = bag_url
+        else:
+            user_config = User(discord_id=user.id, bag_url=bag_url)
+        modified = cfg.add_user(user_config)
         if modified:
             await interaction.response.send_message(f'Modified your bag {user.mention}')
         else:
             await interaction.response.send_message(f'Added your bag {user.mention}')
 
-    def scrape_bag(self, guild_name, user):
+    def scrape_bag(self, guild_name, user_id):
         """Scrape user bag from discgolfbagbuilder.com"""
-        cfg = BagConfig(guild_name)
-        bag = cfg.get_url(user)
-        if bag is not None:
-            bag_scraper = DiscgolfBagBuilder(bag)
-            bag_scraper.scrape_discs()
-            return bag_scraper
+        cfg = UserConfig(guild_name)
+        user = cfg.get_user(user_id)
+        if user is not None:
+            if user.bag_url is not None:
+                bag_scraper = DiscgolfBagBuilder(user.bag_url)
+                bag_scraper.scrape_discs()
+                return bag_scraper
         return None
 
     def get_embed(self, bag_scraper):

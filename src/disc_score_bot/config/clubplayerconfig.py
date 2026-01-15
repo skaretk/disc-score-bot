@@ -1,18 +1,17 @@
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 import logging
 from .config import Config
+from .identifiers import Identifiers
 
 logger = logging.getLogger(__name__)
 
 @dataclass
-class Player:
+class Player(Identifiers):
     """Player Config for Club"""
-    pdga_number: int
     name: str
     discord_id: Optional[int] = None
-    discgolfmetrix_id: Optional[int] = None
 
 class ClubPlayerConfig(Config):
     """Handle ClubPlayerConfig section of the JSON config"""
@@ -23,44 +22,41 @@ class ClubPlayerConfig(Config):
         """Create empty array for ClubPlayerConfig"""
         return self.write([], self.module_name)
 
-    def get_player_by_pdga_number(self, pdga_number: int) -> dict | None:
-        """Lookup club_player by pdg number"""
-        data = self.read_module()
-        if data is None:
-            return None
-        return next((p for p in data if p.get("pdga_number") == pdga_number), None)
+    def _find_player_by(self, key: str, value: Any) -> Optional[Player] | None:
+        """Return the Player whose dict[key] == value, or None."""
+        data = self.read_module() or []
+        for p in data:
+            if p.get(key) == value:
+                return Player(**p)
+        return None
 
-    def get_player_by_name(self, name: str) -> dict | None:
+    def get_player(self, name: str) -> Optional[Player] | None:
         """Lookup club_player by name"""
-        data = self.read_module()
-        if data is None:
-            return None
-        return next((p for p in data if p.get("name") == name), None)
+        return self._find_player_by("name", name)
 
-    def get_player_by_discord_id(self, discord_id: int) -> dict | None:
+    def get_player_by_discord_id(self, discord_id: int) -> Optional[Player] | None:
         """Lookup club_player by discord id [Optional]"""
-        data = self.read_module()
-        if data is None:
-            return None
-        return next((p for p in data if p.get("discord_id") == discord_id), None)
+        return self._find_player_by("discord_id", discord_id)
 
-    def get_player_by_discgolfmetrix_id(self, discgolfmetrix_id: int) -> dict | None:
+    def get_player_by_pdga_number(self, pdga_number: int) -> Optional[Player] | None:
+        """Lookup club_player by pdg number"""
+        return self._find_player_by("pdga_number", pdga_number)
+
+    def get_player_by_discgolfmetrix_code(self, discgolfmetrix_code: str) -> Optional[Player] | None:
         """Lookup club_player by discgolfmetrix id [Optional]"""
-        data = self.read_module()
-        if data is None:
-            return None
-        return next((p for p in data if p.get("discgolfmetrix_id") == discgolfmetrix_id), None)
+        return self._find_player_by("discgolfmetrix_code", discgolfmetrix_code)
 
     def add_player(self, player: Player) -> tuple[bool, bool]:
-        """Add or edit a player"""
-        json_object = self.read_module()
-        if json_object is None:
-            json_object = []
+        """Add or edit a player
+        return:
+        written: bool - config written
+        modified: bool - config modified"""
+        json_object = self.read_module() or []
 
         player_dict = asdict(player)
         modified = False
         for p in json_object:
-            if p["pdga_number"] == player.pdga_number:
+            if p["name"] == player.name:
                 p.update(player_dict)
                 modified = True
                 break
@@ -70,14 +66,14 @@ class ClubPlayerConfig(Config):
 
         return self.write(json_object, self.module_name), modified
 
-    def remove_player(self, pdga_number: int):
+    def remove_player(self, name: str) -> bool:
         """Remove a player by discord_id"""
         cfg = self.read_module()
         if cfg is None:
             return False
 
         for i, p in enumerate(cfg):
-            if p["pdga_number"] == pdga_number:
+            if p["name"] == name:
                 del cfg[i]
                 return self.write(cfg, self.module_name)
 

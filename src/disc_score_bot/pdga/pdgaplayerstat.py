@@ -4,8 +4,7 @@ from nextcord.ext import commands
 from nextcord import Interaction, SlashOption, Embed, Member, slash_command
 from disc_score_bot.utils.embed_validation import validate_embed
 from disc_score_bot.scrapers.pdga import PlayerProfileScraper
-from .pdgaplayer import PdgaPlayer
-from .pdgaplayerconfig import PdgaPlayerConfig
+from disc_score_bot.config import UserConfig, User
 
 class PdgaPlayerStat(commands.Cog):
     def __init__(self, discord_bot):
@@ -21,8 +20,14 @@ class PdgaPlayerStat(commands.Cog):
         interaction: Interaction,
         pdga_number: int = SlashOption(name="setpdganumber", description="associate a pdga number with your discord-user", required=True, min_value=1, max_value=500000),
     ):
-        cfg = PdgaPlayerConfig(interaction.guild.name)
-        written, modified = cfg.add_user(PdgaPlayer(interaction.user.id, pdga_number))
+        cfg = UserConfig(interaction.guild.name)
+        user = cfg.get_user(interaction.user.id)
+        if user is not None:
+            user.pdga_number = pdga_number
+        else:
+            user = User(discord_id=interaction.user.id, pdga_number=pdga_number)
+
+        written, modified = cfg.add_user(user)
         if written and modified:
             await interaction.response.send_message(f'Modified your pdga number{interaction.user.mention}')
         elif written:
@@ -34,20 +39,21 @@ class PdgaPlayerStat(commands.Cog):
     async def check_pdga_number_slash_command(
         self,
         interaction: Interaction,
-        discord_user: Optional[Member] = SlashOption(name="user", description="name of discord-user to check", required=False),
+        discord_member: Optional[Member] = SlashOption(name="user", description="name of discord-user to check", required=False),
     ):
-        if discord_user is None:
-            discord_user = interaction.user
+        if discord_member is None:
+            discord_member = interaction.user
 
-        cfg = PdgaPlayerConfig(interaction.guild.name)
-        pdga_number = cfg.get_pdga_number(discord_user.id)
-        if pdga_number is not None:
-            embed_title = f"{discord_user.display_name}'s pdga-bot info"
-            embed = Embed(title=embed_title, color=0x004899)
-            embed.description = f"\nPDGA Number: {pdga_number}"
+        cfg = UserConfig(interaction.guild.name)
+        user = cfg.get_user(discord_id=discord_member.id)
+        if user is not None:
+            if user.pdga_number is not None:
+                embed_title = f"{discord_member.display_name}'s pdga-bot info"
+                embed = Embed(title=embed_title, description=f"\nPDGA Number: {user.pdga_number}", color=0x004899)
+            else:
+                embed = Embed(title="Uhm.. :thinking:", description=f"No pdga numer stored for '{discord_member.display_name}'", color=0x004899)
         else:
-            embed = Embed(title="Uhm.. :thinking:", description=f"'{discord_user.display_name}' hasn't told me their pdga-number yet", color=0x004899)
-            await interaction.send(embed=embed,content=f"Sorry, I can't help you with this, {interaction.user.mention}")
+            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for '{discord_member.display_name}'", color=0x004899)
 
         if validate_embed(embed=embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
@@ -69,26 +75,25 @@ class PdgaPlayerStat(commands.Cog):
         if validate_embed(embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
 
-    @get_pdga_slash_command.subcommand(name="discorduser", description="get the discord users saved pdga number data from www.pdga.com info ")
+    @get_pdga_slash_command.subcommand(name="discordmember", description="get the discord users saved pdga number data from www.pdga.com info ")
     async def get_pdga_discord_user_slash_command(
         self,
         interaction: Interaction,
-        discord_user: Optional[Member] = SlashOption(name="discorduser", description="discord user's saved number to fetch from www.pdga.com", required=False)
+        discord_member: Optional[Member] = SlashOption(name="discordmember", description="discord user's saved number to fetch from www.pdga.com", required=False)
     ):
-        embed = None
-        if discord_user is None:
-            discord_user = interaction.user
+        if discord_member is None:
+            discord_member = interaction.user
 
-        cfg = PdgaPlayerConfig(interaction.guild.name)
-        pdga_number = cfg.get_pdga_number(discord_user.id)
-
-        if pdga_number is not None:
-            embed = self.get_www_pdga_com_user_data(pdga_number)
+        cfg = UserConfig(interaction.guild.name)
+        user = cfg.get_user(discord_id=discord_member.id)
+        if user is not None:
+            if user.pdga_number is not None:
+                embed = self.get_www_pdga_com_user_data(user.pdga_number)
+            else:
+                embed = Embed(title="Uhm.. :thinking:", description=f"No pdga numer stored for '{discord_member.display_name}'", color=0x004899)
         else:
-            embed = Embed(title="Hmmmmf.. :confused:", description=f"I must have misplaced the pdga-number for {discord_user.displayname}", color=0x004899)
+            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for '{discord_member.display_name}'", color=0x004899)
 
-        if embed is None:
-            embed = Embed(title="Oh, no! This didn't go very well :flushed:", color=0x004899)
         if validate_embed(embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
 
