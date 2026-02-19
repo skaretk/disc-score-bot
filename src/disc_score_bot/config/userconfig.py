@@ -14,6 +14,7 @@ class User(Identifiers):
     bag_url : Optional[str] = None
 
     def __post_init__(self):
+        super().__post_init__()
         if len(str(self.discord_id)) not in range(16,23):
             raise ValueError("Illegal discord user id")
 
