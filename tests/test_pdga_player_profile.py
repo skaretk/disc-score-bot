@@ -1,6 +1,6 @@
 import random
+import pytest
 from disc_score_bot.scrapers import pdga
-
 
 def check_player_profile_data(player_data) -> bool:
     required = (
@@ -17,20 +17,16 @@ def check_player_profile_data(player_data) -> bool:
     )
     return all(required)
 
-def scrape_and_check(scraper):
+@pytest.mark.parametrize("pdga_number", [
+    pytest.param("1",                                  id="steady_ed_expired_membership"),
+    pytest.param("182349",                             id="frode_kallevig"),
+    pytest.param(str(random.randrange(25000, 250000)), id="random"),
+    pytest.param("45971",                              id="calvin_heimburg_mpo_no1"),
+    pytest.param("73986",                              id="kristin_tattar_fpo_no1"),
+])
+
+def test_pdga_player_profile_scraper(pdga_number):
+    scraper = pdga.PlayerProfileScraper(pdga_number=pdga_number)
     scraper.scrape()
     assert check_player_profile_data(scraper.player_data) is True
     assert len(scraper.player_data.dictionary) != 0
-
-
-def test_pdga_player_profile_active_expired_membership_scraper():
-    scrape_and_check(pdga.PlayerProfileScraper(pdga_number="1")) # Steady Ed
-
-def test_pdga_player_profile_random_membership_scraper():
-    scrape_and_check(pdga.PlayerProfileScraper(pdga_number=f"{random.randrange(25000,250000)}"))
-
-def test_pdga_player_profile_active_current_membership_mpo_no_1_scraper():
-    scrape_and_check(pdga.PlayerProfileScraper(pdga_number="45971")) # Calvin Heimburg
-
-def test_pdga_player_profile_active_current_membership_fpo_no_1_scraper():
-    scrape_and_check(pdga.PlayerProfileScraper(pdga_number="73986")) # Kristin Tattar
