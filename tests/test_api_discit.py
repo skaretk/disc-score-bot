@@ -1,4 +1,3 @@
-from pathlib import Path
 from disc_score_bot.apis.discitapi import DiscitApi
 
 def test_discit_get_disc_id():

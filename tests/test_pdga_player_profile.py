@@ -1,4 +1,3 @@
-import os
 import random
 from disc_score_bot.scrapers import pdga
 

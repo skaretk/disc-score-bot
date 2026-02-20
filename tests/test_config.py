@@ -1,5 +1,3 @@
-from pathlib import Path
-
 def test_valid_config(example_cfg):
     """Valid Config"""
     assert example_cfg.path_exists() is True

@@ -1,5 +1,3 @@
-
-# tests/test_embed_validation_with_nextcord.py
 import logging
 import pytest
 from nextcord import Embed

@@ -1,4 +1,3 @@
-from pathlib import Path
 from disc_score_bot.apis.discinstockapi import DiscinstockApi
 
 def test_discinstock_discs_list():

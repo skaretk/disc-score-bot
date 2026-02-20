@@ -1,4 +1,3 @@
-from pathlib import Path
 from disc_score_bot.apis.discgolfmetrixapi import DiscgolfMetrixApi
 
 def test_discgolfmetrix_courses_list():

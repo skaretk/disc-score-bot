@@ -1,4 +1,3 @@
-from pathlib import Path
 from disc_score_bot.scrapers.discgolfbagbuilder import DiscgolfBagBuilder
 
 def test_discgolfbagbuilder_bag_scraper():

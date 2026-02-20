@@ -1,4 +1,3 @@
-from pathlib import Path
 from disc_score_bot.score import AliasConfig
 
 def test_alias_valid_config(example_alias_cfg):
