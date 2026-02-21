@@ -1,103 +1,12 @@
-import logging
 import time
-import urllib.parse
-from datetime import datetime
-
-from dataclasses import dataclass, field
-from disc_score_bot.disc.pdgaapproveddisc import PdgaApprovedDisc
-from .scraper import Scraper
+import logging
+from .pdga import Pdga
+from .playerdata import PdgaEvent, PdgaPlayerData
 
 logger = logging.getLogger(__name__)
 
-class Pdga(Scraper):
-    def __init__(self):
-        super().__init__()
-        self.name = 'PDGA Approved Disc Golf Discs'
-        self.url = 'https://www.pdga.com/'
-
-class DiscScraper(Pdga):
-    def __init__(self):
-        super().__init__()
-        self.scrape_url = f'{self.url}technical-standards/equipment-certification/discs'
-        self.discs = []
-
-    def scrape(self):
-        start_time = time.time()
-        soup = self.urllib_header_get_beatifulsoup()
-
-        manufacturers = soup.find_all("td", class_="views-field views-field-field-equipment-manuf-ref")
-        disc_models = soup.find_all("td", class_="views-field views-field-title")
-        approved_dates = soup.find_all("td", class_="views-field views-field-field-equipment-approve-date")
-
-        for idx, disc_model in enumerate(disc_models):
-            approved_disc = PdgaApprovedDisc()
-            # Fetch Manufacturer
-            manufacturer = manufacturers[idx].getText()
-            approved_disc.manufacturer = manufacturer.replace("\n", "").strip()
-            # Fetch Disc Model
-            disc_name = disc_model.getText()
-            approved_disc.name = disc_name.replace("\n", "").strip()
-            # Fetch Approved Date
-            approved_date = approved_dates[idx].getText()
-            approved_disc.approved_date = approved_date.replace("\n", "").strip()
-            # Fetch link
-            a = disc_model.find('a', href=True)
-            url = f'{self.url}{a["href"]}'
-            approved_disc.url = url
-            # Append
-            self.discs.append(approved_disc)
-
-        self.scraper_time = time.time() - start_time
-        logger.info('PDGA scraper: %s', self.scraper_time)
-
-@dataclass
-class PdgaPlayerData:
-    pdga_number: str
-    current_rating: int = 0
-    rating_change: int = 0
-    location: str = ''
-    membership_status: str = ''
-    official_status: str = ''
-    career_events: int = 0
-    upcoming_events: list = field(default_factory=list)
-    portrait_url: str = ''
-    player_name: str = ''
-
-    @property
-    def dictionary(self):
-        """Returns a dictionary"""
-        return {
-            "Current Rating": self.current_rating,
-            "Career Events": self.career_events,
-            "Location": self.location,
-            "Membership Status": self.membership_status,
-            "Official Status": self.official_status,
-            "PDGA Number": self.pdga_number,
-            "Ratings Change": self.rating_change,
-            "Upcoming Events": self.upcoming_events,
-        }
-
-class PdgaEvent():
-    def __init__(self, url_host:str, url_path:str, title:str, date_start:str, date_from_to:str) -> None:
-        self.event_url = urllib.parse.urljoin(base=url_host, url=url_path)
-        self.title = title
-        self.date_start = date_start
-        self.date_from_to = date_from_to
-        self._on_init()
-
-    def _on_init(self):
-        if self.date_start is None:
-            return
-        try:
-            parsed = datetime.strptime(self.date_start, "%a, %b %d, %Y")
-            self.date_start = parsed.strftime("%a, %b %d, %Y")
-        except ValueError:
-           pass  # date_start is in an unrecognised format, leave as-is
-
-    def __repr__(self) -> str:
-        return f'{self.date_start}: [{self.title}]({self.event_url})'
-
 class PlayerProfileScraper(Pdga):
+    """Scraper for PDGA Player Profiles"""
     def __init__(self, pdga_number):
         super().__init__()
         self.name = "PDGA Player Profile"
