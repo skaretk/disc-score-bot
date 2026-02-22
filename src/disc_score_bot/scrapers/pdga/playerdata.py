@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from datetime import datetime
 import urllib.parse
 
@@ -30,22 +30,24 @@ class PdgaPlayerData:
             "Upcoming Events": self.upcoming_events,
         }
 
-class PdgaEvent():
-    def __init__(self, url_host:str, url_path:str, title:str, date_start:str, date_from_to:str) -> None:
-        self.event_url = urllib.parse.urljoin(base=url_host, url=url_path)
-        self.title = title
-        self.date_start = date_start
-        self.date_from_to = date_from_to
-        self._on_init()
+@dataclass
+class PdgaEvent:
+    url_host: InitVar[str]
+    url_path: InitVar[str]
+    title: str
+    date_start: str | None
+    date_from_to: str
+    event_url: str = field(init=False)
 
-    def _on_init(self):
+    def __post_init__(self, url_host: str, url_path: str):
+        self.event_url = urllib.parse.urljoin(base=url_host, url=url_path)
         if self.date_start is None:
             return
         try:
             parsed = datetime.strptime(self.date_start, "%a, %b %d, %Y")
             self.date_start = parsed.strftime("%a, %b %d, %Y")
         except ValueError:
-           pass  # date_start is in an unrecognised format, leave as-is
+            pass  # date_start is in an unrecognised format, leave as-is
 
     def __repr__(self) -> str:
         return f'{self.date_start}: [{self.title}]({self.event_url})'

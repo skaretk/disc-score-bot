@@ -1,3 +1,4 @@
+from dateutil.parser import parse as parse_date
 import time
 import logging
 from .pdga import Pdga
@@ -26,130 +27,71 @@ class PlayerProfileScraper(Pdga):
         }
         self.soup = self.urllib_header_get_beatifulsoup(headers=headers)
 
-        # find the location data of the player
-        loc_obj = self.soup.find_all('li', class_='location')
-        self.player_data.location = loc_obj[0].a.text
-        # find the membership status of the player
-        membership_obj = self.soup.find_all('li', class_='membership-status')
-        self.player_data.membership_status = membership_obj[0].text.split(": ")[-1].strip()
-        # find the rules official status of the player
-        self.find_official_data()
-
-        # retrieve the player current rating
-        self.find_current_rating()
-
-        # find the rating difference gain
-        self.find_rating_difference_gain()
+        self.player_data.location = self._parse_location()
+        self.player_data.membership_status = self._parse_membership_status()
+        self.player_data.official_status = self._parse_official_status()
+        self.player_data.current_rating = self._parse_current_rating()
+        self.player_data.rating_change = self._parse_rating_change()
 
         # try to find player portrait data (url and player name)
-        player_portrait_data = self.get_player_portrait_data()
-
-        if player_portrait_data:
-            # assign the player name from the portrait data
-            self.player_data.player_name = player_portrait_data['alt'].split(self.player_data.pdga_number)[0].strip()
+        portrait_data = self._parse_portrait_data()
+        self.player_data.portrait_url = portrait_data['src'] if portrait_data else None
+        if portrait_data:
+            self.player_data.player_name = portrait_data['alt'].split(self.player_data.pdga_number)[0].strip()
         else:
-            # assign the player name from the meta tag
-            self.find_player_name()
-            if self.player_data.portrait_url is None and self.player_data.player_name:
-                self.get_player_portrait_data(search_key="'s picture")
+            self.player_data.player_name = self._parse_player_name()
+            if not self.player_data.portrait_url and self.player_data.player_name:
+                fallback = self._parse_portrait_data(search_key="'s picture")
+                self.player_data.portrait_url = fallback['src'] if fallback else None
 
-        # parse players upcoming event and assemble a string worthy of discord-embeds :)
-        self.get_player_upcoming_events_data()
+        self.player_data.upcoming_events = self._parse_upcoming_events()
+        self.player_data.career_events = self._parse_career_events()
 
-        # find the past events data
-        self.get_singles_event_history()
-
-        # print the chore
         self.scraper_time = time.time() - start_time
         logger.info('PDGA PlayerProfileScraper scraper: %s', self.scraper_time)
 
-    def find_player_name(self):
+    def _parse_player_name(self) -> str:
         player_name_metadata = self.soup.find(name="meta", property="og:title")
-        if 'content' in player_name_metadata.attrs:
-            self.player_data.player_name = player_name_metadata.attrs['content'].split("#")[0].rstrip()
+        if player_name_metadata and 'content' in player_name_metadata.attrs:
+            return player_name_metadata.attrs['content'].split("#")[0].rstrip()
+        return ''
 
-    def find_current_rating(self):
+    def _parse_current_rating(self):
+        """Parse the current rating of the player from the soup object. Returns 'n/a' if not found."""
         current_rating_data = self.soup.find('li', class_='current-rating')
-        if current_rating_data is None:
-            self.player_data.current_rating = 'n/a'
-            return
-        self.player_data.current_rating = current_rating_data.text.split(": ")[-1].strip()
+        return current_rating_data.text.split(": ")[-1].strip() if current_rating_data else 'n/a'
 
+    def _parse_rating_change(self) -> str:
+        rating_difference = self.soup.find(name='a', property='rating-difference gain')
+        return rating_difference.text if rating_difference else 'n/a'
 
-    def find_rating_difference_gain(self):
-        rating_diff_data = self.soup.find_all(name='a', property='rating-difference gain')
-        if len(rating_diff_data) == 0:
-            self.player_data.rating_change = 'n/a'
-            return
-        self.player_data.rating_change = rating_diff_data[0].text
+    def _parse_career_events(self) -> str:
+        career_events = self.soup.find_all('li', class_='career-events disclaimer')
+        return career_events[0].text.split(": ")[-1].strip() if career_events else '0'
 
-    def get_singles_event_history(self):
-        singles_events_obj = self.soup.find_all('li', class_='career-events disclaimer')
-        if len(singles_events_obj) == 0:
-            self.player_data.career_events = '0'
-            return
-        self.player_data.career_events = singles_events_obj[0].text.split(": ")[-1]
-
-    def get_player_portrait_data(self, search_key: str | None = None) -> dict | None:
+    def _parse_portrait_data(self, search_key: str | None = None) -> dict | None:
         search = search_key if search_key is not None else self.player_data.pdga_number
-        try:
-            player_portrait_data = None
-            for img in self.soup.find_all('img'):
-                if search in img.attrs.get('alt', ''):
-                    player_portrait_data = img.attrs.copy()
-            self.player_data.portrait_url = player_portrait_data['src']
-        except (KeyError, TypeError):
-            self.player_data.portrait_url = None
-            return None
-        return player_portrait_data
+        portrait_data = None
+        for img in self.soup.find_all('img'):
+            if search in img.attrs.get('alt', ''):
+                portrait_data = img.attrs.copy()
+        if portrait_data and 'src' in portrait_data:
+            return portrait_data
+        return None
 
-    def find_official_data(self):
-        official_obj = self.soup.find_all('li', class_='official')
-        if len(official_obj) >= 1:
-            self.player_data.official_status = official_obj[0].text.split(": ")[-1].strip()
-            return
-        self.player_data.official_status = 'n/a'
+    def _parse_location(self) -> str:
+        location = self.soup.find('li', class_='location')
+        return location.a.text if location else 'n/a'
 
-    def get_player_upcoming_events_data(self):
-        try:
-            # find all upcoming events
-            upcoming_events_obj = self.soup.find_all("li", class_="upcoming-events")
+    def _parse_membership_status(self) -> str:
+        """Parse the membership status of the player from the soup object. Returns 'n/a' if not found."""
+        membership_status = self.soup.find('li', class_='membership-status')
+        return membership_status.text.split(": ")[-1].strip() if membership_status else 'n/a'
 
-            if len(upcoming_events_obj) == 0:
-                # if no upcoming events, player might have 0 or just 1 upcoming event, aka next-event
-                upcoming_events_obj = self.soup.find_all("li", class_="next-event")
-                if len(upcoming_events_obj) >=1:
-                    event_obj = self._get_next_event(next_event_data=upcoming_events_obj[0])
-                    self.player_data.upcoming_events.append(event_obj)
-                    return
-            if len(upcoming_events_obj) >= 1:
-                events_data_list = []
-                for events_data in upcoming_events_obj:
-                    events = events_data.find_all('li')
-                    if len(events) == 0:
-                        # next-event
-                        events = events_data.find_all('a')
-
-                    events_data_list.extend(events)
-                for event in events_data_list:
-                    # try to find the events start date and name
-
-                    date_start, evt_name = event.text.split(": ")
-                    # find the events dates (from to)
-                    evt_date_from_to = event.contents[1]['title'].split(" on ")[-1]
-                    # find the events href
-                    href = event.contents[1]['href']
-                    event_obj = PdgaEvent(url_host=self.url, url_path=href, title=evt_name, date_start=date_start, date_from_to=evt_date_from_to)
-                    self.player_data.upcoming_events.append(event_obj)
-            else:
-
-                if self.player_data.player_name is None:
-                    event_obj = PdgaEvent(url_host=self.url, url_path=f'player/{self.player_data.pdga_number}', title='PDGA Player profile', date_start='No upcoming events found', date_from_to='')
-                else:
-                    event_obj = PdgaEvent(url_host=self.url, url_path=f'player/{self.player_data.pdga_number}', title=f'{self.player_data.player_name}', date_start='No upcoming events found', date_from_to='')
-                self.player_data.upcoming_events.append(event_obj)
-        except:
-            self.player_data.upcoming_events.append(PdgaEvent(url_host=self.url, url_path=f'player/{self.player_data.pdga_number}', title=f'Player profile upcoming events', date_start='Failed to retrieve upcoming events\n', date_from_to=''))
+    def _parse_official_status(self) -> str:
+        """Parse the official status of the player from the soup object. Returns 'n/a' if not found."""
+        official = self.soup.find('li', class_='official')
+        return official.text.split(": ")[-1].strip() if official else 'n/a'
 
     def _get_next_event(self, next_event_data):
         href = None
@@ -166,21 +108,75 @@ class PlayerProfileScraper(Pdga):
             if title is None:
                 if content_data.has_attr('title'):
                     title = content_data['title']
-        if len(title) >=12:
-            parts = title.split(",")
-            if len(parts) >=2:
-                for part in parts:
-                    if part.replace(" ", "").isalpha():
-                        continue
-                    if part.replace(" ", "").replace("-", "").isalnum():
-                        year = ""
-                        if part.rfind("-") >= 0:
-                            year = part.split("-")[-1]
-                        date_parts = part.split(" to ")
-                        if len(date_parts) >=2:
-                            date_start = date_parts[0].split(" ")[-1]
-                            if len(date_start) in [5,6]:
-                                date_start += " " + year
-                        date_from_to = part.replace("on","").lstrip(" ")
-        event_obj = PdgaEvent(url_host=self.url, url_path=href, title=title, date_start=date_start, date_from_to=date_from_to)
-        return event_obj
+        if title and len(title) >=12:
+            date_start, date_from_to = self._parse_date_from_title(title)
+
+        event = PdgaEvent(url_host=self.url, url_path=href, title=title, date_start=date_start, date_from_to=date_from_to)
+        return event
+
+    def _collect_next_event(self) -> list[PdgaEvent]:
+        next_event = self.soup.find_all("li", class_="next-event")
+        if next_event:
+            return [self._get_next_event(next_event_data=next_event[0])]
+        return [self._no_upcoming_events_obj()]
+
+    def _collect_multiple_events(self, upcoming_events) -> list[PdgaEvent]:
+        if not upcoming_events:
+            return [self._no_upcoming_events_obj()]
+        events_list = []
+        for events_data in upcoming_events:
+            events = events_data.find_all('li')
+            if not events:
+                events = events_data.find_all('a')
+            events_list.extend(events)
+        result = []
+        for event in events_list:
+            date_start, evt_name = event.text.split(": ")
+            evt_date_from_to = event.contents[1]['title'].split(" on ")[-1]
+            href = event.contents[1]['href']
+            result.append(PdgaEvent(url_host=self.url, url_path=href, title=evt_name, date_start=date_start, date_from_to=evt_date_from_to))
+        return result
+
+    def _parse_upcoming_events(self) -> list[PdgaEvent]:
+        try:
+            upcoming_events = self.soup.find_all("li", class_="upcoming-events")
+            if not upcoming_events:
+                return self._collect_next_event()
+            return self._collect_multiple_events(upcoming_events)
+        except Exception as e:
+            logger.warning("Failed to parse upcoming events: %s", e)
+            return [self._failed_upcoming_events_obj()]
+
+    def _no_upcoming_events_obj(self) -> PdgaEvent:
+        title = self.player_data.player_name or 'PDGA Player profile'
+        return PdgaEvent(
+            url_host=self.url,
+            url_path=f'player/{self.player_data.pdga_number}',
+            title=title,
+            date_start='No upcoming events found',
+            date_from_to=''
+        )
+
+    def _failed_upcoming_events_obj(self) -> PdgaEvent:
+        return PdgaEvent(
+            url_host=self.url,
+            url_path=f'player/{self.player_data.pdga_number}',
+            title='Player profile upcoming events',
+            date_start='Failed to retrieve upcoming events\n',
+            date_from_to=''
+        )
+
+    def _parse_date_from_title(self, title: str) -> tuple[str | None, str | None]:
+        """Extract date_start and date_from_to from event title string."""
+        parts = title.split(",")
+        for part in parts:
+            stripped = part.replace(" ", "")
+            if stripped.isalpha():
+                continue
+            try:
+                date_start = parse_date(part.strip(), fuzzy=True).strftime("%a, %b %d, %Y")
+                return date_start, part.strip()
+            except ValueError:
+                continue
+        return None, None
+
