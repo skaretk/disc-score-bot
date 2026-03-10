@@ -1,3 +1,4 @@
+"""Scraper for PDGA Approved Discs"""
 import time
 import logging
 

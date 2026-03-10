@@ -12,6 +12,7 @@ class Scraper():
         self.url = ''
         self._scrape_url = ''
         self._scraper_time = ''
+        self.soup = None
 
     @property
     def scrape_url(self):

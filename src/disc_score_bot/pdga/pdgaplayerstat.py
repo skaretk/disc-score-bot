@@ -104,23 +104,23 @@ class PdgaPlayerStat(commands.Cog):
             pdga_player_scraper = PlayerProfileScraper(pdga_number=f"{pdga_player_number}")
             pdga_player_scraper.scrape()
 
-            if isinstance(pdga_player_scraper.player_data.player_name, str) and len(pdga_player_scraper.player_data.player_name) >= 3:
-                embed_title = f'{pdga_player_scraper.player_data.player_name}'
+            if isinstance(pdga_player_scraper.player_info.player_name, str) and len(pdga_player_scraper.player_info.player_name) >= 3:
+                embed_title = f'{pdga_player_scraper.player_info.player_name}'
             else:
                 embed_title = f"Displaying '{pdga_player_scraper.scrape_url}'"
 
             embed = Embed(title=embed_title, url=pdga_player_scraper.scrape_url, color=0x004899)
-            if isinstance(pdga_player_scraper.player_data.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_scraper.player_data.portrait_url):
-                embed.set_thumbnail(url=pdga_player_scraper.player_data.portrait_url)
+            if isinstance(pdga_player_scraper.player_info.portrait_url, str) and re.match(pattern="^https{0,1}://", string=pdga_player_scraper.player_info.portrait_url):
+                embed.set_thumbnail(url=pdga_player_scraper.player_info.portrait_url)
             else:
                 embed.set_image(url='https://discord.com/assets/ee9c489e574f6ecb1d3c.svg')  # 🥏
 
             # pass the data to the __process_embed_description_data method
-            desc_contents = self.__process_embed_description_data__(pdga_player_data_dict=pdga_player_scraper.player_data.dictionary)
+            desc_contents = self.__process_embed_description_data__(pdga_player_data_dict=pdga_player_scraper.player_info.dictionary)
             embed.description = desc_contents
 
             # filter out the upcoming events, alternatively "N/A" in case there are none
-            upcoming_events_strings = self.__process_upcoming_events_data__(player_scraper_events=pdga_player_scraper.player_data.upcoming_events)
+            upcoming_events_strings = self.__process_upcoming_events_data__(player_scraper_events=pdga_player_scraper.player_info.upcoming_events)
 
             for event_string in upcoming_events_strings:
                 embed.add_field(name="Upcoming events:", value=event_string, inline=False)

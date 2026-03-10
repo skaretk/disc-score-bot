@@ -1,3 +1,4 @@
+"""Base Scraper for PDGA"""
 from disc_score_bot.scrapers.scraper import Scraper
 
 class Pdga(Scraper):
