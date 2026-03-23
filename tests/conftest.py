@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 import pytest
-from disc_score_bot.config import Config, ClubPlayerConfig, UserConfig
+from disc_score_bot.config import Config, ClubPlayerConfig, UserConfig, NotificationConfig
 from disc_score_bot.score import AliasConfig
 
 
@@ -60,6 +60,11 @@ def new_user_cfg(cfg_factory):
 def example_user_cfg():
     """Fetch server_example User Config"""
     return UserConfig("server_example")
+
+@pytest.fixture
+def new_pdga_cfg(cfg_factory):
+    """New NotificationConfig"""
+    return cfg_factory(NotificationConfig)
 
 @pytest.fixture
 def new_alias_cfg(cfg_factory):

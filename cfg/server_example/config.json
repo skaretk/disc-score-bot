@@ -30,5 +30,9 @@
             "pdga_number": 12345,
             "discgolfmetrix_code": "metrix_code"
         }
-    ]
+    ],
+    "NotificationConfig": {
+        "upcoming_events_channel_id": 123456789012345678,
+        "new_pdga_approved_discs_channel_id": 123456789012345678
+    }
 }

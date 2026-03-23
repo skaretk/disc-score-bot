@@ -10,13 +10,12 @@ from nextcord.ext import commands
 
 from disc_score_bot.apis import DiscgolfMetrixApi
 
+from disc_score_bot.config import UserConfig, User
 from .discgolfmetrixcompetition import DiscgolfmetrixCompetition
 from .discgolfmetrixcompetitions import DiscgolfmetrixCompetitions
-from .discgolfmetrixconfig import DiscgolfmetrixConfig
 from .discgolfmetrixcourse import (DiscgolfmetrixCourse,
                                    DiscgolfmetrixCourseSource)
 from .discgolfmetrixcourses import DiscgolfmetrixCourses
-from .discgolfmetrixuser import DiscgolfmetrixUser
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +36,8 @@ class DiscgolfMetrix(commands.Cog):
     ):
         """/discgolfmetrix add_user_code"""
         user = interaction.user
-        cfg = DiscgolfmetrixConfig(interaction.guild.name)
-        written, modified = cfg.add_user(DiscgolfmetrixUser(user.id, user_code))
+        cfg = UserConfig(interaction.guild.name)
+        written, modified = cfg.add_user(User(discord_id=user.id, discgolfmetrix_code=user_code))
         if written and modified:
             await interaction.response.send_message(f'Modified your discgolfmetrix player code {user.mention}')
         elif written:
@@ -58,8 +57,9 @@ class DiscgolfMetrix(commands.Cog):
         start_time = time.time()
         if user is None:
             user = interaction.user
-        cfg = DiscgolfmetrixConfig(interaction.guild.name)
-        code = cfg.get_code(user.id)
+        cfg = UserConfig(interaction.guild.name)
+        user_data = cfg.get_user(user.id)
+        code = user_data.discgolfmetrix_code if user_data else None
 
         if code is not None:
             api = DiscgolfMetrixApi()
@@ -99,8 +99,9 @@ class DiscgolfMetrix(commands.Cog):
         """/discgolfmetrix search_course_id"""
         api = DiscgolfMetrixApi()
         user = interaction.user
-        cfg = DiscgolfmetrixConfig(interaction.guild.name)
-        code = cfg.get_code(user.id)
+        cfg = UserConfig(interaction.guild.name)
+        user_data = cfg.get_user(user.id)
+        code = user_data.discgolfmetrix_code if user_data else None
         if code is not None:
             json = api.course(course_id, code)
             if json is not None:

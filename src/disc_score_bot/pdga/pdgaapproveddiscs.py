@@ -3,6 +3,7 @@ from nextcord.ext import tasks, commands
 from dateutil.parser import parse
 import logging
 from disc_score_bot.scrapers import pdga
+from disc_score_bot.config import NotificationConfig
 from .pdgaapproveddiscssql import PdgaSql
 
 logger = logging.getLogger(__name__)
@@ -37,10 +38,12 @@ class PdgaApprovedDiscs(commands.Cog):
                 embed.add_field(name=disc.manufacturer, value=f'[{disc.name}]({disc.url})\nDate: {date.strftime("%d.%m.%Y")}')#\n[Pdga Link]({disc.url})')
                 embed.set_thumbnail(url=(self.bot.user.avatar.url))
 
-            # TODO: Configure channels to send event to
-            channel = self.bot.get_channel(885087767292428298) #EDK: Disc Search
-
-            await channel.send(embed=embed)
+            # Send to configured channel per guild
+            for guild in self.bot.guilds:
+                channel_id = NotificationConfig(guild.name).get_new_pdga_approved_discs_channel_id()
+                channel = self.bot.get_channel(channel_id) if channel_id else None
+                if channel:
+                    await channel.send(embed=embed)
 
     # Wait for the bot to be ready before searching
     @search_discs.before_loop

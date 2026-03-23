@@ -42,4 +42,4 @@ class DiscScraper(Krokholdgs):
             self.discs.append(disc)
 
         self.scraper_time = time.time() - start_time
-        logger.infop('KrokholDgs scraper: %s', self.scraper_time)
+        logger.info('KrokholDgs scraper: %s', self.scraper_time)

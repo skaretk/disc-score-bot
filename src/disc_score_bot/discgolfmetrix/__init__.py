@@ -1,2 +1,1 @@
 from .discgolfmetrix import DiscgolfMetrix
-from .discgolfmetrix import DiscgolfmetrixConfig

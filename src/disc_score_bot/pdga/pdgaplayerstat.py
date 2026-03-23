@@ -1,14 +1,23 @@
 import re
+import asyncio
+import logging
+from datetime import datetime, timedelta, time as dtime
+
+logger = logging.getLogger(__name__)
 from typing import Optional
-from nextcord.ext import commands
-from nextcord import Interaction, SlashOption, Embed, Member, slash_command
+from nextcord.ext import commands, tasks
+from nextcord import Interaction, SlashOption, Embed, Member, TextChannel, slash_command
 from disc_score_bot.utils.embed_validation import validate_embed
 from disc_score_bot.scrapers.pdga import PlayerProfileScraper
-from disc_score_bot.config import UserConfig, User
+from disc_score_bot.config import UserConfig, User, NotificationConfig, ClubPlayerConfig
 
 class PdgaPlayerStat(commands.Cog):
     def __init__(self, discord_bot):
         self.bot = discord_bot
+        self.check_upcoming_events.start()
+
+    def cog_unload(self):
+        self.check_upcoming_events.cancel()
 
     @slash_command(name="pdga", description="all Pdga cog-commands", guild_ids=[])
     async def pdga_slash_command(self, interaction: Interaction):
@@ -96,6 +105,75 @@ class PdgaPlayerStat(commands.Cog):
 
         if validate_embed(embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
+
+    @pdga_slash_command.subcommand(name="events", description="PDGA events notification settings")
+    async def events_slash_command(self, interaction: Interaction):
+        pass
+
+    @events_slash_command.subcommand(name="set-channel", description="Set the channel for weekly upcoming PDGA event notifications")
+    async def set_events_channel_slash_command(
+        self,
+        interaction: Interaction,
+        channel: TextChannel = SlashOption(name="channel", description="Channel to post weekly notifications to", required=True),
+    ):
+        cfg = NotificationConfig(interaction.guild.name)
+        if cfg.set_upcoming_events_channel_id(channel.id):
+            await interaction.response.send_message(f"Upcoming PDGA event notifications will be sent to {channel.mention}")
+        else:
+            await interaction.response.send_message("Failed to save the notification channel.")
+
+    @tasks.loop(time=dtime(hour=18, minute=0, tzinfo=datetime.now().astimezone().tzinfo))
+    async def check_upcoming_events(self):
+        """Weekly task (runs Thursdays at 18:00 local time): post Thu-Sun PDGA events for all registered users."""
+        if datetime.now().weekday() != 3:  # 3 = Thursday
+            return
+        for guild in self.bot.guilds:
+            channel_id = NotificationConfig(guild.name).get_upcoming_events_channel_id()
+            if not channel_id:
+                continue
+            channel = self.bot.get_channel(channel_id)
+            if channel is None:
+                continue
+
+            users = ClubPlayerConfig(guild.name).read_module() or []
+            embed = Embed(title="\U0001f4c5 Upcoming PDGA Events (Thu-Sun)", color=0x004899)
+            found_any = False
+
+            for user_data in users:
+                pdga_number = user_data.get("pdga_number")
+                if not pdga_number:
+                    continue
+                try:
+                    scraper = PlayerProfileScraper(pdga_number=str(pdga_number))
+                    scraper.scrape()
+                    upcoming = [e for e in scraper.player_info.events.upcoming_events if self._is_upcoming_soon(e, days=3)]
+                    if not upcoming:
+                        continue
+                    name = user_data.get("name") or str(pdga_number)
+                    embed.add_field(name=name, value="\n".join(f"- {e}" for e in upcoming)[:1024], inline=False)
+                    found_any = True
+                except Exception as e:
+                    logger.warning("Failed to check events for pdga#%s: %s", pdga_number, e)
+                await asyncio.sleep(1)
+
+            if found_any:
+                await channel.send(embed=embed)
+
+    @check_upcoming_events.before_loop
+    async def before_check_upcoming_events(self):
+        await self.bot.wait_until_ready()
+
+    def _is_upcoming_soon(self, event, days: int = 3) -> bool:
+        """Return True if the event starts within the next "days" (default covers Thu-Sun)."""
+        date_start = getattr(event, 'date_start', None)
+        if not date_start:
+            return False
+        try:
+            date = datetime.strptime(date_start, "%a, %b %d, %Y")
+            now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            return timedelta(0) <= (date - now) <= timedelta(days=days)
+        except ValueError:
+            return False
 
     def get_www_pdga_com_user_data(self, pdga_player_number):
         """construct the www.pdga.com/player/pdga_number scraper and start the scraping"""
