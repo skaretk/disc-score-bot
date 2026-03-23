@@ -36,4 +36,7 @@ COPY . /src
 # Install requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "discgolfbot" ]
+# Install the local package
+RUN pip install --no-cache-dir .
+
+CMD [ "python", "-m", "disc_score_bot" ]
