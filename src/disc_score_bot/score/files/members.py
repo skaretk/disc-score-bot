@@ -1,6 +1,7 @@
 import openpyxl
 import os
 import logging
+from os import getenv
 from disc_score_bot.score.playeralias import PlayerAlias
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,8 @@ class ExcelFile:
 
 class Members:
     def __init__(self, path, file):
-        self.path = f'{os.getcwd()}/cfg/{path}'
+        cfg_dir = getenv("CFG_DIR", "cfg")
+        self.path = f'{cfg_dir}/{path}'
         self.file = file
         self.is_member = 'Betalt'
         self.member_list = []

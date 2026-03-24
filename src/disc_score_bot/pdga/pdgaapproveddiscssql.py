@@ -1,10 +1,12 @@
 import sqlite3
+from os import getenv
 from disc_score_bot.disc import PdgaApprovedDisc
 
 class PdgaSql():
     """Pdga SQL database with approved discs"""
     def __init__(self):
-        self.db_name = 'cfg/pdga_approved_discs.db'
+        cfg_dir = getenv("CFG_DIR", "cfg")
+        self.db_name = f'{cfg_dir}/pdga_approved_discs.db'
 
     def create_table(self):
         """Create table if not exists"""

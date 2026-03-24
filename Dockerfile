@@ -23,20 +23,17 @@ ENV DISPLAY=:99
 RUN pip install --no-cache-dir --upgrade pip
 
 # Set Working directory
-RUN mkdir /src
-WORKDIR /src
+WORKDIR /app
 
 # Set Configuration Volume
-RUN mkdir /src/cfg
-VOLUME /src/cfg
+RUN mkdir /app/cfg
+VOLUME /app/cfg
 
-# Copy the source
-COPY . /src
+ENV CFG_DIR=/app/cfg
 
-# Install requirements
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Install the local package
-RUN pip install --no-cache-dir .
+# Copy the source and install
+COPY . /app/src
+RUN pip install --no-cache-dir -r /app/src/requirements.txt
+RUN pip install --no-cache-dir /app/src
 
 CMD [ "python", "-m", "disc_score_bot" ]

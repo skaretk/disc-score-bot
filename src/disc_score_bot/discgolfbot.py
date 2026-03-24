@@ -4,7 +4,7 @@ from os import getenv
 
 # nextcord
 import nextcord
-from dotenv import find_dotenv, load_dotenv  # Fetch python bot token
+from dotenv import load_dotenv  # Fetch python bot token
 from nextcord.ext import commands
 
 # cogs
@@ -20,7 +20,8 @@ def main():
     """main() entrypoint - discord client """
     configure_logging()
     logger = logging.getLogger(__name__)
-    load_dotenv(find_dotenv('cfg/token.env'))
+    cfg_dir = getenv("CFG_DIR", "cfg")
+    load_dotenv(f'{cfg_dir}/token.env')
     token = getenv("TOKEN")
 
     # intents
