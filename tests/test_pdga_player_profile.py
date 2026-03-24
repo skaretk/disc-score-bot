@@ -61,5 +61,5 @@ def test_upcoming_pdga_events(pdga_number_events):
 
     # Verify _is_upcoming_soon identifies at least one event within a generous 365-day window
     stat = PdgaPlayerStat.__new__(PdgaPlayerStat)
-    soon = [e for e in events if stat._is_event_upcoming(e, days=365)]
+    soon = [e for e in events if stat._is_upcoming_soon(e, days=365)]
     assert len(soon) > 0, "Expected at least one event within the next 365 days"

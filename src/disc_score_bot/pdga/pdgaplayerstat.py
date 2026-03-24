@@ -198,11 +198,12 @@ class PdgaPlayerStat(commands.Cog):
             embed.description = desc_contents
 
             # filter out the upcoming events, alternatively "N/A" in case there are none
-            upcoming_events_strings = self.__process_upcoming_events_data__(player_scraper_events=pdga_player_scraper.player_info.upcoming_events)
+            upcoming_events_strings = self.__process_upcoming_events_data__(player_scraper_events=pdga_player_scraper.player_info.events.upcoming_events)
 
             for event_string in upcoming_events_strings:
                 embed.add_field(name="Upcoming events:", value=event_string, inline=False)
-        except:
+        except Exception as e:
+            logger.exception("get_www_pdga_com_user_data failed for pdga#%s: %s", pdga_player_number, e)
             if embed is None:
                 embed = Embed(title="Sorry, I couldn't find the embed I was attempting to work on :(", color=0x004899)
             else:
