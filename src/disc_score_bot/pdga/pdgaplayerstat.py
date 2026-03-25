@@ -54,15 +54,15 @@ class PdgaPlayerStat(commands.Cog):
             user = interaction.user
 
         cfg = UserConfig(interaction.guild.name)
-        user = cfg.get_user(discord_id=user.id)
-        if user is not None:
+        cfg_user = cfg.get_user(discord_id=user.id)
+        if cfg_user is not None:
             embed_title = f"{user.display_name} configured info"
-            if user.pdga_number is not None:
-                embed = Embed(title=embed_title, description=f"\nPDGA Number: {user.pdga_number}", color=0x004899)
+            if cfg_user.pdga_number is not None:
+                embed = Embed(title=embed_title, description=f"\nPDGA Number: {cfg_user.pdga_number}", color=0x004899)
             else:
-                embed = Embed(title=embed_title, description=f"No PDGA number stored", color=0x004899)
+                embed = Embed(title=embed_title, description="No PDGA number stored", color=0x004899)
         else:
-            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for the given user", color=0x004899)
+            embed = Embed(title="Uhm.. :thinking:", description="Could not find any configuration for the given user", color=0x004899)
 
         if validate_embed(embed=embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
