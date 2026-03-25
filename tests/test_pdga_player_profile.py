@@ -59,7 +59,7 @@ def test_upcoming_pdga_events(pdga_number_events):
         assert isinstance(event.event_url, str) and event.event_url.startswith("https://"), "Event URL should be a valid https URL"
         assert isinstance(event.location, str), "Event location should be a string"
 
-    # Verify _is_upcoming_soon identifies at least one event within a generous 365-day window
+    # Verify is_upcoming_event identifies at least one event within a generous 365-day window
     stat = PdgaPlayerStat.__new__(PdgaPlayerStat)
-    soon = [e for e in events if stat._is_upcoming_soon(e, days=365)]
+    soon = [e for e in events if stat.is_upcoming_event(e, days=365)]
     assert len(soon) > 0, "Expected at least one event within the next 365 days"

@@ -23,7 +23,7 @@ class PdgaPlayerStat(commands.Cog):
     async def pdga_slash_command(self, interaction: Interaction):
         pass
 
-    @pdga_slash_command.subcommand(name="set", description="add your pdga number to bot-db")
+    @pdga_slash_command.subcommand(name="set", description="add your pdga number to the bot")
     async def set_pdga_number_slash_command(
         self,
         interaction: Interaction,
@@ -44,35 +44,35 @@ class PdgaPlayerStat(commands.Cog):
         else:
             await interaction.response.send_message(f'Failed to add your pdga number{interaction.user.mention}')
 
-    @pdga_slash_command.subcommand(name="check", description="check the discord users pdga-bot info")
-    async def check_pdga_number_slash_command(
+    @pdga_slash_command.subcommand(name="get", description="get the user stored bot info")
+    async def get_pdga_number_slash_command(
         self,
         interaction: Interaction,
-        discord_member: Optional[Member] = SlashOption(name="user", description="name of discord-user to check", required=False),
+        user: Optional[Member] = SlashOption(name="user", description="discord user to check", required=False),
     ):
-        if discord_member is None:
-            discord_member = interaction.user
+        if user is None:
+            user = interaction.user
 
         cfg = UserConfig(interaction.guild.name)
-        user = cfg.get_user(discord_id=discord_member.id)
+        user = cfg.get_user(discord_id=user.id)
         if user is not None:
+            embed_title = f"{user.display_name} configured info"
             if user.pdga_number is not None:
-                embed_title = f"{discord_member.display_name}'s pdga-bot info"
                 embed = Embed(title=embed_title, description=f"\nPDGA Number: {user.pdga_number}", color=0x004899)
             else:
-                embed = Embed(title="Uhm.. :thinking:", description=f"No pdga numer stored for '{discord_member.display_name}'", color=0x004899)
+                embed = Embed(title=embed_title, description=f"No PDGA number stored", color=0x004899)
         else:
-            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for '{discord_member.display_name}'", color=0x004899)
+            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for the given user", color=0x004899)
 
         if validate_embed(embed=embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
 
-    @pdga_slash_command.subcommand(name="get", description="get the discord users www.pdga.com info")
-    async def get_pdga_slash_command(self, interaction: Interaction):
+    @pdga_slash_command.subcommand(name="lookup", description="lookup info from www..pdga.com")
+    async def lookup_pdga_slash_command(self, interaction: Interaction):
         pass
 
-    @get_pdga_slash_command.subcommand(name="pdganumber", description="get the discord users www.pdga.com info by pdga number")
-    async def get_pdga_number_slash_command(
+    @lookup_pdga_slash_command.subcommand(name="pdganumber", description="lookup the PDGA number")
+    async def lookup_pdga_number_slash_command(
         self,
         interaction: Interaction,
         pdga_number: int = SlashOption(name="pdganumber", description="pdga-number to fetch from www.pdga.com",required=True, min_value=1, max_value=500000)
@@ -84,29 +84,29 @@ class PdgaPlayerStat(commands.Cog):
         if validate_embed(embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
 
-    @get_pdga_slash_command.subcommand(name="discordmember", description="get the discord users saved pdga number data from www.pdga.com info ")
-    async def get_pdga_discord_user_slash_command(
+    @lookup_pdga_slash_command.subcommand(name="user", description="lookup the PDGA number for a discord member")
+    async def lookup_pdga_discord_user_slash_command(
         self,
         interaction: Interaction,
-        discord_member: Optional[Member] = SlashOption(name="discordmember", description="discord user's saved number to fetch from www.pdga.com", required=False)
+        user: Optional[Member] = SlashOption(name="user", description="discord user's saved number to fetch from www.pdga.com", required=False)
     ):
-        if discord_member is None:
-            discord_member = interaction.user
+        if user is None:
+            user = interaction.user
 
         cfg = UserConfig(interaction.guild.name)
-        user = cfg.get_user(discord_id=discord_member.id)
+        user = cfg.get_user(discord_id=user.id)
         if user is not None:
             if user.pdga_number is not None:
                 embed = self.get_www_pdga_com_user_data(user.pdga_number)
             else:
-                embed = Embed(title="Uhm.. :thinking:", description=f"No pdga numer stored for '{discord_member.display_name}'", color=0x004899)
+                embed = Embed(title="Uhm.. :thinking:", description=f"No pdga numer stored for '{user.display_name}'", color=0x004899)
         else:
-            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for '{discord_member.display_name}'", color=0x004899)
+            embed = Embed(title="Uhm.. :thinking:", description=f"Could not find any configuration for '{user.display_name}'", color=0x004899)
 
         if validate_embed(embed):
             await interaction.send(embed=embed, content=f"{interaction.user.mention}:")
 
-    @pdga_slash_command.subcommand(name="events", description="PDGA events notification settings")
+    @pdga_slash_command.subcommand(name="events", description="PDGA events notifications")
     async def events_slash_command(self, interaction: Interaction):
         pass
 
@@ -122,9 +122,24 @@ class PdgaPlayerStat(commands.Cog):
         else:
             await interaction.response.send_message("Failed to save the notification channel.")
 
+    @events_slash_command.subcommand(name="check", description="Post upcoming PDGA events for all registered club players")
+    async def check_events_slash_command(
+        self,
+        interaction: Interaction,
+        days: Optional[int] = SlashOption(name="days", description="Number of days ahead to look for events (default: 7)", required=False, min_value=1, max_value=365),
+    ):
+        if days is None:
+            days = 7
+        await interaction.response.defer()
+        embed = await self._build_upcoming_events_embed(interaction.guild.name, days=days)
+        if embed is not None:
+            await interaction.followup.send(embed=embed)
+        else:
+            await interaction.followup.send(f"No upcoming PDGA events found in the next {days} day(s).")
+
     @tasks.loop(time=dtime(hour=18, minute=0, tzinfo=datetime.now().astimezone().tzinfo))
     async def check_upcoming_events(self):
-        """Weekly task (runs Thursdays at 18:00 local time): post Thu-Sun PDGA events for all registered users."""
+        """Weekly task (runs Thursdays at 18:00 local time): post upcoming PDGA events for all registered users."""
         if datetime.now().weekday() != 3:  # 3 = Thursday
             return
         for guild in self.bot.guilds:
@@ -134,36 +149,40 @@ class PdgaPlayerStat(commands.Cog):
             channel = self.bot.get_channel(channel_id)
             if channel is None:
                 continue
-
-            users = ClubPlayerConfig(guild.name).read_module() or []
-            embed = Embed(title="\U0001f4c5 Upcoming PDGA Events (Thu-Sun)", color=0x004899)
-            found_any = False
-
-            for user_data in users:
-                pdga_number = user_data.get("pdga_number")
-                if not pdga_number:
-                    continue
-                try:
-                    scraper = PlayerProfileScraper(pdga_number=str(pdga_number))
-                    scraper.scrape()
-                    upcoming = [e for e in scraper.player_info.events.upcoming_events if self._is_upcoming_soon(e, days=3)]
-                    if not upcoming:
-                        continue
-                    name = user_data.get("name") or str(pdga_number)
-                    embed.add_field(name=name, value="\n".join(f"- {e}" for e in upcoming)[:1024], inline=False)
-                    found_any = True
-                except Exception as e:
-                    logger.warning("Failed to check events for pdga#%s: %s", pdga_number, e)
-                await asyncio.sleep(1)
-
-            if found_any:
+            embed = await self._build_upcoming_events_embed(guild.name, days=3)
+            if embed is not None:
                 await channel.send(embed=embed)
 
     @check_upcoming_events.before_loop
     async def before_check_upcoming_events(self):
         await self.bot.wait_until_ready()
 
-    def _is_upcoming_soon(self, event, days: int = 3) -> bool:
+    async def _build_upcoming_events_embed(self, guild_name: str, days: int) -> Optional[Embed]:
+        """Scrape upcoming PDGA events for all club players and return an Embed, or None if none found."""
+        users = ClubPlayerConfig(guild_name).read_module() or []
+        embed = Embed(title=f"\U0001f4c5 Upcoming PDGA Events (next {days} day(s))", color=0x004899)
+        found_any = False
+
+        for user_data in users:
+            pdga_number = user_data.get("pdga_number")
+            if not pdga_number:
+                continue
+            try:
+                scraper = PlayerProfileScraper(pdga_number=str(pdga_number))
+                scraper.scrape()
+                upcoming = [e for e in scraper.player_info.events.upcoming_events if self.is_upcoming_event(e, days=days)]
+                if not upcoming:
+                    continue
+                name = user_data.get("name") or str(pdga_number)
+                embed.add_field(name=name, value="\n".join(f"- {e}" for e in upcoming)[:1024], inline=False)
+                found_any = True
+            except Exception as e:
+                logger.warning("Failed to check events for pdga#%s: %s", pdga_number, e)
+            await asyncio.sleep(10)  # avoid hammering pdga.com with requests
+
+        return embed if found_any else None
+
+    def is_upcoming_event(self, event, days: int = 3) -> bool:
         """Return True if the event starts within the next "days" (default covers Thu-Sun)."""
         date_start = getattr(event, 'date_start', None)
         if not date_start:

@@ -56,7 +56,7 @@ def test_pdgaconfig_no_module_returns_none_channel(new_pdga_cfg):
 
 
 # ---------------------------------------------------------------------------
-# PdgaPlayerStat._is_upcoming_soon
+# PdgaPlayerStat.is_upcoming_event
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
@@ -73,31 +73,31 @@ def make_event(date: datetime | None):
     return event
 
 
-def test_is_upcoming_soon_within_window(stat):
+def test_is_upcoming_event_within_window(stat):
     event = make_event(datetime.now() + timedelta(days=2))
-    assert stat._is_upcoming_soon(event) is True
+    assert stat.is_upcoming_event(event) is True
 
-def test_is_upcoming_soon_today(stat):
+def test_is_upcoming_event_today(stat):
     event = make_event(datetime.now())
-    assert stat._is_upcoming_soon(event) is True
+    assert stat.is_upcoming_event(event) is True
 
-def test_is_upcoming_soon_exactly_on_boundary(stat):
+def test_is_upcoming_event_exactly_on_boundary(stat):
     event = make_event(datetime.now() + timedelta(days=3))
-    assert stat._is_upcoming_soon(event) is True
+    assert stat.is_upcoming_event(event) is True
 
-def test_is_upcoming_soon_outside_window(stat):
+def test_is_upcoming_event_outside_window(stat):
     event = make_event(datetime.now() + timedelta(days=4))
-    assert stat._is_upcoming_soon(event) is False
+    assert stat.is_upcoming_event(event) is False
 
-def test_is_upcoming_soon_past_event(stat):
+def test_is_upcoming_event_past_event(stat):
     event = make_event(datetime.now() - timedelta(days=1))
-    assert stat._is_upcoming_soon(event) is False
+    assert stat.is_upcoming_event(event) is False
 
-def test_is_upcoming_soon_no_date(stat):
+def test_is_upcoming_event_no_date(stat):
     event = make_event(None)
-    assert stat._is_upcoming_soon(event) is False
+    assert stat.is_upcoming_event(event) is False
 
-def test_is_upcoming_soon_custom_days(stat):
+def test_is_upcoming_event_custom_days(stat):
     event = make_event(datetime.now() + timedelta(days=30))
-    assert stat._is_upcoming_soon(event, days=31) is True
-    assert stat._is_upcoming_soon(event, days=29) is False
+    assert stat.is_upcoming_event(event, days=31) is True
+    assert stat.is_upcoming_event(event, days=29) is False
