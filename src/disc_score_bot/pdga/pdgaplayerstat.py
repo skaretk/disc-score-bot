@@ -169,7 +169,7 @@ class PdgaPlayerStat(commands.Cog):
                 continue
             try:
                 scraper = PlayerProfileScraper(pdga_number=str(pdga_number))
-                scraper.scrape()
+                await asyncio.to_thread(scraper.scrape)
                 upcoming = [e for e in scraper.player_info.events.upcoming_events if self.is_upcoming_event(e, days=days)]
                 if not upcoming:
                     continue
