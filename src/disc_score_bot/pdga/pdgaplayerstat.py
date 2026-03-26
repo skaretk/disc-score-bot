@@ -131,7 +131,7 @@ class PdgaPlayerStat(commands.Cog):
         if days is None:
             days = 7
         await interaction.response.defer()
-        embed = await self._build_upcoming_events_embed(interaction.guild.name, days=days)
+        embed = await self._build_upcoming_events_embed(interaction.guild, days=days)
         if embed is not None:
             await interaction.followup.send(embed=embed)
         else:
@@ -149,7 +149,7 @@ class PdgaPlayerStat(commands.Cog):
             channel = self.bot.get_channel(channel_id)
             if channel is None:
                 continue
-            embed = await self._build_upcoming_events_embed(guild.name, days=3)
+            embed = await self._build_upcoming_events_embed(guild, days=3)
             if embed is not None:
                 await channel.send(embed=embed)
 
@@ -157,9 +157,9 @@ class PdgaPlayerStat(commands.Cog):
     async def before_check_upcoming_events(self):
         await self.bot.wait_until_ready()
 
-    async def _build_upcoming_events_embed(self, guild_name: str, days: int) -> Optional[Embed]:
+    async def _build_upcoming_events_embed(self, guild, days: int) -> Optional[Embed]:
         """Scrape upcoming PDGA events for all club players and return an Embed, or None if none found."""
-        users = ClubPlayerConfig(guild_name).read_module() or []
+        users = ClubPlayerConfig(guild.name).read_module() or []
         embed = Embed(title=f"\U0001f4c5 Upcoming PDGA Events (next {days} day(s))", color=0x004899)
         found_any = False
 
@@ -173,14 +173,20 @@ class PdgaPlayerStat(commands.Cog):
                 upcoming = [e for e in scraper.player_info.events.upcoming_events if self.is_upcoming_event(e, days=days)]
                 if not upcoming:
                     continue
+                # Try to get the discord member for the user, and include their name in the embed if found
+                discord_id = user_data.get("discord_id")
+                member = guild.get_member(discord_id) if discord_id else None
                 name = user_data.get("name") or str(pdga_number)
+                if member:
+                    name = f"{name} - @{member.name}"
+
                 embed.add_field(name=name, value="\n".join(f"- {e}" for e in upcoming)[:1024], inline=False)
                 found_any = True
             except Exception as e:
                 logger.warning("Failed to check events for pdga#%s: %s", pdga_number, e)
             await asyncio.sleep(10)  # avoid hammering pdga.com with requests
 
-        return embed if found_any else None
+        return embed if found_any and validate_embed(embed) else None
 
     def is_upcoming_event(self, event, days: int = 3) -> bool:
         """Return True if the event starts within the next "days" (default covers Thu-Sun)."""
