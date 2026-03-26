@@ -23,7 +23,7 @@ PySocks==1.7.1
 pytest==8.4.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
-requests==2.32.4
+requests==2.33.0
 selenium==4.33.0
 setuptools==80.9.0
 six==1.17.0
