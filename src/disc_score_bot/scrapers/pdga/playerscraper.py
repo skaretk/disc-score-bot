@@ -138,10 +138,10 @@ class PlayerProfileScraper(Pdga):
         link = next_event_data.find('a', href=True, title=True)
         href = link['href'] if link else None
         title = link['title'] if link else None
-        date_start, date_from_to = self._parse_date_from_title(title) if title and len(title) >= 12 else (None, None)
+        date_start, dates = self._parse_date_from_title(title) if title and len(title) >= 12 else (None, None)
         name = link.get_text(strip=True) if link else None
         location = title.split(' in ', 1)[1].split(',')[0].strip() if title and ' in ' in title else ''
-        return PdgaEvent(url_host=self.url, url_path=href, name=name, location=location, date_start=date_start, date_from_to=date_from_to)
+        return PdgaEvent(url_host=self.url, url_path=href, name=name, location=location, date_start=date_start, dates=dates)
 
     def _collect_next_event(self) -> list[PdgaEvent]:
         next_event = self._player_info.find("li", class_="next-event")
@@ -164,7 +164,7 @@ class PlayerProfileScraper(Pdga):
                     name=evt_name,
                     location=event_location,
                     date_start=date_start,
-                    date_from_to=event_title.split(' on ')[-1]
+                    dates=event_title.split(' on ')[-1]
                 ))
         return result
 
@@ -185,7 +185,7 @@ class PlayerProfileScraper(Pdga):
             url_path=f'player/{self.player_info.pdga_number}',
             name=title,
             date_start='No upcoming events found',
-            date_from_to=''
+            dates=''
         )
 
     def _failed_upcoming_events_obj(self) -> PdgaEvent:
@@ -194,11 +194,11 @@ class PlayerProfileScraper(Pdga):
             url_path=f'player/{self.player_info.pdga_number}',
             name='Player profile upcoming events',
             date_start='Failed to retrieve upcoming events\n',
-            date_from_to=''
+            dates=''
         )
 
     def _parse_date_from_title(self, title: str) -> tuple[str | None, str | None]:
-        """Extract date_start and date_from_to from event title string."""
+        """Extract date_start and dates from event title string."""
         parts = title.split(",")
         for part in parts:
             stripped = part.replace(" ", "")

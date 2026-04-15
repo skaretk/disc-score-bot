@@ -160,8 +160,10 @@ class PdgaPlayerStat(commands.Cog):
     async def _build_upcoming_events_embed(self, guild, days: int) -> Optional[Embed]:
         """Scrape upcoming PDGA events for all club players and return an Embed, or None if none found."""
         users = ClubPlayerConfig(guild.name).read_module() or []
-        embed = Embed(title=f"\U0001f4c5 Upcoming PDGA Events (next {days} day(s))", color=0x004899)
-        found_any = False
+        embed = Embed(title=f"\U0001f4c5 Upcoming PDGA Events (next {days} days)", color=0x004899)
+
+        # event_url -> (event, [player_name, ...])
+        events_map: dict[str, tuple] = {}
 
         for user_data in users:
             pdga_number = user_data.get("pdga_number")
@@ -173,20 +175,40 @@ class PdgaPlayerStat(commands.Cog):
                 upcoming = [e for e in scraper.player_info.events.upcoming_events if self.is_upcoming_event(e, days=days)]
                 if not upcoming:
                     continue
-                # Try to get the discord member for the user, and include their name in the embed if found
                 discord_id = user_data.get("discord_id")
                 member = guild.get_member(discord_id) if discord_id else None
                 name = user_data.get("name") or str(pdga_number)
                 if member:
                     name = f"{name} - @{member.name}"
 
-                embed.add_field(name=name, value="\n".join(f"- {e}" for e in upcoming)[:1024], inline=False)
-                found_any = True
+                for event in upcoming:
+                    event_key = event.event_url
+                    if event_key not in events_map:
+                        events_map[event_key] = (event, [])
+                    events_map[event_key][1].append(name)
             except Exception as e:
                 logger.warning("Failed to check events for pdga#%s: %s", pdga_number, e)
             await asyncio.sleep(10)  # avoid hammering pdga.com with requests
 
-        return embed if found_any and validate_embed(embed) else None
+        if not events_map:
+            return None
+
+        # Sort events by date_start
+        def event_sort_key(item):
+            event = item[0]
+            try:
+                return datetime.strptime(event.date_start, "%d.%m.%Y")
+            except (ValueError, TypeError):
+                return datetime.max
+
+        for event, players in sorted(events_map.values(), key=event_sort_key):
+            date_range = f"{event.date_start} - {event.date_end}" if event.date_end else (event.date_start or "")
+            field_name = date_range
+            player_lines = "\n".join(f"- {p}" for p in players)
+            field_value = f"[{event.name}]({event.event_url})\n{player_lines}"
+            embed.add_field(name=field_name[:256], value=field_value[:1024], inline=False)
+
+        return embed if validate_embed(embed) else None
 
     def is_upcoming_event(self, event, days: int = 3) -> bool:
         """Return True if the event starts within the next "days" (default covers Thu-Sun)."""
@@ -194,7 +216,7 @@ class PdgaPlayerStat(commands.Cog):
         if not date_start:
             return False
         try:
-            date = datetime.strptime(date_start, "%a, %b %d, %Y")
+            date = datetime.strptime(date_start, "%d.%m.%Y")
             now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
             return timedelta(0) <= (date - now) <= timedelta(days=days)
         except ValueError:
