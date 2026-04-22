@@ -34,6 +34,8 @@ class PdgaEvent:
                     break
                 except ValueError:
                     continue
+        else:
+            self.date_end = self.date_start
 
     def __repr__(self) -> str:
         return f'{self.date_start}: [{self.name}]({self.event_url})'

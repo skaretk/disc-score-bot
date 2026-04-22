@@ -69,7 +69,7 @@ def stat():
 
 def make_event(date: datetime | None):
     event = MagicMock()
-    event.date_start = date.strftime("%a, %b %d, %Y") if date else None
+    event.date_start = date.strftime("%d.%m.%Y") if date else None
     return event
 
 

@@ -63,3 +63,27 @@ def test_upcoming_pdga_events(pdga_number_events):
     stat = PdgaPlayerStat.__new__(PdgaPlayerStat)
     soon = [e for e in events if stat.is_upcoming_event(e, days=365)]
     assert len(soon) > 0, "Expected at least one event within the next 365 days"
+
+
+class TestPdgaEventDates:
+    """Unit tests for PdgaEvent date_start / date_end parsing."""
+    URL_HOST = "https://www.pdga.com/"
+    def _make_event(self, date_start, dates):
+        return PdgaEvent(url_host=self.URL_HOST, url_path="tour/event/1", name="Test Event", location="", date_start=date_start, dates=dates)
+
+    def test_single_date_event_sets_date_end_equal_to_date_start(self):
+        """When dates has no ' to ', date_end should equal date_start."""
+        event = self._make_event(date_start="Sat, Apr 25, 2026", dates="25-Apr-2026")
+        assert event.date_start == "25.04.2026"
+        assert event.date_end == event.date_start
+
+    def test_multi_date_event_parses_start_and_end(self):
+        """When dates contains ' to ', start and end should be parsed independently."""
+        event = self._make_event(date_start="Sat, Apr 25, 2026", dates="25-Apr to 26-Apr-2026")
+        assert event.date_start == "25.04.2026"
+        assert event.date_end == "26.04.2026"
+
+    def test_multi_date_event_year_inherited_from_end(self):
+        """Year in the end part must not bleed into date_start parsing."""
+        event = self._make_event(date_start="Sat, Apr 25, 2026", dates="25-Apr to 26-Apr-2026")
+        assert event.date_start == "25.04.2026", "date_start should be the 25th, not the 26th"

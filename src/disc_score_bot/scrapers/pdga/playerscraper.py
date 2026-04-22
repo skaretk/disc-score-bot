@@ -1,6 +1,7 @@
 """Scraper for PDGA Player Profiles"""
 import time
 import logging
+from datetime import datetime
 from dateutil.parser import parse as parse_date
 from .pdga import Pdga
 from .pdgaplayerinfo import PdgaPlayerInfo
@@ -138,10 +139,34 @@ class PlayerProfileScraper(Pdga):
         link = next_event_data.find('a', href=True, title=True)
         href = link['href'] if link else None
         title = link['title'] if link else None
-        date_start, dates = self._parse_date_from_title(title) if title and len(title) >= 12 else (None, None)
+        dates = title.split(' on ', 1)[1].strip() if title and ' on ' in title else None
+        date_start = self._parse_event_start_date(dates) if dates else None
         name = link.get_text(strip=True) if link else None
         location = title.split(' in ', 1)[1].split(',')[0].strip() if title and ' in ' in title else ''
         return PdgaEvent(url_host=self.url, url_path=href, name=name, location=location, date_start=date_start, dates=dates)
+
+    def _parse_event_start_date(self, dates: str) -> str | None:
+        """Parse the start date from a date range like '25-Apr to 26-Apr-2026' or '25-Apr-2026'."""
+        start_str = dates.split(' to ')[0].strip()
+        # Try parsing start directly (already includes a year)
+        for fmt in ("%d-%b-%Y", "%b %d, %Y", "%d %b %Y"):
+            try:
+                return datetime.strptime(start_str, fmt).strftime("%a, %b %d, %Y")
+            except ValueError:
+                continue
+        # Start has no year — get it from end date
+        if ' to ' in dates:
+            end_str = dates.split(' to ', 1)[1].strip()
+            for end_fmt in ("%d-%b-%Y", "%b %d, %Y", "%d %b %Y"):
+                try:
+                    year = datetime.strptime(end_str, end_fmt).year
+                    return datetime.strptime(f"{start_str}-{year}", "%d-%b-%Y").strftime("%a, %b %d, %Y")
+                except ValueError:
+                    continue
+        try:
+            return parse_date(start_str, fuzzy=True).strftime("%a, %b %d, %Y")
+        except ValueError:
+            return None
 
     def _collect_next_event(self) -> list[PdgaEvent]:
         next_event = self._player_info.find("li", class_="next-event")
