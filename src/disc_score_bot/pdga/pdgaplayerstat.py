@@ -176,10 +176,14 @@ class PdgaPlayerStat(commands.Cog):
                 if not upcoming:
                     continue
                 discord_id = user_data.get("discord_id")
-                member = guild.get_member(discord_id) if discord_id else None
                 name = user_data.get("name") or str(pdga_number)
-                if member:
-                    name = f"{name} - @{member.name}"
+                if discord_id:
+                    try:
+                        member = await guild.fetch_member(discord_id)
+                    except Exception:
+                        member = None
+                    if member:
+                        name = f"{name} {member.mention}"
 
                 for event in upcoming:
                     event_key = event.event_url
@@ -204,7 +208,7 @@ class PdgaPlayerStat(commands.Cog):
         for event, players in sorted(events_map.values(), key=event_sort_key):
             date_range = f"{event.date_start} - {event.date_end}" if event.date_end else (event.date_start or "")
             field_name = date_range
-            player_lines = "\n".join(f"- {p}" for p in players)
+            player_lines = "\n".join(f"- {p}" for p in sorted(players, key=lambda n: n.split()[0].casefold()))
             field_value = f"[{event.name}]({event.event_url})\n{player_lines}"
             embed.add_field(name=field_name[:256], value=field_value[:1024], inline=False)
 
