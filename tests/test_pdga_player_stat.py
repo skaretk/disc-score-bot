@@ -101,3 +101,47 @@ def test_is_upcoming_event_custom_days(stat):
     event = make_event(datetime.now() + timedelta(days=30))
     assert stat.is_upcoming_event(event, days=31) is True
     assert stat.is_upcoming_event(event, days=29) is False
+
+
+# ---------------------------------------------------------------------------
+# PdgaPlayerStat._split_event_into_fields
+# ---------------------------------------------------------------------------
+
+def test_split_event_into_fields_single_field_when_short():
+    header = "[Event](https://example.com)"
+    lines = ["- Alice", "- Bob", "- Carol"]
+    fields = PdgaPlayerStat._split_event_into_fields(header, lines)
+    assert fields == [f"{header}\n- Alice\n- Bob\n- Carol"]
+
+def test_split_event_into_fields_every_player_present_across_fields():
+    header = "[Event](https://example.com)"
+    lines = [f"- Player {i:03d}" for i in range(200)]
+    fields = PdgaPlayerStat._split_event_into_fields(header, lines)
+    assert len(fields) > 1
+    assert all(len(f) <= 1024 for f in fields)
+    joined = "\n".join(fields)
+    for line in lines:
+        assert line in joined
+
+def test_split_event_into_fields_does_not_split_a_player_name():
+    header = "[Event](https://example.com)"
+    lines = [f"- Player {i:03d}" for i in range(200)]
+    fields = PdgaPlayerStat._split_event_into_fields(header, lines)
+    rebuilt = []
+    for field in fields:
+        for entry in field.split("\n"):
+            if entry.startswith("- "):
+                rebuilt.append(entry)
+    assert rebuilt == lines
+
+def test_split_event_into_fields_header_only_in_first_field():
+    header = "[Event](https://example.com)"
+    lines = [f"- Player {i:03d}" for i in range(200)]
+    fields = PdgaPlayerStat._split_event_into_fields(header, lines)
+    assert fields[0].startswith(header)
+    assert all(header not in f for f in fields[1:])
+
+def test_split_event_into_fields_no_players():
+    header = "[Event](https://example.com)"
+    fields = PdgaPlayerStat._split_event_into_fields(header, [])
+    assert fields == [header]

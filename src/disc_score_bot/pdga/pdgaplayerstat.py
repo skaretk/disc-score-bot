@@ -207,12 +207,33 @@ class PdgaPlayerStat(commands.Cog):
 
         for event, players in sorted(events_map.values(), key=event_sort_key):
             date_range = f"{event.date_start} - {event.date_end}" if event.date_end else (event.date_start or "")
-            field_name = date_range
-            player_lines = "\n".join(f"- {p}" for p in sorted(players, key=lambda n: n.split()[0].casefold()))
-            field_value = f"[{event.name}]({event.event_url})\n{player_lines}"
-            embed.add_field(name=field_name[:256], value=field_value[:1024], inline=False)
+            header = f"[{event.name}]({event.event_url})"
+            player_lines = [f"- {p}" for p in sorted(players, key=lambda n: n.split()[0].casefold())]
+            for i, value in enumerate(self._split_event_into_fields(header, player_lines)):
+                field_name = date_range if i == 0 else f"{date_range} (forts.)"
+                embed.add_field(name=field_name[:256], value=value, inline=False)
 
         return embed if validate_embed(embed) else None
+
+    @staticmethod
+    def _split_event_into_fields(header: str, player_lines: list[str], limit: int = 1024) -> list[str]:
+        """Group an event's header and its player lines into embed field values, each within "limit" characters. A player line is never split across fields."""
+        field_values: list[str] = []
+        current_lines = [header]
+        current_length = len(header)
+
+        for player in player_lines:
+            player_length = len("\n") + len(player)
+            if current_length + player_length > limit:
+                field_values.append("\n".join(current_lines))
+                current_lines = [player]
+                current_length = len(player)
+            else:
+                current_lines.append(player)
+                current_length += player_length
+
+        field_values.append("\n".join(current_lines))
+        return field_values
 
     def is_upcoming_event(self, event, days: int = 3) -> bool:
         """Return True if the event starts within the next "days" (default covers Thu-Sun)."""
