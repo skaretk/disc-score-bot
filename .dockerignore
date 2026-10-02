@@ -2,3 +2,8 @@
 .pytest_cache
 .vscode
 __pycache__
+cfg/
+tests/
+.venv/
+chromedriver.exe
+flight.png
