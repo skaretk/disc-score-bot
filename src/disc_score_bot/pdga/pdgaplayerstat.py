@@ -210,7 +210,7 @@ class PdgaPlayerStat(commands.Cog):
             header = f"[{event.name}]({event.event_url})"
             player_lines = [f"- {p}" for p in sorted(players, key=lambda n: n.split()[0].casefold())]
             for i, value in enumerate(self._split_event_into_fields(header, player_lines)):
-                field_name = date_range if i == 0 else f"{date_range} (forts.)"
+                field_name = date_range if i == 0 else f"{event.name} (continued)"
                 embed.add_field(name=field_name[:256], value=value, inline=False)
 
         return embed if validate_embed(embed) else None
